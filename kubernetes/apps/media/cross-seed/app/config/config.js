@@ -8,8 +8,7 @@ module.exports = {
   includeNonVideos: true,
   rssCadence: "10 minutes",
   includeSingleEpisodes: true,
-  // TODO: Uncomment once 6.12.x comes out - Ref (https://ptb.discord.com/channels/880949701845872672/1228878509414420594/1363638432873709690)
-  //ignoreNonRelevantFilesToResume: true,
+  ignoreNonRelevantFilesToResume: true,
 
   // ======== Blocklist =========
   blockList: ["category:snatches"],
