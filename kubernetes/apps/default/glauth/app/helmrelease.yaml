@@ -28,7 +28,7 @@ spec:
           app:
             image:
               repository: ghcr.io/glauth/glauth
-              tag: v2.3.2@sha256:8ff602d3cd4cc90e25baee6660ce50218ec6efcf5eac0ce3cf396ba1b5af543a
+              tag: v2.4.0@sha256:66095183015481f8c2ac45d79cfceedf3b12a308659cb863e0de3b80995a29ad
             command: ["/app/glauth", "-c", "/config"]
             probes:
               liveness: &probes
