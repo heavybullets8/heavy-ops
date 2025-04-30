@@ -146,7 +146,7 @@ spec:
         kubernetes-nodes:
           # renovate: depName="Kubernetes / Views / Nodes"
           gnetId: 15759
-          revision: 34
+          revision: 35
           datasource: Prometheus
         kubernetes-pods:
           # renovate: depName="Kubernetes / Views / Pods"
@@ -168,7 +168,8 @@ spec:
           # renovate: depName="Node Exporter Full"
           gnetId: 1860
           revision: 37
-          datasource: Prometheus
+          datasource:
+            - { name: DS_PROMETHEUS, value: Prometheus }
         nvidia-dcgm-exporter:
           url: https://raw.githubusercontent.com/NVIDIA/dcgm-exporter/refs/heads/main/grafana/dcgm-exporter-dashboard.json
           datasource: Prometheus
@@ -177,10 +178,10 @@ spec:
           gnetId: 19105
           revision: 7
           datasource: Prometheus
-        smart:
-          # renovate: depName="Dashboard for smartctl_exporter"
-          gnetId: 20204
-          revision: 1
+        smartctl-exporter:
+          # renovate: depName="SMARTctl Exporter Dashboard"
+          gnetId: 22604
+          revision: 2
           datasource:
             - { name: DS_PROMETHEUS, value: Prometheus }
         unpackerr:
