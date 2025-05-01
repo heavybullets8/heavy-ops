@@ -67,6 +67,7 @@ machine:
       - init_on_alloc=0
       - init_on_free=0
       - talos.auditd.disabled=1
+      - -selinux
   files:
     - op: create
       path: /etc/cri/conf.d/20-customization.part
