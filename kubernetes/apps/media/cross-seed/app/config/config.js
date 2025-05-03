@@ -34,7 +34,7 @@ module.exports = {
   // ======== DATA BASED MATCHING (Requires Partial Matching) =========
   // Commented out, since you only need to ever run it once
   // After it successfully runs, comment it out.
-  maxDataDepth: 4,
+  maxDataDepth: 3,
   dataDirs: [
     //"/media/library/series",
     "/media/library/movies",
@@ -50,7 +50,7 @@ module.exports = {
   ),
 
   // ======== TORRENT CLIENT =========
-  qbittorrentUrl: "http://qbittorrent.media.svc.cluster.local",
+  torrentClients: ["qbittorrent:http://qbittorrent.media.svc.cluster.local"],
   torrentDir: null,
   useClientTorrents: true,
 
