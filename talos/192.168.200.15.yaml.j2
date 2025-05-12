@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://www.talos.dev/v1.9/schemas/config.schema.json
+# yaml-language-server: $schema=https://www.talos.dev/v1.10/schemas/config.schema.json
 version: v1alpha1
 debug: false
 machine:
@@ -253,3 +253,17 @@ cluster:
   coreDNS:
     disabled: true
   allowSchedulingOnControlPlanes: true
+---
+apiVersion: v1alpha1
+kind: EthernetConfig
+name: enp130s0f1np1
+rings:
+  rx: 8192
+  tx: 8192
+---
+apiVersion: v1alpha1
+kind: EthernetConfig
+name: enp130s0f0np0
+rings:
+  rx: 8192
+  tx: 8192
