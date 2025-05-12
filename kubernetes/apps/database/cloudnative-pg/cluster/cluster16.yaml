@@ -5,7 +5,7 @@ kind: Cluster
 metadata:
   name: postgres16
 spec:
-  imageName: ghcr.io/cloudnative-pg/postgresql:16.8@sha256:3f990f865ecdda2a84f72981876661a7ed510f5746759115212cf89b714180d7
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.9@sha256:4418a66c2232ba0bd63dd6c7a98ee401bcac340efbb5f380f8879d004654a7d3
   instances: 3
   primaryUpdateStrategy: unsupervised
   storage:
