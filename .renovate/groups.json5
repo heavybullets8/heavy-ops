@@ -11,6 +11,33 @@
       }
     },
     {
+      "description": ["Actions Runner Controller Group"],
+      "groupName": "Actions Runner Controller",
+      "matchDatasources": ["docker", "helm"],
+      "matchPackageNames": ["/gha-runner-scale-set/"],
+      "group": {
+        "commitMessageTopic": "{{{groupName}}} group"
+      }
+    },
+    {
+      description: "Cert-Manager Group",
+      groupName: "Cert-Manager",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["/cert-manager/"],
+      group: {
+        commitMessageTopic: "{{{groupName}}} group",
+      },
+    },
+    {
+      description: "Cilium Group",
+      groupName: "Cilium",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["/cilium/"],
+      group: {
+        commitMessageTopic: "{{{groupName}}} group",
+      },
+    },
+    {
       "description": ["CoreDNS Group"],
       "groupName": "CoreDNS",
       "matchDatasources": ["docker"],
@@ -20,13 +47,14 @@
       }
     },
     {
-      "description": ["Actions Runner Controller Group"],
-      "groupName": "Actions Runner Controller",
-      "matchDatasources": ["docker", "helm"],
-      "matchPackageNames": ["/gha-runner-scale-set/"],
+      "description": ["Dragonfly Operator Group"],
+      "groupName": "Dragonfly Operator",
+      "matchDatasources": ["docker", "github-releases"],
+      "matchPackageNames": ["/dragonflydb/"],
       "group": {
         "commitMessageTopic": "{{{groupName}}} group"
-      }
+      },
+      "separateMinorPatch": true
     },
     {
       "description": ["External Secrets Operator Group"],
@@ -45,16 +73,6 @@
       "group": {
         "commitMessageTopic": "{{{groupName}}} group"
       }
-    },
-    {
-      "description": ["Dragonfly Operator Group"],
-      "groupName": "Dragonfly Operator",
-      "matchDatasources": ["docker", "github-releases"],
-      "matchPackageNames": ["/dragonflydb/"],
-      "group": {
-        "commitMessageTopic": "{{{groupName}}} group"
-      },
-      "separateMinorPatch": true
     },
     {
       "description": ["Immich Group"],
