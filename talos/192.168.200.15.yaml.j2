@@ -103,6 +103,7 @@ machine:
     net.ipv4.tcp_rmem: 4096 262144 67108864
     net.ipv4.tcp_wmem: 4096 262144 67108864
     net.ipv4.tcp_mtu_probing: "1"
+    user.max_user_namespaces: "11255"
     vm.nr_hugepages: "3072"
   sysfs:
     # ZFS ARC Max (89% of total RAM)
