@@ -53,7 +53,7 @@ function main() {
         check_env NODE_IP CONFIG_FILE
         check_cli minijinja-cli talosctl yq
         gum log --structured --level info "Upgrading Talos on node ${NODE_IP}"
-        if ! FACTORY_IMAGE=$(minijinja-cli "${CONFIG_FILE}" | yq --exit-status '.machine.install.image'); then
+        if ! FACTORY_IMAGE=$(minijinja-cli "${CONFIG_FILE}" | yq --exit-status 'select(document_index == 0) | .machine.install.image'); then
             gum log --structured --level error "Failed to fetch factory image"
             exit 1
         fi
