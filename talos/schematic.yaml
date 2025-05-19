@@ -1,0 +1,17 @@
+---
+customization:
+  extraKernelArgs:
+    - talos.platform=metal
+    - apparmor=0
+    - security=none
+    - init_on_alloc=0
+    - init_on_free=0
+    - talos.auditd.disabled=1
+    - -selinux
+  systemExtensions:
+    officialExtensions:
+      - siderolabs/gasket-driver
+      - siderolabs/i915
+      - siderolabs/intel-ucode
+      - siderolabs/mei
+      - siderolabs/thunderbolt

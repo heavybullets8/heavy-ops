@@ -58,16 +58,8 @@ machine:
   install:
     diskSelector:
       model: INTEL SSDPE21D960GA
-    image: factory.talos.dev/installer/cd56b3762a712114d0be3f80c21168070f2318fc566887b2e8af642fe2b9085c:{{ ENV.TALOS_VERSION }}
+    image: factory.talos.dev/metal-installer/{{ ENV.TALOS_SCHEMATIC }}:{{ ENV.TALOS_VERSION }}
     wipe: true
-    extraKernelArgs:
-      - talos.platform=metal
-      - apparmor=0
-      - security=none
-      - init_on_alloc=0
-      - init_on_free=0
-      - talos.auditd.disabled=1
-      - -selinux
   files:
     - op: create
       path: /etc/cri/conf.d/20-customization.part

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 CONFIG_FILE="${TALOS_DIR}/${NODE_IP}.yaml.j2"
+SCHEMATIC_FILE="${TALOS_DIR}/schematic.yaml"
 OPTIONS=("Apply Talos Config" "Upgrade Talos" "Upgrade Kubernetes" "Reboot Talos" "Shutdown Talos" "Reset Talos" "Generate Kubeconfig" "Help" "Back")
 
 function show_help() {
@@ -25,6 +26,24 @@ function menu() {
     fi
 }
 
+function generate_schematic() {
+    gum log --structured --level info "Generating Talos schematic"
+
+    if [[ ! -f "$SCHEMATIC_FILE" ]]; then
+        gum log --structured --level error "Schematic file not found" "file" "$SCHEMATIC_FILE"
+        exit 1
+    fi
+
+    local schematic_id
+    if ! schematic_id=$(curl --silent -X POST --data-binary @"$SCHEMATIC_FILE" https://factory.talos.dev/schematics | jq --raw-output '.id'); then
+        gum log --structured --level error "Failed to generate schematic ID"
+        exit 1
+    fi
+
+    export TALOS_SCHEMATIC="$schematic_id"
+    gum log --structured --level info "Schematic ID generated" "id" "$schematic_id"
+}
+
 function main() {
     local args=("$@")
 
@@ -41,6 +60,7 @@ function main() {
         check_env NODE_IP CONFIG_FILE
         check_cli minijinja-cli op talosctl
         gum log --structured --level info "Applying Talos config to node ${NODE_IP}"
+        generate_schematic
         op_signin
         if ! minijinja-cli "${CONFIG_FILE}" | op inject | talosctl --nodes "${NODE_IP}" apply-config --mode auto --file /dev/stdin; then
             gum log --structured --level error "Failed to apply Talos config"
