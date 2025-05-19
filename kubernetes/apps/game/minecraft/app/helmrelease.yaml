@@ -1,0 +1,65 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app minecraft
+spec:
+  interval: 1h
+
+  chartRef:
+    kind: OCIRepository
+    name: minecraft
+
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+
+  values:
+    fullnameOverride: *app
+
+    image:
+      repository: itzg/minecraft-bedrock-server
+      tag: "2025.5.0@sha256:3014e03316581c0c67b39233667df8946c5d9bc8ae548e793353d8da0591619b"
+
+    resources:
+      requests:
+        cpu: 200m
+      limits:
+        cpu: 2000m
+        memory: 4Gi
+
+    env:
+      EULA: "TRUE"
+      TZ: ${TIMEZONE}
+      SERVER_NAME: "FrenZone"
+      GAMEMODE: survival
+      DIFFICULTY: normal
+      ONLINE_MODE: "TRUE"
+      MAX_PLAYERS: "20"
+      VIEW_DISTANCE: "12"
+      ALLOW_CHEATS: "FALSE"
+
+    service:
+      type: LoadBalancer
+      ports:
+        bedrock:
+          port: 19132
+          protocol: UDP
+          targetPort: 19132
+      annotations: {}
+
+    persistence:
+      dataDir:
+        enabled: true
+        existingClaim: *app
+
+  dependsOn:
+    - name: openebs
+      namespace: openebs-system
+    - name: volsync
+      namespace: volsync-system
