@@ -1,0 +1,84 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: openebs-zfs-16k
+provisioner: zfs.csi.openebs.io
+parameters:
+  fstype: zfs
+  poolname: speed
+  recordsize: "16k"
+  compression: lz4
+  dedup: off
+  thinprovision: "yes"
+  shared: "yes"
+reclaimPolicy: Delete
+allowVolumeExpansion: true
+volumeBindingMode: Immediate
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: openebs-zfs-64k
+provisioner: zfs.csi.openebs.io
+parameters:
+  fstype: zfs
+  poolname: speed
+  recordsize: "64k"
+  compression: lz4
+  dedup: off
+  thinprovision: "yes"
+  shared: "yes"
+reclaimPolicy: Delete
+allowVolumeExpansion: true
+volumeBindingMode: Immediate
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: openebs-zfs-128k
+provisioner: zfs.csi.openebs.io
+parameters:
+  fstype: zfs
+  poolname: speed
+  recordsize: "128k"
+  compression: lz4
+  dedup: off
+  thinprovision: "yes"
+  shared: "yes"
+reclaimPolicy: Delete
+allowVolumeExpansion: true
+volumeBindingMode: Immediate
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: openebs-zfs-256k
+provisioner: zfs.csi.openebs.io
+parameters:
+  fstype: zfs
+  poolname: speed
+  recordsize: "256k"
+  compression: lz4
+  dedup: off
+  thinprovision: "yes"
+  shared: "yes"
+reclaimPolicy: Delete
+allowVolumeExpansion: true
+volumeBindingMode: Immediate
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: openebs-zfs-1m
+provisioner: zfs.csi.openebs.io
+parameters:
+  fstype: zfs
+  poolname: speed
+  recordsize: "1m"
+  compression: lz4
+  dedup: off
+  thinprovision: "yes"
+  shared: "yes"
+reclaimPolicy: Delete
+allowVolumeExpansion: true
+volumeBindingMode: Immediate

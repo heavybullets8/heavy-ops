@@ -13,12 +13,12 @@ spec:
     repository: "${APP}-volsync-local-secret"
     copyMethod: Snapshot
     volumeSnapshotClassName: "openebs-zfs"
-    cacheStorageClassName: "${VOLSYNC_CACHE_SNAPSHOTCLASS:-openebs-hostpath}"
+    cacheStorageClassName: "openebs-zfs-${VOLSYNC_RECORD_SIZE:-128k}"
     cacheAccessModes: ["${VOLSYNC_CACHE_ACCESSMODES:-ReadWriteOnce}"]
-    cacheCapacity: "${VOLSYNC_CACHE_CAPACITY:-8Gi}"
+    cacheCapacity: "${VOLSYNC_CACHE_CAPACITY:-10Gi}"
     storageClassName: "openebs-zfs-${VOLSYNC_RECORD_SIZE:-128k}"
     accessModes: ["${VOLSYNC_ACCESSMODES:-ReadWriteOnce}"]
     capacity: "${VOLSYNC_CAPACITY}"
-    # cleanupCachePVC: true
-    # cleanupTempPVC: true
-    # enableFileDeletion: true
+    cleanupCachePVC: true
+    cleanupTempPVC: true
+    enableFileDeletion: true
