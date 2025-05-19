@@ -24,7 +24,7 @@ spec:
 
     image:
       repository: itzg/minecraft-bedrock-server
-      tag: "2025.5.0@sha256:3014e03316581c0c67b39233667df8946c5d9bc8ae548e793353d8da0591619b"
+      tag: "2025.5.0@sha256:263acc4a01c01adc76fedf92934f125144a93eab8f8550c85015348386c6bfa2"
 
     resources:
       requests:
