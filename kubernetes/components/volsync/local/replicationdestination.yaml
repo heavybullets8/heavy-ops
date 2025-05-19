@@ -19,6 +19,6 @@ spec:
     storageClassName: "openebs-zfs-${VOLSYNC_RECORD_SIZE:-128k}"
     accessModes: ["${VOLSYNC_ACCESSMODES:-ReadWriteOnce}"]
     capacity: "${VOLSYNC_CAPACITY}"
-    cleanupCachePVC: true
-    cleanupTempPVC: true
-    enableFileDeletion: true
+    # cleanupCachePVC: true
+    # cleanupTempPVC: true
+    # enableFileDeletion: true

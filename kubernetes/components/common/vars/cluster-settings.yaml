@@ -21,3 +21,4 @@ data:
   PLEX_IP:            192.168.201.50
   JELLYFIN_IP:        192.168.201.51
   VALHEIM_IP:         192.168.201.52
+  MINECRAFT_IP:       192.168.201.53

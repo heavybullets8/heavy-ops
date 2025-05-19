@@ -1,0 +1,63 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app minecraft
+spec:
+  interval: 1h
+
+  chartRef:
+    kind: OCIRepository
+    name: minecraft
+
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+
+  values:
+    fullnameOverride: minecraft
+
+    image:
+      repository: itzg/minecraft-bedrock-server
+      tag: "2025.5.0@sha256:263acc4a01c01adc76fedf92934f125144a93eab8f8550c85015348386c6bfa2"
+      pullPolicy: Always
+      pullSecret: ""
+
+    resources:
+      requests:
+        memory: 512Mi
+        cpu: 200m
+      limits:
+        cpu: 8000m
+        memory: 20Gi
+
+    minecraftServer:
+      eula: "TRUE"
+      gameMode: survival
+      difficulty: normal
+      onlineMode: true
+      serverName: "FrenZone"
+      maxPlayers: 20
+      viewDistance: 12
+      cheats: false
+
+      serviceType: LoadBalancer
+      serverPort: 19132
+
+    extraEnv:
+      TZ: ${TIMEZONE}
+
+    persistence:
+      labels: {}
+      dataDir:
+        enabled: true
+        existingClaim: *app
+
+    serviceAnnotations:
+      lbipam.cilium.io/ips: "${MINECRAFT_IP}"
+
