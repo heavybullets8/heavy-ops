@@ -71,6 +71,21 @@ spec:
                 cpu: 10m
                 memory: 25Mi
 
+          mam-ip-helper:
+            dependsOn: app
+            image:
+              repository: docker.io/tyzen9/myanonamouse-ip-helper
+              tag: latest
+            env:
+              DEBUG: "0"
+            envFrom: &envFrom
+              - secretRef:
+                  name: qbittorrent-secret
+            resources:
+              requests:
+                cpu: 10m
+                memory: 10Mi
+
         initContainers:
           gluetun:
             image:
@@ -89,9 +104,7 @@ spec:
               VPN_SERVICE_PROVIDER: airvpn
               SERVER_COUNTRIES: "United States"
               WIREGUARD_MTU: 3418
-            envFrom:
-              - secretRef:
-                  name: wireguard-secret
+            envFrom: *envFrom
             probes:
               liveness:
                 enabled: true
@@ -141,14 +154,12 @@ spec:
     service:
       app:
         controller: *app
-        nameOverride: *app
         ports:
           http:
             port: *port
 
       gluetun:
         controller: *app
-        nameOverride: gluetun
         ports:
           socks-proxy:
             enabled: true
