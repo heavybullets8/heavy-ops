@@ -20,7 +20,7 @@ spec:
       retries: 3
 
   values:
-    fullnameOverride: minecraft
+    fullnameOverride: *app
 
     image:
       repository: itzg/minecraft-bedrock-server
