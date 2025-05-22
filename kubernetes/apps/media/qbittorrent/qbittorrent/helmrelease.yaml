@@ -71,13 +71,13 @@ spec:
                 cpu: 10m
                 memory: 25Mi
 
-          mam-ip-helper:
+          mamapi:
             dependsOn: app
             image:
-              repository: docker.io/tyzen9/myanonamouse-ip-helper
+              repository: elforkhead/mamapi
               tag: latest
             env:
-              DEBUG: "0"
+              TZ: ${TIMEZONE}
             envFrom: &envFrom
               - secretRef:
                   name: qbittorrent-secret
@@ -211,3 +211,14 @@ spec:
         path: /mnt/speed/snatch
         globalMounts:
           - path: /speed/snatch
+
+      mamapi-data:
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        storageClass: openebs-hostpath
+        size: 1Gi
+        advancedMounts:
+          qbittorrent:
+            mamapi:
+              - path: /data
+
