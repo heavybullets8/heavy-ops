@@ -87,7 +87,7 @@ share_limits:
       - ignore
       - other
     last_active: 1m
-    max_seeding_time: 14d
+    max_seeding_time: 30d
     max_ratio: 4
 
 recyclebin:
