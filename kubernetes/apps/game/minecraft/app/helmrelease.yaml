@@ -37,14 +37,19 @@ spec:
         memory: 20Gi
 
     minecraftServer:
+      cheats: true
+      difficulty: normal
       eula: "TRUE"
       gameMode: survival
-      difficulty: normal
-      onlineMode: true
-      serverName: "FrenZone"
       maxPlayers: 20
-      viewDistance: 12
-      cheats: false
+      onlineMode: true
+      ops: "2535421636443049,2535410585100219"
+      serverName: "FrenZone"
+      tickDistance: 6
+      threads: 0
+      viewDistance: 20
+      whitelist: true
+      whitelistUsers: BigWizWyatt,DJVelveeta69,HeavyBullets88,suckker10000,MediumYoda
 
       serviceType: LoadBalancer
       serverPort: 19132
