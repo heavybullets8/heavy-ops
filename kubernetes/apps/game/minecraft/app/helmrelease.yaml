@@ -43,8 +43,12 @@ spec:
       onlineMode: true
       serverName: "FrenZone"
       maxPlayers: 20
-      viewDistance: 12
+      viewDistance: 20
       cheats: false
+      threads: 0
+      whitelistUsers: HeavyBullets88,DJVelveeta69
+      whitelist: true
+      ops: "2535421636443049,2535410585100219"
 
       serviceType: LoadBalancer
       serverPort: 19132
