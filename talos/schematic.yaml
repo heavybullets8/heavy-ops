@@ -10,8 +10,9 @@ customization:
     - -selinux
   systemExtensions:
     officialExtensions:
-      - siderolabs/gasket-driver
-      - siderolabs/i915
-      - siderolabs/intel-ucode
-      - siderolabs/mei
-      - siderolabs/thunderbolt
+      - siderolabs/amd-ucode
+      - siderolabs/nvidia-container-toolkit-production
+      - siderolabs/nvidia-open-gpu-kernel-modules-production
+      - siderolabs/nvme-cli
+      - siderolabs/util-linux-tools
+      - siderolabs/zfs
