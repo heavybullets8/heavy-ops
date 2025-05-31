@@ -75,7 +75,7 @@ spec:
             dependsOn: app
             image:
               repository: elforkhead/mamapi
-              tag: latest@sha256:41d1b1c0aa216431f993cb6a91ff34e85f34930b7bfaf45124eec57e3beef47c
+              tag: latest@sha256:decc079f112a8611d889d17d4411077cf42eeee246bdefdfded868e93560dda0
             env:
               TZ: ${TIMEZONE}
             envFrom: &envFrom
