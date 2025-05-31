@@ -32,6 +32,7 @@ directory:
 cat:
   series: /media/download/torrent/categories/series
   movies: /media/download/torrent/categories/movies
+  audio-books: /media/download/torrent/categories/audio-books
   books: /media/download/torrent/categories/books
   imported: /media/download/torrent/categories/imported
   manga: /media/download/torrent/categories/manga
@@ -45,6 +46,7 @@ nohardlinks:
   - imported:
       exclude_tags:
         - MaM
+        - Materialize
 
 share_limits:
   # Torrents not in use by plex, and not "ignored" or "other"
