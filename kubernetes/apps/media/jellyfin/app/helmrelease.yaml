@@ -125,9 +125,11 @@ spec:
           - path: /media
             readOnly: true
 
-      posters:
-        type: persistentVolumeClaim
-        existingClaim: kometa-assets
+      audio-books:
+        type: nfs
+        server: ${TRUENAS_IP}
+        path: /mnt/tank/media/download/torrent/categories/audio-books
         globalMounts:
-          - path: /config/posters
-            subPath: posters
+          - path: /audio-books
+            readOnly: true
+
