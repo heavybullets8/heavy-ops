@@ -7,6 +7,7 @@ components:
   - ../../components/common
 resources:
   - ./authelia/ks.yaml
+  - ./docmost/ks.yaml
   - ./glauth/ks.yaml
   - ./homepage/ks.yaml
   # TODO: Re-enable if upload chunking is ever enabled

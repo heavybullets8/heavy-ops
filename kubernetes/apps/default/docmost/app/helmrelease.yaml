@@ -1,0 +1,99 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app docmost
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+
+  values:
+    controllers:
+      docmost:
+        annotations:
+          reloader.stakater.com/auto: "true"
+
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/home-operations/postgres-init
+              tag: 17
+
+        containers:
+          app:
+            image:
+              repository: ghcr.io/ahinko/docmost
+              tag: 0.20.4@sha256:d6e6fa935661084c332183fcf82a8e1d2075f1d5774356c0d96863078d3d2ba8
+
+            env:
+              # General
+              TZ: ${TIMEZONE}
+              APP_URL: https://notes.${SECRET_DOMAIN}
+              FILE_UPLOAD_SIZE_LIMIT: 200mb
+              # Redis
+              REDIS_URL: "redis://dragonfly.database.svc.cluster.local:6379/3"
+
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 4096Mi
+
+            probes:
+              liveness:
+                enabled: true
+              readiness:
+                enabled: true
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 5
+
+        pod:
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            runAsNonRoot: true
+            fsGroup: 1000
+            fsGroupChangePolicy: OnRootMismatch
+
+        defaultContainerOptions:
+          envFrom:
+            - secretRef:
+                name: docmost-secret
+
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: 3000
+
+    ingress:
+      app:
+        className: external
+        hosts:
+          - host: notes.${SECRET_DOMAIN}
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
+
+    persistence:
+      config:
+        existingClaim: *app
+        globalMounts:
+          - path: /app/data/storage
