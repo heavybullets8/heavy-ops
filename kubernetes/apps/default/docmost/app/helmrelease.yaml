@@ -42,6 +42,13 @@ spec:
               FILE_UPLOAD_SIZE_LIMIT: 200mb
               # Redis
               REDIS_URL: "redis://dragonfly.database.svc.cluster.local:6379/3"
+              #Email
+              MAIL_DRIVER: smtp
+              SMTP_HOST: smtp.migadu.com
+              SMTP_PORT: 465
+              SMTP_SECURE: true
+              MAIL_FROM_ADDRESS: support@${SECRET_DOMAIN}
+              MAIL_FROM_NAME: BGM-Docs
 
             resources:
               requests:
