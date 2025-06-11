@@ -126,7 +126,7 @@ sync_gdrive:
       location: /config/assets/.inputs/zarox
 
     # ++ Drazzilb drive (High priority)
-    - id: 1VeeQ_frBFpp6AZLimaJSSr0Qsrl6Tb7z # Drazzilb
+    - id: 1fKRkx4Yine5cqkH411FmShdd-wHRMBIF # Drazzilb
       location: /config/assets/.inputs/Drazz
 
 # Rename posters to match what Kometa expects
