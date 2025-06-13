@@ -44,42 +44,6 @@ function generate_schematic() {
     gum log --structured --level info "Schematic ID generated" "id" "$schematic_id"
 }
 
-function rotate_certs() {
-    check_env NODE_IP CONFIG_FILE
-    check_cli minijinja-cli op yq talosctl base64 gum
-
-    gum log --structured --level info "Rotating client cert"
-    op_signin
-
-    local injected
-    injected=$(mktemp)
-    minijinja-cli "${CONFIG_FILE}" | op inject >"${injected}"
-
-    local ca_crt_b64
-    local ca_key_b64
-    ca_crt_b64=$(yq -r 'select(document_index==0) | .machine.ca.crt' "${injected}" | tr -d '\n')
-    ca_key_b64=$(yq -r 'select(document_index==0) | .machine.ca.key' "${injected}" | tr -d '\n')
-
-    local tmp
-    tmp=$(mktemp -d)
-    trap 'rm -rf "${tmp}"' EXIT
-    echo "${ca_crt_b64}" | base64 -d >"${tmp}/ca.crt"
-    echo "${ca_key_b64}" | base64 -d >"${tmp}/ca.key"
-
-    pushd "${tmp}" >/dev/null || return 1
-    talosctl gen key --name admin                         # admin.key
-    talosctl gen csr --key admin.key --ip 127.0.0.1       # admin.csr
-    talosctl gen crt --ca ca --csr admin.csr --name admin # admin.crt
-    popd >/dev/null || return 1
-
-    yq -i '
-      .contexts.main.crt = "'"$(base64 -w0 "${tmp}/admin.crt")"'" |
-      .contexts.main.key = "'"$(base64 -w0 "${tmp}/admin.key")"'"
-    ' talosconfig
-
-    gum log --structured --level info "Rotation complete – talosconfig updated"
-}
-
 function main() {
     local args=("$@")
 
@@ -185,7 +149,39 @@ function main() {
         ;;
 
     "Rotate Client Certs" | "rotate-certs")
-        rotate_certs
+        check_env NODE_IP CONFIG_FILE
+        check_cli minijinja-cli op yq talosctl base64 gum
+
+        gum log --structured --level info "Rotating client cert"
+        op_signin
+
+        local injected
+        injected=$(mktemp)
+        minijinja-cli "${CONFIG_FILE}" | op inject >"${injected}"
+
+        local ca_crt_b64
+        local ca_key_b64
+        ca_crt_b64=$(yq -r 'select(document_index==0) | .machine.ca.crt' "${injected}" | tr -d '\n')
+        ca_key_b64=$(yq -r 'select(document_index==0) | .machine.ca.key' "${injected}" | tr -d '\n')
+
+        local tmp
+        tmp=$(mktemp -d)
+        trap 'rm -rf "${tmp}"' EXIT
+        echo "${ca_crt_b64}" | base64 -d >"${tmp}/ca.crt"
+        echo "${ca_key_b64}" | base64 -d >"${tmp}/ca.key"
+
+        pushd "${tmp}" >/dev/null || return 1
+        talosctl gen key --name admin                         # admin.key
+        talosctl gen csr --key admin.key --ip 127.0.0.1       # admin.csr
+        talosctl gen crt --ca ca --csr admin.csr --name admin # admin.crt
+        popd >/dev/null || return 1
+
+        yq -i '
+          .contexts.main.crt = "'"$(base64 -w0 "${tmp}/admin.crt")"'" |
+          .contexts.main.key = "'"$(base64 -w0 "${tmp}/admin.key")"'"
+        ' talosconfig
+
+        gum log --structured --level info "Rotation complete – talosconfig updated"
         ;;
 
     "-h" | "--help" | "Help")
