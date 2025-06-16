@@ -19,6 +19,5 @@ configMapGenerator:
       - ./custom/Movies_Collections_Suggestions.yaml
       - ./custom/Series_Collections_Networks.yaml
       - ./custom/Series_Collections_Suggestions.yaml
-      - ./custom/Movies_Metadata.yaml
 generatorOptions:
   disableNameSuffixHash: true

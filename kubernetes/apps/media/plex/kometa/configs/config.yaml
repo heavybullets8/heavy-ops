@@ -64,7 +64,7 @@ libraries:
       delete_collections:
         less: 1
       mass_originally_available_update:
-        - mdb_digital
+        - unlock
     collection_files:
       - file: config/Movies_Collections_Awards.yaml
         asset_directory: config/assets/awards
@@ -76,8 +76,6 @@ libraries:
         asset_directory: config/assets/holidays
       - file: config/Movies_Collections_Suggestions.yaml
         asset_directory: config/assets/suggestions
-    metadata_files:
-      - file: config/Movies_Metadata.yaml
 
   Series:
     operations:

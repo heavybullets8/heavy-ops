@@ -102,7 +102,6 @@ spec:
             args:
               - |
                 python3 kometa.py --run --read-only-config --run-libraries "Movies"
-                python3 kometa.py --read-only-config --run-files "Movies_Metadata.yaml"
 
     defaultPodOptions:
       securityContext:
@@ -158,9 +157,6 @@ spec:
             readOnly: true
           - path: /config/Movies_Collections_Suggestions.yaml
             subPath: Movies_Collections_Suggestions.yaml
-            readOnly: true
-          - path: /config/Movies_Metadata.yaml
-            subPath: Movies_Metadata.yaml
             readOnly: true
           - path: /config/Series_Collections_Networks.yaml
             subPath: Series_Collections_Networks.yaml
