@@ -6,6 +6,7 @@ namespace: media
 components:
   - ../../components/common
 resources:
+  - ./audiobookshelf/ks.yaml
   - ./autobrr/ks.yaml # TODO: Remove autobrr once snatches are sufficient
   - ./cross-seed/ks.yaml
   - ./deemix/ks.yaml

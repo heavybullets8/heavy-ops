@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &app jellyfin
+  name: &app audiobookshelf
 spec:
   interval: 30m
   chartRef:
@@ -17,70 +17,56 @@ spec:
     remediation:
       strategy: rollback
       retries: 3
-  dependsOn:
-    - name: nvidia-device-plugin
-      namespace: kube-system
-    - name: openebs
-      namespace: openebs-system
-    - name: volsync
-      namespace: volsync-system
 
   values:
     controllers:
-      jellyfin:
+      audiobookshelf:
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
           app:
             image:
-              repository: ghcr.io/jellyfin/jellyfin
-              tag: 10.10.7@sha256:e4d1dc5374344446a3a78e43dd211247f22afba84ea2e5a13cbe1a94e1ff2141
+              repository: ghcr.io/advplyr/audiobookshelf
+              tag: 2.25.1@sha256:5154518d8215f8e795fde1c1561080b450af8a6bc0c0bd60c2a920084bf930d6
             env:
               TZ: ${TIMEZONE}
-              JELLYFIN_PublishedServerUrl: https://jellyfin.${SECRET_DOMAIN}
+              AUDIOBOOKSHELF_UID: 568
+              AUDIOBOOKSHELF_GID: 568
+              CONFIG_PATH: /config
+              METADATA_PATH: /config/metadata
             probes:
               liveness: &probes
                 enabled: true
                 custom: true
                 spec:
                   httpGet:
-                    path: /health
-                    port: &port 8096
+                    path: /healthcheck
+                    port: &port 80
                   initialDelaySeconds: 0
                   periodSeconds: 10
                   timeoutSeconds: 1
                   failureThreshold: 3
               readiness: *probes
-              startup:
-                enabled: false
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
               capabilities: { drop: ["ALL"] }
             resources:
               requests:
-                cpu: 100m
-                memory: 500Mi
+                cpu: 10m
               limits:
-                memory: 100Gi
-                nvidia.com/gpu: 1
+                memory: 8Gi
 
     defaultPodOptions:
-      terminationGracePeriodSeconds: 300
       securityContext:
         runAsNonRoot: true
         runAsUser: 568
         runAsGroup: 568
         fsGroup: 568
-        fsGroupChangePolicy: OnRootMismatch
-        supplementalGroups: [44]
 
     service:
       app:
         controller: *app
-        type: LoadBalancer
-        annotations:
-          lbipam.cilium.io/ips: "${JELLYFIN_IP}"
         ports:
           http:
             port: *port
@@ -100,28 +86,9 @@ spec:
       config:
         existingClaim: *app
 
-      cache:
-        type: persistentVolumeClaim
-        accessMode: ReadWriteOnce
-        storageClass: openebs-zfs-64k
-        size: 100Gi
-
-      temporary:
-        type: emptyDir
-        medium: Memory
-        globalMounts:
-          - path: /config/log
-            subPath: log
-          - path: /tmp
-            subPath: tmp
-          - path: /cache/transcodes
-            subPath: transcode
-
       media:
         type: nfs
         server: ${TRUENAS_IP}
-        path: /mnt/tank/media/library
+        path: /mnt/tank/media/library/audio-books
         globalMounts:
-          - path: /media
-            readOnly: true
-
+          - path: /audio-books
