@@ -58,7 +58,7 @@ share_limits:
       - other
     include_all_tags:
       - noHL
-    last_active: 1m
+    min_last_active: 1m
     max_seeding_time: 30d
     max_ratio: 4
     cleanup: true
@@ -67,7 +67,7 @@ share_limits:
     priority: 2
     categories:
       - snatches
-    last_active: 1m
+    min_last_active: 1m
     max_seeding_time: 7d
     max_ratio: 2
     cleanup: true
@@ -88,7 +88,7 @@ share_limits:
     exclude_any_tags:
       - ignore
       - other
-    last_active: 1m
+    min_last_active: 1m
     max_seeding_time: 30d
     max_ratio: 4
 
