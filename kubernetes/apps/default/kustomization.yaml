@@ -13,6 +13,7 @@ resources:
   - ./homepage/ks.yaml
   # TODO: Re-enable if upload chunking is ever enabled
   # - ./immich/ks.yaml
+  - ./nesting/ks.yaml
   - ./nextcloud/ks.yaml
   - ./stirling-pdf/ks.yaml
   - ./theme-park/ks.yaml
