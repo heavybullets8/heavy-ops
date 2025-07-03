@@ -27,7 +27,7 @@ spec:
           app:
             image:
               repository: ghcr.io/heavybullets8/1d-nesting
-              tag: 1.0.1@sha256:ae548526fa687f5ef3165d20e02b2aa750cb3a8d65969ed28a318c0f3e759be0
+              tag: 1.0.2@sha256:085911918b1a0f34b01fccb6ed5f4cb1a3c2d5e1f7739b6dd45f6bacd6bacabf
 
             env:
               # General
