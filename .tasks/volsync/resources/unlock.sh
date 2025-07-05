@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-mapfile -t secrets < <(kubectl get secrets --all-namespaces --no-headers -o custom-columns="NAMESPACE:.metadata.namespace,NAME:.metadata.name" | grep "r2-secret$")
+mapfile -t secrets < <(kubectl get secrets --all-namespaces --no-headers -o custom-columns="NAMESPACE:.metadata.namespace,NAME:.metadata.name" | grep "remote-secret$")
 
 if [ -z "${secrets[*]}" ]; then
     gum log --structured --level warn "No secrets found.."
