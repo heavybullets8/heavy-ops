@@ -8,6 +8,9 @@ bpf:
   tproxy: true
   preallocateMaps: true
   datapathMode: netkit
+  distributedLRU:
+    enabled: true
+  mapDynamicSizeRatio: 0.08
 bpfClockProbe: true
 cgroup:
   automount:
