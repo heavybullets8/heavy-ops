@@ -49,7 +49,7 @@ spec:
       serverPort: 19132
 
       # renovate: datasource=custom.bedrock depName=MinecraftBedrockServer versioning=loose
-      version: "1.21.90.3"
+      version: "1.21.93.1"
 
     extraEnv:
       TZ: ${TIMEZONE}
