@@ -1,0 +1,37 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "customDatasources": {
+    "bedrock": {
+      "defaultRegistryUrlTemplate": "https://net-secondary.web.minecraft-services.net/api/v1.0/download/links",
+      "format": "json",
+      "transformTemplates": [
+        "{ \"releases\": [ { \"version\": $match($.result.links[downloadType=\"serverBedrockLinux\"].downloadUrl, /bedrock-server-(\\d+(?:\\.\\d+)*)\\.zip/).groups[0] } ] }"
+      ]
+    }
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": ["Process Minecraft Bedrock version dependencies"],
+      "managerFilePatterns": ["/(^|/)kubernetes/.+\\.ya?ml$/"],
+      "matchStrings": [
+        "# renovate: datasource=custom\\.bedrock depName=(?<depName>[^\\s]+)(?:\\s+versioning=(?<versioning>[^\\s]+))?\\s*\\n[^\\n]*version:\\s*[\"']?(?<currentValue>[^\"'\\s]+)"
+      ],
+      "datasourceTemplate": "custom.bedrock"
+    }
+  ],
+  "packageRules": [
+    {
+      "addLabels": ["renovate/minecraft"],
+      "automerge": true,
+      "automergeType": "branch",
+      "commitMessageExtra": "({{currentVersion}} → {{newVersion}})",
+      "commitMessageTopic": "Minecraft Bedrock",
+      "ignoreTests": true,
+      "matchDatasources": ["custom.bedrock"],
+      "matchUpdateTypes": ["major", "minor", "patch"],
+      "semanticCommitScope": "minecraft",
+      "semanticCommitType": "chore"
+    }
+  ]
+}
