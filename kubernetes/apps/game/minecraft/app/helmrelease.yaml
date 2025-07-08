@@ -48,6 +48,9 @@ spec:
       serviceType: LoadBalancer
       serverPort: 19132
 
+      # renovate: datasource=custom.bedrock depName=MinecraftBedrockServer versioning=loose
+      version: "1.21.93.1"
+
     extraEnv:
       TZ: ${TIMEZONE}
 
