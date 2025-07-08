@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &app daps
+  name: daps
 spec:
   interval: 30m
   chartRef:
@@ -33,15 +33,29 @@ spec:
   values:
     controllers:
       daps:
-        annotations:
-          reloader.stakater.com/auto: "true"
+        type: &type cronjob
+        cronjob: &cronjob
+          schedule: "0 4,15 * * *"
+          timeZone: &timeZone ${TIMEZONE}
+          successfulJobsHistory: 1
+          failedJobsHistory: 1
         containers:
-          app:
+          app: &container_app
             image:
               repository: ghcr.io/drazzilb08/daps
-              tag: v2.0.0@sha256:6a0879aeab34d1b55b65e1cdc5a1b93534b764104449043d5c979b4e0decead5
+              tag: v1.2.4@sha256:8a9b8d51a5c6a89d7fd3a1b66ba3782ab354ed7ba7cd31dc39d7e635acc7b553
+            command:
+              - /bin/sh
+              - -c
+            args:
+              - |
+                export RCLONE_CONFIG="/config/rclone.conf"
+                python3 /app/main.py poster_renamerr
+                python3 /app/main.py health_checkarr
             env:
-              TZ: ${TIMEZONE}
+              TZ: *timeZone
+              PUID: 568
+              PGID: 568
             resources:
               requests:
                 cpu: 10m
@@ -49,39 +63,52 @@ spec:
               limits:
                 memory: 5Gi
 
-    service:
-      app:
-        controller: *app
-        ports:
-          http:
-            port: 8000
+      # unmatched-assets:
+      #   type: *type
+      #   cronjob:
+      #     <<: *cronjob
+      #     schedule: "0 12 * * 0"
+      #   containers:
+      #     app:
+      #       <<: *container_app
+      #       args:
+      #         - |
+      #           export RCLONE_CONFIG="/config/rclone.conf"
+      #           python3 /app/main.py unmatched_assets
 
-    ingress:
-      app:
-        className: external
-        annotations:
-          nginx.ingress.kubernetes.io/auth-method: GET
-          nginx.ingress.kubernetes.io/auth-url: "https://auth.${SECRET_DOMAIN}/api/verify"
-          nginx.ingress.kubernetes.io/auth-signin: "https://auth.${SECRET_DOMAIN}/?rm=$request_method"
-          nginx.ingress.kubernetes.io/auth-response-headers: Remote-User,Remote-Name,Remote-Groups,Remote-Email
-          nginx.ingress.kubernetes.io/auth-snippet: proxy_set_header X-Forwarded-Method $request_method;
-        hosts:
-          - host: "{{ .Release.Name }}.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: http
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 568
+        runAsGroup: 568
+        fsGroup: 568
+        fsGroupChangePolicy: Always
 
     persistence:
       config:
-        existingClaim: *app
+        type: emptyDir
+        medium: Memory
         globalMounts:
           - path: /config
 
-      posters:
+      assets:
         type: persistentVolumeClaim
         existingClaim: kometa-assets
         globalMounts:
-          - path: /posters
+          - path: /config/assets
 
+      config-file:
+        type: secret
+        name: daps-secret
+        globalMounts:
+          - path: /config/config.yml
+            subPath: config.yaml
+            readOnly: true
+
+      sa-file:
+        type: secret
+        name: daps-sa-secret
+        globalMounts:
+          - path: /config/sa.json
+            subPath: sa.json
+            readOnly: true

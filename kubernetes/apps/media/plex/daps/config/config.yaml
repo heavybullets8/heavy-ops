@@ -1,0 +1,281 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Drazzilb08/daps/master/schemas/config-schema.json# Options:
+
+schedule:
+  # No in-script schedules since we run these manually with a cronjob
+  sync_gdrive:
+  border_replacerr:
+  poster_renamerr:
+  health_checkarr:
+  unmatched_assets:
+  jduparr:
+  labelarr:
+  nohl:
+  nohl_bash:
+  poster_cleanarr:
+  renameinatorr:
+  upgradinatorr:
+
+instances:
+  radarr:
+    radarr:
+      url: http://radarr.media.svc.cluster.local
+      api: "{{ .RADARR_API_KEY }}"
+  sonarr:
+    sonarr:
+      url: http://sonarr.media.svc.cluster.local
+      api: "{{ .SONARR_API_KEY }}"
+  plex:
+    plex:
+      url: http://plex.media.svc.cluster.local:32400
+      api: "{{ .PLEX_TOKEN }}"
+
+discord:
+  notifiarr_webhook: "{{ .NOTIFIARR_DAPS_WEBHOOK_URL }}"
+  main:
+    discord_webhook:
+    channel_id: "{{ .DISCORD_DAPS_CHANNEL_ID }}"
+  poster_renamerr:
+    discord_webhook:
+    channel_id: "{{ .DISCORD_DAPS_CHANNEL_ID }}"
+  renameinatorr:
+    discord_webhook:
+    channel_id:
+  upgradinatorr:
+    discord_webhook:
+    channel_id:
+  nohl:
+    discord_webhook:
+    channel_id:
+  labelarr:
+    discord_webhook:
+    channel_id:
+  nohl_bash:
+    discord_webhook:
+    channel_id:
+  jduparr:
+    discord_webhook:
+    channel_id:
+
+# Syncs posters from multiple users Google Drives to a local directory
+# gdrive list pulled from: https://github.com/christophedc0/Dump/blob/main/DAPS/gdrives.md
+sync_gdrive:
+  log_level: info
+  client_id: "{{ .GDRIVE_CLIENT_ID }}"
+  client_secret: "{{ .GDRIVE_CLIENT_SECRET }}"
+  token: {}
+  gdrive_sa_location: /config/sa.json
+  gdrive_sync:
+    # -- Collection of others (Lowest priority)
+    - id: 1zWY-ORtJkOLcQChV--oHquxW3JCow1zm # Solen (#2)
+      location: /config/assets/.inputs/solen2
+
+    - id: 1-WhCVwRLfV6hxyKF7W5IuzIHIYicCdAv # IamSpartacus (#2)
+      location: /config/assets/.inputs/iamspartacus2
+
+    - id: 15sNlcFZmeDox2OQJyGjVxRwtigtd82Ru # MajorGiant (#2)
+      location: /config/assets/.inputs/majorgiant2
+
+    - id: 1oBzEOXXrTHGq6sUY_4RMtzMTt4VHyeJp # Chris DC
+      location: /config/assets/.inputs/chrisdc
+
+    # - Homemade (Low priority)
+    - id: 1qBC7p9K4zur5dOCf3F6VTyUROVvHQoSb # Jpalenz77
+      location: /config/assets/.inputs/jpalenz77
+
+    - id: 1cqDinU27cnHf5sL5rSlfO7o_T6LSxG77 # Reitenth
+      location: /config/assets/.inputs/reitenth
+
+    - id: 1TYVIGKpSwhipLyVQQn_OJHTobM6KaokB # TheOtherGuy #1
+      location: /config/assets/.inputs/theotherguy
+
+    - id: 1KJlsnMz-z2RAfNxKZp7sYP_U0SD1V6lS # MiniMyself
+      location: /config/assets/.inputs/minimyself
+
+    - id: 1KJlsnMz-z2RAfNxKZp7sYP_U0SD1V6lS # TokenMinal
+      location: /config/assets/.inputs/tokenminal
+
+    - id: 1hEY9qEdXVDzIbnQ4z9Vpo0SVXXuZBZR- # Mareau
+      location: /config/assets/.inputs/mareau
+
+    # + Homemade (Medium priority)
+    - id: 1G77TLQvgs_R7HdMWkMcwHL6vd_96cMp7 # Quafley
+      location: /config/assets/.inputs/quafley
+
+    - id: 1bBbK_3JeXCy3ElqTwkFHaNoNxYgqtLug # Stupifier
+      location: /config/assets/.inputs/stupifierr
+
+    - id: 1KnwxzwBUQzQyKF1e24q_wlFqcER9xYHM # Sahara
+      location: /config/assets/.inputs/sahara
+
+    - id: 1ZfvUgN0qz4lJYkC_iMRjhH-fZ0rDN_Yu # MajorGiant (#1)
+      location: /config/assets/.inputs/majorgiant
+
+    - id: 1alseEnUBjH6CjXh77b5L4R-ZDGdtOMFr # Lion City Gaming
+      location: /config/assets/.inputs/lion
+
+    - id: 1aRngLdC9yO93gvSrTI2LQ_I9BSoGD-7o # IamSpartacus (#1)
+      location: /config/assets/.inputs/iamspartacus
+
+    - id: 1Xg9Huh7THDbmjeanW0KyRbEm6mGn_jm8 # BZ
+      location: /config/assets/.inputs/bz
+
+    - id: 1YEuS1pulJAfhKm4L8U9z5-EMtGl-d2s7 # Solen (#1)
+      location: /config/assets/.inputs/solen
+
+    - id: 1wOhY88zc0wdQU-QQmhm4FzHL9QiCQnpu # Zarox
+      location: /config/assets/.inputs/zarox
+
+    # ++ Drazzilb drive (High priority)
+    - id: 1fKRkx4Yine5cqkH411FmShdd-wHRMBIF # Drazzilb
+      location: /config/assets/.inputs/Drazz
+
+# Rename posters to match what Kometa expects
+# Also runs "sync_posters", and "border_replacerr", meaning we only need to run this script
+poster_renamerr:
+  log_level: info
+  dry_run: false
+  sync_posters: true # Run sync_gdrive
+  action_type: hardlink # Use same PVC as Kometa
+  asset_folders: true # Using "asset_folders" within Kometa, so matching that setting here
+  print_only_renames: false
+  border_replacerr: true # Run border_replacerr
+
+  library_names:
+    - Movies
+    - Series
+    - Anime Movies
+    - Anime Series
+
+  source_dirs:
+    # -- Collection of others (Lowest priority)
+    - /config/assets/.inputs/solen2
+    - /config/assets/.inputs/iamspartacus2
+    - /config/assets/.inputs/majorgiant2
+    - /config/assets/.inputs/chrisdc
+    # - Homemade (Low priority)
+    - /config/assets/.inputs/tokenminal
+    - /config/assets/.inputs/minimyself
+    - /config/assets/.inputs/theotherguy
+    - /config/assets/.inputs/reitenth
+    - /config/assets/.inputs/jpalenz77
+    - /config/assets/.inputs/mareau
+    # + Homemade (Medium priority)
+    - /config/assets/.inputs/quafley
+    - /config/assets/.inputs/stupifierr
+    - /config/assets/.inputs/sahara
+    - /config/assets/.inputs/majorgiant
+    - /config/assets/.inputs/lion
+    - /config/assets/.inputs/iamspartacus
+    - /config/assets/.inputs/bz
+    - /config/assets/.inputs/solen
+    - /config/assets/.inputs/zarox
+    # ++ Drazzilb drive (High priority)
+    - /config/assets/.inputs/Drazz
+  destination_dir: /config/assets/posters
+  instances:
+    - plex
+    - radarr
+    - sonarr
+
+# Replace or remove borders from posters
+border_replacerr:
+  log_level: info
+  dry_run: false
+  source_dirs:
+    - /config/process # Ignored when running poster_renamerr
+  destination_dir: /config/assets/posters # Ignored when running poster_renamerr
+  border_width: 26
+  skip: false
+  border_colors: # Set to nothing, removing the white borders around posters
+  schedule: {}
+
+# Prints out assets (Collections, Series, Movies) without matching posters
+unmatched_assets:
+  log_level: info
+  instances:
+    - plex
+    - radarr
+    - sonarr
+  ignore_root_folders:
+  library_names:
+    - Movies
+    - Anime Movies
+    - Series
+    - Anime Series
+  ignore_collections:
+  source_dirs:
+    - /config/assets/posters
+
+# Deletes any shows from the instances that were deleted from TMDB or TVDB.
+health_checkarr:
+  log_level: info
+  dry_run: false
+  instances:
+    - radarr
+    - sonarr
+
+# Remove any posters from kometa assets directory that are not in use
+poster_cleanarr:
+  log_level: info
+  dry_run: false
+  instances:
+    - plex
+    - sonarr
+    - radarr
+  library_names:
+    - Movies
+    - Anime Movies
+    - Series
+    - Anime Series
+  ignore_collections:
+    - "Latest Dubs"
+    - "Christianity"
+  source_dirs:
+    - /config/assets/posters
+    - /config/assets/posters/tmp
+
+##############################################
+## I do not use anything below this comment ##
+##############################################
+upgradinatorr:
+  log_level: info
+  dry_run: false
+  instances: {}
+
+renameinatorr:
+  log_level: info
+  dry_run: false
+  rename_folders: true
+  count: 10
+  tag_name: renamed
+  instances: []
+
+nohl:
+  dry_run: true
+  log_level: info
+  maximum_searches: 10
+  print_files: false
+  instances: {}
+  paths: []
+  filters:
+    exclude_profiles: ""
+    exclude_movies: []
+    exclude_series: []
+
+labelarr:
+  dry_run: true
+  log_level: info
+  instances: {}
+
+bash_scripts:
+  log_level: info
+  nohl_bash:
+    source:
+    include:
+    exclude:
+  jduparr:
+    data_dir:
+    silent: false
+
+main:
+  log_level: info

@@ -98,9 +98,9 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  components:
-    - ../../../../components/gatus/guarded
-    - ../../../../components/volsync
+  dependsOn:
+    - name: onepassword
+      namespace: external-secrets
   wait: false
   path: kubernetes/apps/media/plex/daps
   prune: true
@@ -113,8 +113,6 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      VOLSYNC_CAPACITY: 5Gi
-      VOLSYNC_RECORD_SIZE: 64k
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/kustomization-kustomize-v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
