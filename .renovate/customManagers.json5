@@ -25,6 +25,17 @@
     },
     {
       "customType": "regex",
+      "description": ["Process custom datasource dependencies"],
+      "managerFilePatterns": ["/(^|/)kubernetes/.+\\.ya?ml$/"],
+      "matchStrings": [
+        // # renovate: datasource=custom.bedrock depName=MinecraftBedrockServer versioning=loose
+        // version: "1.21.90.3"
+        "# renovate: datasource=(?<datasource>custom\\.[^\\s]+) depName=(?<depName>[^\\s]+)(?:\\s+versioning=(?<versioning>[^\\s]+))?\\s*\\n[^\\n]*version:\\s*[\"']?(?<currentValue>[^\"'\\s]+)"
+      ],
+      "datasourceTemplate": "{{{datasource}}}"
+    },
+    {
+      "customType": "regex",
       "description": ["Process any imageName keys in YAML files (cloudnative-pg)"],
       "managerFilePatterns": ["(^|/)kubernetes/.+\\.ya?ml$"],
       "matchStrings": ["imageName: (?<depName>[^\\s:]+):(?<currentValue>\\S+)(@(?<currentDigest>sha256:\\S+)?)"],

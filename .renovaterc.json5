@@ -5,6 +5,7 @@
     "docker:enableMajor",
     "helpers:pinGitHubActionDigests",
     "github>heavybullets8/heavy-ops//.renovate/autoMerge.json5",
+    "github>heavybullets8/heavy-ops//.renovate/customDatasources.json5",
     "github>heavybullets8/heavy-ops//.renovate/customManagers.json5",
     "github>heavybullets8/heavy-ops//.renovate/grafanaDashboards.json5",
     "github>heavybullets8/heavy-ops//.renovate/groups.json5",
@@ -34,5 +35,5 @@
   },
   kubernetes: {
     managerFilePatterns: ["/(^|/)kubernetes/.+\\.ya?ml$/"]
-  },
+  }
 }
