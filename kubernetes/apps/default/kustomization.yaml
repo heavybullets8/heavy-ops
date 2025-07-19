@@ -6,6 +6,7 @@ namespace: default
 components:
   - ../../components/common
 resources:
+  - ./akaunting/ks.yaml
   - ./authelia/ks.yaml
   - ./docmost/ks.yaml
   - ./filebrowser/ks.yaml

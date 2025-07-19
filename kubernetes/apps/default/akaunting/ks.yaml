@@ -1,0 +1,37 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app akaunting
+  namespace: &namespace default
+spec:
+  targetNamespace: *namespace
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: onepassword
+      namespace: external-secrets
+    - name: openebs
+      namespace: openebs-system
+    - name: volsync
+      namespace: volsync-system
+  components:
+    - ../../../../components/gatus/external
+    - ../../../../components/volsync
+  path: ./kubernetes/apps/default/akaunting/app
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: false
+  interval: 30m
+  timeout: 5m
+  postBuild:
+    substitute:
+      APP: *app
+      GATUS_SUBDOMAIN: sales
+      VOLSYNC_CAPACITY: 20Gi
