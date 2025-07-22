@@ -7,7 +7,7 @@ function apply_talos_config() {
     machine_config=$(render_template "$config_file")
     gum log --structured --level info "Talos config rendered successfully"
     local output
-    if ! output=$(echo "$machine_config" | talosctl --nodes "$NODE_IP" apply-config --insecure --file /dev/stdin 2>&1); then
+    if ! output=$(echo "$machine_config" | talosctl --nodes "$NODE_IP" apply-config --insecure --file /dev/stdin --config-patch "@${TALOS_DIR}/patches/enp130s0f0np0.yaml" --config-patch "@${TALOS_DIR}/patches/enp130s0f1np1.yaml" 2>&1); then
         if [[ "$output" == *"certificate required"* ]]; then
             gum log --structured --level warn "Talos already has an applied configuration..."
         else

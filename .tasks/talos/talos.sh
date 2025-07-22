@@ -62,7 +62,7 @@ function main() {
         gum log --structured --level info "Applying Talos config to node ${NODE_IP}"
         generate_schematic
         op_signin
-        if ! minijinja-cli "${CONFIG_FILE}" | op inject | talosctl --nodes "${NODE_IP}" apply-config --mode auto --file /dev/stdin; then
+        if ! minijinja-cli "${CONFIG_FILE}" | op inject | talosctl --nodes "${NODE_IP}" apply-config --mode auto --file /dev/stdin --config-patch "@${TALOS_DIR}/patches/enp130s0f0np0.yaml" --config-patch "@${TALOS_DIR}/patches/enp130s0f1np1.yaml"; then
             gum log --structured --level error "Failed to apply Talos config"
         else
             gum log --structured --level info "Successfully applied Talos config"
@@ -74,7 +74,7 @@ function main() {
         check_cli minijinja-cli talosctl yq
         gum log --structured --level info "Upgrading Talos on node ${NODE_IP}"
         generate_schematic
-        if ! FACTORY_IMAGE=$(minijinja-cli "${CONFIG_FILE}" | yq --exit-status 'select(document_index == 0) | .machine.install.image'); then
+        if ! FACTORY_IMAGE=$(minijinja-cli "${CONFIG_FILE}" | yq --exit-status '.machine.install.image'); then
             gum log --structured --level error "Failed to fetch factory image"
             exit 1
         fi
@@ -161,8 +161,8 @@ function main() {
 
         local ca_crt_b64
         local ca_key_b64
-        ca_crt_b64=$(yq -r 'select(document_index==0) | .machine.ca.crt' "${injected}" | tr -d '\n')
-        ca_key_b64=$(yq -r 'select(document_index==0) | .machine.ca.key' "${injected}" | tr -d '\n')
+        ca_crt_b64=$(yq -r '.machine.ca.crt' "${injected}" | tr -d '\n')
+        ca_key_b64=$(yq -r '.machine.ca.key' "${injected}" | tr -d '\n')
 
         local tmp
         tmp=$(mktemp -d)
