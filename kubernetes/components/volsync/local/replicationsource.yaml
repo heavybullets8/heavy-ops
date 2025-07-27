@@ -13,7 +13,7 @@ spec:
     pruneIntervalDays: 7
     repository: "${APP}-volsync-local-secret"
     volumeSnapshotClassName: "openebs-zfs"
-    cacheCapacity: "${VOLSYNC_CACHE_CAPACITY:-4Gi}"
+    cacheCapacity: "${VOLSYNC_CACHE_CAPACITY:-8Gi}"
     cacheStorageClassName: "openebs-zfs-${VOLSYNC_RECORD_SIZE:-128k}"
     cacheAccessModes: ["${VOLSYNC_CACHE_ACCESSMODES:-ReadWriteOnce}"]
     storageClassName: "openebs-zfs-${VOLSYNC_RECORD_SIZE:-128k}"
