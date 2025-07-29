@@ -10,7 +10,7 @@ sonarr:
       type: anime
 
     media_naming:
-      series: jellyfin
+      series: jellyfin-tvdb
       season: default
       episodes:
         rename: true
@@ -36,10 +36,10 @@ radarr:
       type: movie
 
     media_naming:
-      folder: jellyfin
+      folder: jellyfin-tmdb
       movie:
         rename: true
-        standard: anime-jellyfin
+        standard: jellyfin-anime-tmdb
 
     delete_old_custom_formats: true
     replace_existing_custom_formats: true
