@@ -100,11 +100,10 @@ spec:
       config:
         existingClaim: *app
 
-      cache:
-        type: persistentVolumeClaim
-        accessMode: ReadWriteOnce
-        storageClass: openebs-zfs-64k
-        size: 100Gi
+      config-cache:
+        existingClaim: jellyfin-cache
+        globalMounts:
+          - path: /config/metadata
 
       temporary:
         type: emptyDir

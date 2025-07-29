@@ -92,10 +92,7 @@ spec:
         existingClaim: *app
 
       cache:
-        type: persistentVolumeClaim
-        accessMode: ReadWriteOnce
-        size: 15Gi
-        storageClass: openebs-zfs-256k
+        existingClaim: tautulli-cache
         globalMounts:
           - path: /config/cache
 

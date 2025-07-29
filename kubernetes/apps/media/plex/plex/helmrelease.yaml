@@ -108,11 +108,8 @@ spec:
         globalMounts:
           - path: /config/Library/Application Support/Plex Media Server
 
-      cache:
-        type: persistentVolumeClaim
-        accessMode: ReadWriteOnce
-        storageClass: openebs-zfs-64k
-        size: 100Gi
+      config-cache:
+        existingClaim: plex-cache
         globalMounts:
           - path: /config/Library/Application Support/Plex Media Server/Cache
 

@@ -104,9 +104,23 @@ spec:
                 service:
                   identifier: app
                   port: http
+    rbac:
+      roles:
+        gatus:
+          type: ClusterRole
+          rules:
+            - apiGroups: [""]
+              resources: ["configmaps", "secrets"]
+              verbs: ["get", "watch", "list"]
+      bindings:
+        gatus:
+          type: ClusterRoleBinding
+          roleRef:
+            identifier: *app
+          subjects:
+            - identifier: *app
     serviceAccount:
-      create: true
-      name: *app
+      gatus: {}
     persistence:
       config:
         type: emptyDir

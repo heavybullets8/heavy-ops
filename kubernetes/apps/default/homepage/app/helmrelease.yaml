@@ -48,6 +48,11 @@ spec:
                 memory: 200M
               limits:
                 memory: 2G
+
+        serviceAccount:
+          identifier: *app
+
+
     service:
       app:
         controller: *app
@@ -56,8 +61,7 @@ spec:
             port: 3000
 
     serviceAccount:
-      create: true
-      name: *app
+      homepage: {}
 
     ingress:
       app:
