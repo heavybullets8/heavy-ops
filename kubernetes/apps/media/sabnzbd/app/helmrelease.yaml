@@ -69,7 +69,10 @@ spec:
                 memory: 500Mi
                 cpu: 100m
               limits:
-                memory: 140Gi
+                # TODO: Enable Later
+                # memory: 140Gi
+                memory: 10Gi
+
             lifecycle:
               preStop:
                 exec:
@@ -122,7 +125,8 @@ spec:
 
       temporary:
         type: emptyDir
-        medium: Memory
+        # TODO: Enable Later
+        # medium: Memory
         globalMounts:
           - path: /config/logs
             subPath: config/logs
