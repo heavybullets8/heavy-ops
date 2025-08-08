@@ -26,24 +26,6 @@ function menu() {
     fi
 }
 
-function generate_schematic() {
-    gum log --structured --level info "Generating Talos schematic"
-
-    if [[ ! -f "$SCHEMATIC_FILE" ]]; then
-        gum log --structured --level error "Schematic file not found" "file" "$SCHEMATIC_FILE"
-        exit 1
-    fi
-
-    local schematic_id
-    if ! schematic_id=$(curl --silent -X POST --data-binary @"$SCHEMATIC_FILE" https://factory.talos.dev/schematics | jq --raw-output '.id'); then
-        gum log --structured --level error "Failed to generate schematic ID"
-        exit 1
-    fi
-
-    export TALOS_SCHEMATIC="$schematic_id"
-    gum log --structured --level info "Schematic ID generated" "id" "$schematic_id"
-}
-
 function main() {
     local args=("$@")
 
@@ -62,7 +44,7 @@ function main() {
         gum log --structured --level info "Applying Talos config to node ${NODE_IP}"
         generate_schematic
         op_signin
-        if ! minijinja-cli "${CONFIG_FILE}" | op inject | talosctl --nodes "${NODE_IP}" apply-config --mode auto --file /dev/stdin --config-patch "@${TALOS_DIR}/patches/enp130s0f0np0.yaml" --config-patch "@${TALOS_DIR}/patches/enp130s0f1np1.yaml"; then
+        if ! minijinja-cli "${CONFIG_FILE}" | op inject | talosctl --nodes "${NODE_IP}" apply-config --mode auto --file /dev/stdin --config-patch "@${TALOS_DIR}/patches/patches.yaml"; then
             gum log --structured --level error "Failed to apply Talos config"
         else
             gum log --structured --level info "Successfully applied Talos config"

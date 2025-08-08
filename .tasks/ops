@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
-export ROOT_DIR TASK_DIR TALOS_DIR BOOTSTRAP_DIR NODE_IP
+export ROOT_DIR TASK_DIR TALOS_DIR BOOTSTRAP_DIR NODE_IP SCHEMATIC_FILE
 ROOT_DIR="$(git rev-parse --show-toplevel)"
 TASK_DIR="$ROOT_DIR/.tasks"
 TALOS_DIR="$ROOT_DIR/talos"
 BOOTSTRAP_DIR="$ROOT_DIR/bootstrap"
+SCHEMATIC_FILE="$TALOS_DIR/schematic.yaml"
 NODE_IP="192.168.200.15"
 
 source "$TASK_DIR/common.sh"
