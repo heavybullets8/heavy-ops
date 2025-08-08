@@ -45,6 +45,12 @@ spec:
                   periodSeconds: 5
                   failureThreshold: 5
               readiness: *probes
+            resources:
+              requests:
+                cpu: 10m
+                memory: 256Mi
+              limits:
+                memory: 10Gi
             securityContext:
               runAsUser: 568
               runAsGroup: 568
