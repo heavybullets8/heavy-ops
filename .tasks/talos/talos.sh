@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 CONFIG_FILE="${TALOS_DIR}/${NODE_IP}.yaml"
-SCHEMATIC_FILE="${TALOS_DIR}/schematic.yaml"
 OPTIONS=("Apply Talos Config" "Upgrade Talos" "Upgrade Kubernetes" "Reboot Talos" "Shutdown Talos" "Reset Talos" "Generate Kubeconfig" "Rotate Client Certs" "Help" "Back")
 
 function show_help() {

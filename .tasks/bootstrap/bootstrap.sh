@@ -120,7 +120,7 @@ function apply_helm_releases() {
 }
 
 function main() {
-    check_env KUBECONFIG KUBERNETES_VERSION TALOS_VERSION NODE_IP
+    check_env KUBECONFIG KUBERNETES_VERSION TALOS_VERSION NODE_IP COMPONENTS_DIR
     check_cli helmfile jq kubectl kustomize op talosctl yq
     gum confirm "Bootstrap the Talos node ${NODE_IP} ... continue?" || exit 0
     op_signin
