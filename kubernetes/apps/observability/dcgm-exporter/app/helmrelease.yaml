@@ -22,6 +22,8 @@ spec:
       retries: 3
   values:
     resources:
+      requests:
+        memory: 128Mi
       limits:
         nvidia.com/gpu: 1
     serviceMonitor:
