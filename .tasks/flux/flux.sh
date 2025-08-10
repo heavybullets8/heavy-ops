@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 
-OPTIONS=("Reconcile Kustomizations" "Reconcile Helm Releases" "Help" "Back")
+OPTIONS=("Reconcile All" "Help" "Back")
+
+: "${MAX_PARALLEL:=8}"
+: "${FLUX_TIMEOUT:=30s}"
 
 function show_help() {
     echo "Usage: $0 [command]"
     echo "Commands:"
-    echo "  rk    Reconcile all kustomizations"
-    echo "  rh    Reconcile all helm releases"
+    echo "  r, reconcile    Reconcile all Kustomizations and HelmReleases in parallel"
     echo "Options:"
     echo "  -h, --help, help    Display this help message"
     exit 0
@@ -14,8 +16,39 @@ function show_help() {
 
 function menu() {
     choice=$(gum choose "${OPTIONS[@]}")
-    if [ -n "$choice" ]; then
-        echo "$choice"
+    [ -n "$choice" ] && echo "$choice"
+}
+
+function throttle() {
+    while true; do
+        running=$(jobs -pr | wc -l | tr -d ' ')
+        ((running < MAX_PARALLEL)) && break
+        sleep 0.2
+    done
+}
+
+function reconcile_kustomization() {
+    local ns="$1" name="$2"
+    gum log --structured --level info "Reconciling Kustomization" "namespace" "$ns" "name" "$name"
+    if flux reconcile kustomization -n "$ns" "$name" --timeout "$FLUX_TIMEOUT" >/dev/null 2>&1; then
+        gum log --structured --level info "Kustomization OK" "namespace" "$ns" "name" "$name"
+    else
+        gum log --structured --level error "Kustomization FAILED" "namespace" "$ns" "name" "$name"
+    fi
+}
+
+function reconcile_helmrelease() {
+    local ns="$1" name="$2"
+    gum log --structured --level info "Reconciling HelmRelease" "namespace" "$ns" "name" "$name"
+    if flux reconcile helmrelease -n "$ns" "$name" --timeout "$FLUX_TIMEOUT" >/dev/null 2>&1; then
+        gum log --structured --level info "HelmRelease OK" "namespace" "$ns" "name" "$name"
+        return
+    fi
+    gum log --structured --level warn "HelmRelease initial reconcile failed; retrying with --with-source --reset --force" "namespace" "$ns" "name" "$name"
+    if flux reconcile helmrelease -n "$ns" "$name" --with-source --reset --force --timeout "$FLUX_TIMEOUT" >/dev/null 2>&1; then
+        gum log --structured --level info "HelmRelease RECOVERED" "namespace" "$ns" "name" "$name"
+    else
+        gum log --structured --level error "HelmRelease FAILED (after forced retry)" "namespace" "$ns" "name" "$name"
     fi
 }
 
@@ -31,38 +64,33 @@ function main() {
     fi
 
     case "${args[0]}" in
-    "Reconcile Kustomizations" | "rk")
+    "Reconcile All (Ks+HRs)" | "r" | "reconcile")
         gum log --structured --level debug "Fetching kustomizations"
-        if ! kustomizations=$(kubectl get kustomization --all-namespaces -o jsonpath='{range .items[*]}{.metadata.namespace}{","}{.metadata.name}{"\n"}{end}'); then
+        if ! kustomizations=$(kubectl get kustomization --all-namespaces -o jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\n"}{end}'); then
             gum log --structured --level error "Failed to fetch kustomizations"
             exit 1
         fi
-        for k in $kustomizations; do
-            namespace=$(echo "$k" | awk -F',' '{print $1}')
-            name=$(echo "$k" | awk -F',' '{print $2}')
-            if ! gum spin --spinner monkey --title "flux reconcile kustomization -n $namespace $name" -- flux reconcile kustomization -n "$namespace" "$name"; then
-                gum log --structured --level error "Failed to reconcile kustomization" "namespace" "$namespace" "name" "$name"
-            else
-                gum log --structured --level info "Successfully reconciled kustomization" "namespace" "$namespace" "name" "$name"
-            fi
-        done
-        ;;
 
-    "Reconcile Helm Releases" | "rh")
         gum log --structured --level debug "Fetching helm releases"
-        if ! helmreleases=$(kubectl get helmrelease --all-namespaces -o jsonpath='{range .items[*]}{.metadata.namespace}{","}{.metadata.name}{"\n"}{end}'); then
+        if ! helmreleases=$(kubectl get helmrelease --all-namespaces -o jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\n"}{end}'); then
             gum log --structured --level error "Failed to fetch helm releases"
             exit 1
         fi
-        for h in $helmreleases; do
-            namespace=$(echo "$h" | awk -F',' '{print $1}')
-            name=$(echo "$h" | awk -F',' '{print $2}')
-            if ! gum spin --spinner monkey --title "flux reconcile helmrelease -n $namespace $name" -- flux reconcile helmrelease -n "$namespace" "$name"; then
-                gum log --structured --level error "Failed to reconcile helm release" "namespace" "$namespace" "name" "$name"
-            else
-                gum log --structured --level info "Successfully reconciled helm release" "namespace" "$namespace" "name" "$name"
-            fi
-        done
+
+        while IFS=$'\t' read -r ns name; do
+            [ -z "$ns" ] && continue
+            throttle
+            reconcile_kustomization "$ns" "$name" &
+        done <<<"$kustomizations"
+
+        while IFS=$'\t' read -r ns name; do
+            [ -z "$ns" ] && continue
+            throttle
+            reconcile_helmrelease "$ns" "$name" &
+        done <<<"$helmreleases"
+
+        wait
+        gum log --structured --level info "All reconcile jobs finished"
         ;;
 
     "-h" | "--help" | "Help")
