@@ -48,7 +48,7 @@ function render_template() {
         gum log --structured --level error "File not found" "file" "$file"
         exit 1
     fi
-    if ! output=$(minijinja-cli "$file" | op inject 2>/dev/null) || [[ -z "$output" ]]; then
+    if ! output=$(op inject -i "$file" 2>/dev/null) || [[ -z "$output" ]]; then
         gum log --structured --level error "Failed to render" "file" "$file"
         exit 1
     fi

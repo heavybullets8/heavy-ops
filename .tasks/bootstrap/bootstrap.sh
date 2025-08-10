@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 function apply_talos_config() {
-    local config_file="${TALOS_DIR}/${NODE_IP}.yaml.j2"
+    local config_file="${TALOS_DIR}/${NODE_IP}.yaml"
     local machine_config
     gum log --structured --level info "Applying Talos configuration"
     machine_config=$(render_template "$config_file")
@@ -62,7 +62,7 @@ function apply_configs() {
 }
 
 function apply_resources() {
-    local resources_file="${BOOTSTRAP_DIR}/resources.yaml.j2"
+    local resources_file="${BOOTSTRAP_DIR}/resources.yaml"
     gum log --structured --level info "Applying resources"
     if [[ ! -f "$resources_file" ]]; then
         gum log --structured --level error "Resources file not found" "file" "$resources_file"
@@ -121,7 +121,7 @@ function apply_helm_releases() {
 
 function main() {
     check_env KUBECONFIG KUBERNETES_VERSION TALOS_VERSION NODE_IP
-    check_cli helmfile jq kubectl kustomize minijinja-cli op talosctl yq
+    check_cli helmfile jq kubectl kustomize op talosctl yq
     gum confirm "Bootstrap the Talos node ${NODE_IP} ... continue?" || exit 0
     op_signin
     generate_schematic
