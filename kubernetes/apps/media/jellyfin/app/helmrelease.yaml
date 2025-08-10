@@ -107,7 +107,8 @@ spec:
 
       temporary:
         type: emptyDir
-        medium: Memory
+        # TODO: Enable Later
+        # medium: Memory
         globalMounts:
           - path: /config/log
             subPath: log
