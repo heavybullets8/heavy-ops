@@ -64,7 +64,7 @@ function main() {
     fi
 
     case "${args[0]}" in
-    "Reconcile All (Ks+HRs)" | "r" | "reconcile")
+    "Reconcile All" | "r" | "reconcile")
         gum log --structured --level debug "Fetching kustomizations"
         if ! kustomizations=$(kubectl get kustomization --all-namespaces -o jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\n"}{end}'); then
             gum log --structured --level error "Failed to fetch kustomizations"
