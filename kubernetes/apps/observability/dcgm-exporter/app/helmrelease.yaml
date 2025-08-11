@@ -21,6 +21,13 @@ spec:
     remediation:
       retries: 3
   values:
+    affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: extensions.talos.dev/nvidia-open-gpu-kernel-modules-production
+                    operator: Exists
     resources:
       requests:
         memory: 128Mi
