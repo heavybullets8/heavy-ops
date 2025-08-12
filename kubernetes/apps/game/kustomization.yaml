@@ -7,4 +7,4 @@ components:
   - ../../components/common
 resources:
   - ./minecraft/ks.yaml
-  - ./valheim/ks.yaml
+  # - ./valheim/ks.yaml # TODO: Enable once RAM returns from RMA
