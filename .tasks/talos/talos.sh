@@ -43,7 +43,7 @@ function main() {
         gum log --structured --level info "Applying Talos config to node ${NODE_IP}"
         generate_schematic
         op_signin
-        if ! op inject -i "${CONFIG_FILE}" | talosctl --nodes "${NODE_IP}" apply-config --mode auto --file /dev/stdin --config-patch "@${TALOS_DIR}/patches/patches.yaml"; then
+        if ! op inject -i "${CONFIG_FILE}" | envsubst | talosctl --nodes "${NODE_IP}" apply-config --mode auto --file /dev/stdin --config-patch "@${TALOS_DIR}/patches/patches.yaml"; then
             gum log --structured --level error "Failed to apply Talos config"
         else
             gum log --structured --level info "Successfully applied Talos config"
@@ -55,7 +55,7 @@ function main() {
         check_cli talosctl yq
         gum log --structured --level info "Upgrading Talos on node ${NODE_IP}"
         generate_schematic
-        if ! FACTORY_IMAGE=$(op inject -i "${CONFIG_FILE}" | yq --exit-status '.machine.install.image'); then
+        if ! FACTORY_IMAGE=$(op inject -i "${CONFIG_FILE}" | envsubst | yq --exit-status '.machine.install.image'); then
             gum log --structured --level error "Failed to fetch factory image"
             exit 1
         fi
@@ -138,7 +138,7 @@ function main() {
 
         local injected
         injected=$(mktemp)
-        op inject -i "${CONFIG_FILE}" >"${injected}"
+        op inject -i "${CONFIG_FILE}" | envsubst >"${injected}"
 
         local ca_crt_b64
         local ca_key_b64

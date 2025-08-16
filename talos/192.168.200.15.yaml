@@ -11,7 +11,7 @@ machine:
     - 192.168.200.16
     - 127.0.0.1
   kubelet:
-    image: ghcr.io/siderolabs/kubelet:{{ ENV.KUBERNETES_VERSION }}
+    image: "ghcr.io/siderolabs/kubelet:${KUBERNETES_VERSION}"
     extraConfig:
       maxPods: 150
       serializeImagePulls: false
@@ -50,7 +50,7 @@ machine:
   install:
     diskSelector:
       model: INTEL SSDPE21D960GA
-    image: factory.talos.dev/metal-installer/{{ ENV.TALOS_SCHEMATIC }}:{{ ENV.TALOS_VERSION }}
+    image: "factory.talos.dev/metal-installer/${TALOS_SCHEMATIC}:${TALOS_VERSION}"
     wipe: true
   files:
     - op: create
@@ -203,7 +203,7 @@ cluster:
   serviceAccount:
     key: op://talos/talos/CLUSTER_SERVICEACCOUNT_KEY
   apiServer:
-    image: registry.k8s.io/kube-apiserver:{{ ENV.KUBERNETES_VERSION }}
+    image: "registry.k8s.io/kube-apiserver:${KUBERNETES_VERSION}"
     extraArgs:
       enable-aggregator-routing: "true"
       feature-gates: MutatingAdmissionPolicy=true
@@ -218,13 +218,13 @@ cluster:
       rules:
         - level: Metadata
   controllerManager:
-    image: registry.k8s.io/kube-controller-manager:{{ ENV.KUBERNETES_VERSION }}
+    image: "registry.k8s.io/kube-controller-manager:${KUBERNETES_VERSION}"
     extraArgs:
       bind-address: 0.0.0.0
   proxy:
     disabled: true
   scheduler:
-    image: registry.k8s.io/kube-scheduler:{{ ENV.KUBERNETES_VERSION }}
+    image: "registry.k8s.io/kube-scheduler:${KUBERNETES_VERSION}"
     extraArgs:
       bind-address: 0.0.0.0
   etcd:
