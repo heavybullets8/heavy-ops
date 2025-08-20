@@ -1,5 +1,3 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/Drazzilb08/daps/master/schemas/config-schema.json# Options:
-
 schedule:
   # No in-script schedules since we run these manually with a cronjob
   sync_gdrive:
@@ -29,32 +27,21 @@ instances:
       url: http://plex.media.svc.cluster.local:32400
       api: "{{ .PLEX_TOKEN }}"
 
-discord:
-  notifiarr_webhook: "{{ .NOTIFIARR_DAPS_WEBHOOK_URL }}"
+notifications:
   main:
-    discord_webhook:
-    channel_id: "{{ .DISCORD_DAPS_CHANNEL_ID }}"
+    notifiarr:
+      webhook: "{{ .NOTIFIARR_DAPS_WEBHOOK_URL }}"
+      channel_id: "{{ .DISCORD_DAPS_CHANNEL_ID }}"
   poster_renamerr:
-    discord_webhook:
-    channel_id: "{{ .DISCORD_DAPS_CHANNEL_ID }}"
-  renameinatorr:
-    discord_webhook:
-    channel_id:
-  upgradinatorr:
-    discord_webhook:
-    channel_id:
-  nohl:
-    discord_webhook:
-    channel_id:
-  labelarr:
-    discord_webhook:
-    channel_id:
-  nohl_bash:
-    discord_webhook:
-    channel_id:
-  jduparr:
-    discord_webhook:
-    channel_id:
+    notifiarr:
+      webhook: "{{ .NOTIFIARR_DAPS_WEBHOOK_URL }}"
+      channel_id: "{{ .DISCORD_DAPS_CHANNEL_ID }}"
+  renameinatorr: {}
+  upgradinatorr: {}
+  nohl: {}
+  labelarr: {}
+  nohl_bash: {}
+  jduparr: {}
 
 # Syncs posters from multiple users Google Drives to a local directory
 # gdrive list pulled from: https://github.com/christophedc0/Dump/blob/main/DAPS/gdrives.md
@@ -64,70 +51,90 @@ sync_gdrive:
   client_secret: "{{ .GDRIVE_CLIENT_SECRET }}"
   token: {}
   gdrive_sa_location: /config/sa.json
-  gdrive_sync:
+  gdrive_list:
     # -- Collection of others (Lowest priority)
-    - id: 1zWY-ORtJkOLcQChV--oHquxW3JCow1zm # Solen (#2)
+    - id: 1zWY-ORtJkOLcQChV--oHquxW3JCow1zm
       location: /config/assets/.inputs/solen2
+      name: Solen2
 
-    - id: 1-WhCVwRLfV6hxyKF7W5IuzIHIYicCdAv # IamSpartacus (#2)
+    - id: 1-WhCVwRLfV6hxyKF7W5IuzIHIYicCdAv
       location: /config/assets/.inputs/iamspartacus2
+      name: IamSpartacus2
 
-    - id: 15sNlcFZmeDox2OQJyGjVxRwtigtd82Ru # MajorGiant (#2)
+    - id: 15sNlcFZmeDox2OQJyGjVxRwtigtd82Ru
       location: /config/assets/.inputs/majorgiant2
+      name: MajorGiant2
 
-    - id: 1oBzEOXXrTHGq6sUY_4RMtzMTt4VHyeJp # Chris DC
+    - id: 1oBzEOXXrTHGq6sUY_4RMtzMTt4VHyeJp
       location: /config/assets/.inputs/chrisdc
+      name: ChrisDC
 
     # - Homemade (Low priority)
-    - id: 1qBC7p9K4zur5dOCf3F6VTyUROVvHQoSb # Jpalenz77
+    - id: 1qBC7p9K4zur5dOCf3F6VTyUROVvHQoSb
       location: /config/assets/.inputs/jpalenz77
+      name: Jpalenz77
 
-    - id: 1cqDinU27cnHf5sL5rSlfO7o_T6LSxG77 # Reitenth
+    - id: 1cqDinU27cnHf5sL5rSlfO7o_T6LSxG77
       location: /config/assets/.inputs/reitenth
+      name: Reitenth
 
-    - id: 1TYVIGKpSwhipLyVQQn_OJHTobM6KaokB # TheOtherGuy #1
+    - id: 1TYVIGKpSwhipLyVQQn_OJHTobM6KaokB
       location: /config/assets/.inputs/theotherguy
+      name: TheOtherGuy
 
-    - id: 1KJlsnMz-z2RAfNxKZp7sYP_U0SD1V6lS # MiniMyself
+    - id: 1KJlsnMz-z2RAfNxKZp7sYP_U0SD1V6lS
       location: /config/assets/.inputs/minimyself
+      name: MiniMyself
 
-    - id: 1KJlsnMz-z2RAfNxKZp7sYP_U0SD1V6lS # TokenMinal
+    - id: 1KJlsnMz-z2RAfNxKZp7sYP_U0SD1V6lS
       location: /config/assets/.inputs/tokenminal
+      name: TokenMinal
 
-    - id: 1hEY9qEdXVDzIbnQ4z9Vpo0SVXXuZBZR- # Mareau
+    - id: 1hEY9qEdXVDzIbnQ4z9Vpo0SVXXuZBZR-
       location: /config/assets/.inputs/mareau
+      name: Mareau
 
     # + Homemade (Medium priority)
-    - id: 1G77TLQvgs_R7HdMWkMcwHL6vd_96cMp7 # Quafley
+    - id: 1G77TLQvgs_R7HdMWkMcwHL6vd_96cMp7
       location: /config/assets/.inputs/quafley
+      name: Quafley
 
-    - id: 1bBbK_3JeXCy3ElqTwkFHaNoNxYgqtLug # Stupifier
+    - id: 1bBbK_3JeXCy3ElqTwkFHaNoNxYgqtLug
       location: /config/assets/.inputs/stupifierr
+      name: Stupifier
 
-    - id: 1KnwxzwBUQzQyKF1e24q_wlFqcER9xYHM # Sahara
+    - id: 1KnwxzwBUQzQyKF1e24q_wlFqcER9xYHM
       location: /config/assets/.inputs/sahara
+      name: Sahara
 
-    - id: 1ZfvUgN0qz4lJYkC_iMRjhH-fZ0rDN_Yu # MajorGiant (#1)
+    - id: 1ZfvUgN0qz4lJYkC_iMRjhH-fZ0rDN_Yu
       location: /config/assets/.inputs/majorgiant
+      name: MajorGiant
 
-    - id: 1alseEnUBjH6CjXh77b5L4R-ZDGdtOMFr # Lion City Gaming
+    - id: 1alseEnUBjH6CjXh77b5L4R-ZDGdtOMFr
       location: /config/assets/.inputs/lion
+      name: LionCityGaming
 
-    - id: 1aRngLdC9yO93gvSrTI2LQ_I9BSoGD-7o # IamSpartacus (#1)
+    - id: 1aRngLdC9yO93gvSrTI2LQ_I9BSoGD-7o
       location: /config/assets/.inputs/iamspartacus
+      name: IamSpartacus
 
-    - id: 1Xg9Huh7THDbmjeanW0KyRbEm6mGn_jm8 # BZ
+    - id: 1Xg9Huh7THDbmjeanW0KyRbEm6mGn_jm8
       location: /config/assets/.inputs/bz
+      name: BZ
 
-    - id: 1YEuS1pulJAfhKm4L8U9z5-EMtGl-d2s7 # Solen (#1)
+    - id: 1YEuS1pulJAfhKm4L8U9z5-EMtGl-d2s7
       location: /config/assets/.inputs/solen
+      name: Solen
 
-    - id: 1wOhY88zc0wdQU-QQmhm4FzHL9QiCQnpu # Zarox
+    - id: 1wOhY88zc0wdQU-QQmhm4FzHL9QiCQnpu
       location: /config/assets/.inputs/zarox
+      name: Zarox
 
     # ++ Drazzilb drive (High priority)
-    - id: 1fKRkx4Yine5cqkH411FmShdd-wHRMBIF # Drazzilb
+    - id: 1fKRkx4Yine5cqkH411FmShdd-wHRMBIF
       location: /config/assets/.inputs/Drazz
+      name: Drazzilb
 
 # Rename posters to match what Kometa expects
 # Also runs "sync_posters", and "border_replacerr", meaning we only need to run this script
@@ -138,13 +145,8 @@ poster_renamerr:
   action_type: hardlink # Use same PVC as Kometa
   asset_folders: true # Using "asset_folders" within Kometa, so matching that setting here
   print_only_renames: false
-  border_replacerr: true # Run border_replacerr
-
-  library_names:
-    - Movies
-    - Series
-    - Anime Movies
-    - Anime Series
+  run_border_replacerr: true
+  incremental_border_replacerr: false
 
   source_dirs:
     # -- Collection of others (Lowest priority)
@@ -173,9 +175,14 @@ poster_renamerr:
     - /config/assets/.inputs/Drazz
   destination_dir: /config/assets/posters
   instances:
-    - plex
     - radarr
     - sonarr
+    - plex:
+        library_names:
+          - Movies
+          - Series
+          - Anime Movies
+          - Anime Series
 
 # Replace or remove borders from posters
 border_replacerr:
@@ -193,7 +200,12 @@ border_replacerr:
 unmatched_assets:
   log_level: info
   instances:
-    - plex
+    - plex:
+      library_names:
+        - Movies
+        - Series
+        - Anime Movies
+        - Anime Series
     - radarr
     - sonarr
   ignore_root_folders:
