@@ -55,6 +55,7 @@ function main() {
         check_cli talosctl yq
         gum log --structured --level info "Upgrading Talos on node ${NODE_IP}"
         generate_schematic
+        op_signin
         if ! FACTORY_IMAGE=$(op inject -i "${CONFIG_FILE}" | envsubst | yq --exit-status '.machine.install.image'); then
             gum log --structured --level error "Failed to fetch factory image"
             exit 1
