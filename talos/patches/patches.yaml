@@ -17,6 +17,8 @@ apiVersion: v1alpha1
 kind: VolumeConfig
 name: EPHEMERAL
 provisioning:
+  diskSelector:
+    match: disk.serial == "PHM2911201VL960CGN"
   maxSize: 100GiB
 ---
 apiVersion: v1alpha1
