@@ -21,6 +21,9 @@ settings:
   rem_unregistered_ignore_list: []
   cat_update_all: true
   disable_qbt_default_share_limits: true
+  rem_unregistered_filter_completed: false
+  rem_unregistered_grace_minutes: 15
+  stalled_tag: stalledDL
 
 directory:
   root_dir: /media/download/torrent
