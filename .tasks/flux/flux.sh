@@ -29,26 +29,26 @@ function throttle() {
 
 function reconcile_kustomization() {
     local ns="$1" name="$2"
-    gum log --structured --level info "Reconciling Kustomization" "namespace" "$ns" "name" "$name"
+    echo "[INFO] Reconciling Kustomization namespace=${ns} name=${name}"
     if flux reconcile kustomization -n "$ns" "$name" --timeout "$FLUX_TIMEOUT" >/dev/null 2>&1; then
-        gum log --structured --level info "Kustomization OK" "namespace" "$ns" "name" "$name"
+        echo "[INFO] Kustomization OK namespace=${ns} name=${name}"
     else
-        gum log --structured --level error "Kustomization FAILED" "namespace" "$ns" "name" "$name"
+        echo "[ERROR] Kustomization FAILED namespace=${ns} name=${name}"
     fi
 }
 
 function reconcile_helmrelease() {
     local ns="$1" name="$2"
-    gum log --structured --level info "Reconciling HelmRelease" "namespace" "$ns" "name" "$name"
+    echo "[INFO] Reconciling HelmRelease namespace=${ns} name=${name}"
     if flux reconcile helmrelease -n "$ns" "$name" --timeout "$FLUX_TIMEOUT" >/dev/null 2>&1; then
-        gum log --structured --level info "HelmRelease OK" "namespace" "$ns" "name" "$name"
+        echo "[INFO] HelmRelease OK namespace=${ns} name=${name}"
         return
     fi
-    gum log --structured --level warn "HelmRelease initial reconcile failed; retrying with --with-source --reset --force" "namespace" "$ns" "name" "$name"
+    echo "[WARN] HelmRelease initial reconcile failed; retrying with --with-source --reset --force namespace=${ns} name=${name}"
     if flux reconcile helmrelease -n "$ns" "$name" --with-source --reset --force --timeout "$FLUX_TIMEOUT" >/dev/null 2>&1; then
-        gum log --structured --level info "HelmRelease RECOVERED" "namespace" "$ns" "name" "$name"
+        echo "[INFO] HelmRelease RECOVERED namespace=${ns} name=${name}"
     else
-        gum log --structured --level error "HelmRelease FAILED (after forced retry)" "namespace" "$ns" "name" "$name"
+        echo "[ERROR] HelmRelease FAILED (after forced retry) namespace=${ns} name=${name}"
     fi
 }
 
