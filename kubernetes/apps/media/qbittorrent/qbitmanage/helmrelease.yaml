@@ -37,7 +37,7 @@ spec:
               repository: ghcr.io/stuffanthings/qbit_manage
               # TODO: Fix when https://github.com/StuffAnThings/qbit_manage/issues/911 closes
               # tag: v4.5.4@sha256:09d33f81e8d41f1c00ca32b38eba6992ee9aae1a8b5b33134dfb7bb2d3570306
-              tag: develop@sha256:52e0dc7634f7ce7847ab38445c1c7d5cef9549059d1fe7ba10865faba61fd802
+              tag: develop@sha256:22d9ee9e00bffad95269a112f4653e2713d54667ce692d35e7e5615fcef68ddb
             env:
               TZ: *timeZone
               QBT_CONFIG: "/config/config.yaml"
