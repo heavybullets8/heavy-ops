@@ -80,7 +80,7 @@ spec:
             dependsOn: app
             image:
               repository: ghcr.io/elforkhead/mamapi
-              tag: v2.0.0-beta2@sha256:decc079f112a8611d889d17d4411077cf42eeee246bdefdfded868e93560dda0
+              tag: v2.1.2@sha256:9403628e9c0e773c04bb640743105bdbfca53423033828e13d3f5efc79370493
             env:
               TZ: ${TIMEZONE}
             envFrom: &envFrom
