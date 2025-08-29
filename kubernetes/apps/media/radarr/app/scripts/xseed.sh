@@ -56,7 +56,7 @@ is_valid_client() {
 cross_seed_request() {
     local endpoint="$1"
     local data="$2"
-    local headers=(-X POST "http://$XSEED_HOST:$XSEED_PORT/api/$endpoint" --data-urlencode "$data")
+    local headers=(-X POST "http://$XSEED_HOST:$XSEED_PORT/api/$endpoint" --data-urlencode "$data" --data-urlencode 'includeSingleEpisodes=true')
     if [ -n "$CROSS_SEED_API_KEY" ]; then
         headers+=(-H "X-Api-Key: $CROSS_SEED_API_KEY")
     fi
