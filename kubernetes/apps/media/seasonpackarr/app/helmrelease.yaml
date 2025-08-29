@@ -32,7 +32,7 @@ spec:
               TZ: ${TIMEZONE}
               SEASONPACKARR__DISABLE_CONFIG_FILE: true
               SEASONPACKARR__PORT: &port 80
-              SEASONPACKARR__LOG_LEVEL: DEBUG
+              SEASONPACKARR__LOG_LEVEL: INFO
               SEASONPACKARR__SMART_MODE: true
               SEASONPACKARR__SMART_MODE_THRESHOLD: 0.75
               SEASONPACKARR__PARSE_TORRENT_FILE: true
