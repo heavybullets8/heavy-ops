@@ -38,7 +38,7 @@ spec:
               tag: v4.6.0@sha256:ffb0d2b53a6fad9ad19046a11eae78b0fa0d22f90c1c7ad50b2cb866aece2a2b
             env:
               TZ: *timeZone
-              QBT_CONFIG: "/config/config.yaml"
+              QBT_CONFIG_DIR: "/config"
               QBT_CROSS_SEED: false
               QBT_DRY_RUN: false
               QBT_LOG_LEVEL: INFO
