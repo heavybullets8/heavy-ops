@@ -11,7 +11,7 @@ resources:
   - ./cross-seed/ks.yaml
   - ./deemix/ks.yaml
   - ./flaresolverr/ks.yaml
-  # - ./jellyfin/ks.yaml # TODO: Enable once RAM is back from RMA
+  - ./jellyfin/ks.yaml
   - ./jellyseerr/ks.yaml
   - ./komga/ks.yaml
   - ./media-roller/ks.yaml

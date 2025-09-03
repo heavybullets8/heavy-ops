@@ -68,9 +68,7 @@ spec:
                 cpu: 100m
                 memory: 500Mi
               limits:
-                memory: 20Gi
-                # TODO: Enable Later
-                # memory: 100Gi
+                memory: 100Gi
                 nvidia.com/gpu: 1
 
     defaultPodOptions:
@@ -117,8 +115,7 @@ spec:
 
       temporary:
         type: emptyDir
-        # TODO: Enable Later
-        # medium: Memory
+        medium: Memory
         globalMounts:
           - path: /config/Library/Application Support/Plex Media Server/Logs
             subPath: logs
