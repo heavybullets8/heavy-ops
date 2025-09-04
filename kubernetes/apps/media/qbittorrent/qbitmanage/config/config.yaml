@@ -40,7 +40,6 @@ cat:
   imported: /media/download/torrent/categories/imported
   manga: /media/download/torrent/categories/manga
   manual: /media/download/torrent/categories/manual
-  # TODO: Remove once snatches are sufficient
   snatches: /speed/snatches
 
 tracker: {{ .QBITMANAGE_TRACKERS | nindent 2 }}

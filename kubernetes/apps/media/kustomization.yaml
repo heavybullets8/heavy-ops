@@ -7,7 +7,7 @@ components:
   - ../../components/common
 resources:
   - ./audiobookshelf/ks.yaml
-  - ./autobrr/ks.yaml # TODO: Remove autobrr once snatches are sufficient
+  - ./autobrr/ks.yaml
   - ./cross-seed/ks.yaml
   - ./deemix/ks.yaml
   - ./flaresolverr/ks.yaml

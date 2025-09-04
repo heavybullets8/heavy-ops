@@ -209,7 +209,6 @@ spec:
         storageClass: openebs-hostpath
         size: 1Gi
 
-      # TODO: Remove once snatches are sufficient
       tempmedia:
         type: nfs
         server: ${TRUENAS_IP}

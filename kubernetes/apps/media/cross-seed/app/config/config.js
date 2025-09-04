@@ -34,17 +34,17 @@ module.exports = {
   // ======== DATA BASED MATCHING (Requires Partial Matching) =========
   // Commented out, since you only need to ever run it once
   // After it successfully runs, comment it out.
-  //maxDataDepth: 3,
-  //dataDirs: [
-  //"/media/library/series",
-  //  "/media/library/movies",
-  //],
-  //excludeRecentSearch: "6 weeks",
-  //excludeOlder: "12 weeks",
-  //searchCadence: "2 weeks",
+  maxDataDepth: 3,
+  dataDirs: [
+  "/media/library/series",
+   "/media/library/movies",
+  ],
+  excludeRecentSearch: "6 weeks",
+  excludeOlder: "12 weeks",
+  searchCadence: "2 weeks",
 
   // ======== PROWLARR =========
-  torznab: [19, 28, 31, 67].map(
+  torznab: [19, 28, 31, 67, 68].map(
     (i) =>
       `http://prowlarr.media.svc.cluster.local/$${i}/api?apikey={{ .PROWLARR_API_KEY }}`,
   ),

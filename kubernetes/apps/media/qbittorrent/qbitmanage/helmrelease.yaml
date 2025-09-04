@@ -106,7 +106,6 @@ spec:
           - path: /qbittorrent
             readOnly: true
 
-      # TODO: Remove once snatches are sufficient
       tempmedia:
         type: nfs
         server: ${TRUENAS_IP}
