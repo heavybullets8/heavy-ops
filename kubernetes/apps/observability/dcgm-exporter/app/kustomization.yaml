@@ -5,4 +5,4 @@ kind: Kustomization
 resources:
   - ./alerts.yaml
   - ./helmrelease.yaml
-  - ./helmrepository.yaml
+  - ./ocirepository.yaml
