@@ -18,7 +18,6 @@ resources:
   - ./notifiarr/ks.yaml
   - ./plex/ks.yaml
   - ./podgrab/ks.yaml
-  - ./seasonpackarr/ks.yaml
   - ./sonarr/ks.yaml
   - ./qbittorrent/ks.yaml
   - ./radarr/ks.yaml
