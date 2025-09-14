@@ -31,7 +31,7 @@ spec:
         memory: 20Gi
 
     minecraftServer:
-      cheats: true
+      cheats: false
       difficulty: normal
       eula: "TRUE"
       gameMode: survival
@@ -62,4 +62,3 @@ spec:
 
     serviceAnnotations:
       lbipam.cilium.io/ips: "${MINECRAFT_IP}"
-
