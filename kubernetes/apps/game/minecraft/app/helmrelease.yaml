@@ -43,7 +43,7 @@ spec:
       threads: 0
       viewDistance: 20
       whitelist: true
-      whitelistUsers: BigWizWyatt,DJVelveeta69,HeavyBullets88,BlackafroTTV,MediumYoda
+      whitelistUsers: BigWizWyatt,DJVelveeta69,HeavyBullets88,BlackafroTTV,MediumYoda,PwNpRo
 
       serviceType: LoadBalancer
       serverPort: 19132
