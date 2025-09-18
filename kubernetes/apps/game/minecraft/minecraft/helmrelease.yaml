@@ -39,6 +39,7 @@ spec:
       onlineMode: true
       ops: "2535421636443049,2535410585100219"
       serverName: "FrenZone"
+      texturepackRequired: true
       tickDistance: 6
       threads: 0
       viewDistance: 20
