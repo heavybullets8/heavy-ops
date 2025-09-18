@@ -16,7 +16,7 @@ spec:
   dependsOn:
     - name: onepassword
       namespace: external-secrets
-  path: ./kubernetes/apps/game/minecraft/app
+  path: ./kubernetes/apps/game/minecraft/minecraft
   prune: true
   retryInterval: 2m
   sourceRef:
@@ -31,3 +31,31 @@ spec:
       APP: *app
       VOLSYNC_CAPACITY: 30Gi
       VOLSYNC_RECORD_SIZE: 16k
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app mcxboxbroadcast
+  namespace: &namespace game
+spec:
+  targetNamespace: *namespace
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: minecraft
+      namespace: game
+  path: ./kubernetes/apps/game/minecraft/mcxboxbroadcast
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: false
+  interval: 30m
+  timeout: 5m
+  postBuild:
+    substitute:
+      APP: *app
