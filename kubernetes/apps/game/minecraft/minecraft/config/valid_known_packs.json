@@ -38,5 +38,21 @@
         "path": "behavior_packs/Cave-Dweller-Behavior",
         "uuid": "efbee398-641d-4fd6-bf36-430d780c4f8f",
         "version": "1.0.8"
+    },
+    {
+        "file_system": "RawPath",
+        "from_locked_template": false,
+        "from_world_template": false,
+        "path": "resource_packs/Structure-Generation-RP",
+        "uuid": "68ac942e-3470-4d14-a430-d12ceb49e93f",
+        "version": "1.1.5"
+    },
+    {
+        "file_system": "RawPath",
+        "from_locked_template": false,
+        "from_world_template": false,
+        "path": "behavior_packs/Structure-Generation-BP",
+        "uuid": "50ce70da-8091-4ef9-8c71-539c3d7d8654",
+        "version": "1.1.5"
     }
 ]
