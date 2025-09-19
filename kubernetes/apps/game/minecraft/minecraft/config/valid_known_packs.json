@@ -54,5 +54,53 @@
         "path": "behavior_packs/Structure-Generation-BP",
         "uuid": "50ce70da-8091-4ef9-8c71-539c3d7d8654",
         "version": "1.1.5"
+    },
+    {
+        "file_system": "RawPath",
+        "from_locked_template": false,
+        "from_world_template": false,
+        "path": "behavior_packs/Cave-Biomes-BP",
+        "uuid": "72924636-47ee-43f0-a36b-03efa792756f",
+        "version": "1.0.7"
+    },
+    {
+        "file_system": "RawPath",
+        "from_locked_template": false,
+        "from_world_template": false,
+        "path": "resource_packs/Cave-Biomes-RP",
+        "uuid": "67d777ab-847c-45ca-8ba8-91a9fd92171f",
+        "version": "1.0.7"
+    },
+    {
+        "file_system": "RawPath",
+        "from_locked_template": false,
+        "from_world_template": false,
+        "path": "behavior_packs/Crops-Farms-BP",
+        "uuid": "d5de6bb3-8857-47a1-9375-b239c0f95ad3",
+        "version": "1.1.4"
+    },
+    {
+        "file_system": "RawPath",
+        "from_locked_template": false,
+        "from_world_template": false,
+        "path": "resource_packs/Crops-Farms-RP",
+        "uuid": "d916218f-5397-4435-b2e7-6f573cbd2cbf",
+        "version": "1.1.4"
+    },
+    {
+        "file_system": "RawPath",
+        "from_locked_template": false,
+        "from_world_template": false,
+        "path": "behavior_packs/Essentials-BP",
+        "uuid": "47a58c9a-1d18-4761-9323-35a01254ef67",
+        "version": "1.0.24"
+    },
+    {
+        "file_system": "RawPath",
+        "from_locked_template": false,
+        "from_world_template": false,
+        "path": "resource_packs/Essentials-RP",
+        "uuid": "24188c69-3fc5-47a7-b41b-23847c67adf5",
+        "version": "1.0.24"
     }
 ]
