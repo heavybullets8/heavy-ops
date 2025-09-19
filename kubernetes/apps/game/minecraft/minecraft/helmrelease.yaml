@@ -22,6 +22,9 @@ spec:
   values:
     fullnameOverride: *app
 
+    podAnnotations:
+      reloader.stakater.com/auto: "true"
+
     resources:
       requests:
         memory: 512Mi
@@ -60,6 +63,20 @@ spec:
       dataDir:
         enabled: true
         existingClaim: *app
+
+      pack-configs:
+        type: configMap
+        name: minecraft-pack-configs
+        globalMounts:
+          - path: /data/worlds/level/world_resource_packs.json
+            subPath: world_resource_packs.json
+            readOnly: false
+          - path: /data/worlds/level/world_behavior_packs.json
+            subPath: world_behavior_packs.json
+            readOnly: false
+          - path: /data/valid_known_packs.json
+            subPath: valid_known_packs.json
+            readOnly: false
 
     serviceAnnotations:
       lbipam.cilium.io/ips: "${MINECRAFT_IP}"

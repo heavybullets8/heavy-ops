@@ -5,3 +5,11 @@ kind: Kustomization
 resources:
   - ./helmrelease.yaml
   - ./ocirepository.yaml
+configMapGenerator:
+  - name: minecraft-pack-configs
+    files:
+      - ./config/world_resource_packs.json
+      - ./config/world_behavior_packs.json
+      - ./config/valid_known_packs.json
+generatorOptions:
+  disableNameSuffixHash: true

@@ -1,0 +1,42 @@
+[
+    {
+        "file_system": "RawPath",
+        "from_locked_template": false,
+        "from_world_template": false,
+        "path": "resource_packs/Dynamic_Lightning_V3.3.0",
+        "uuid": "f94c7e73-0928-4acf-904f-70920c796729",
+        "version": "3.3.0"
+    },
+    {
+        "file_system": "RawPath",
+        "from_locked_template": false,
+        "from_world_template": false,
+        "path": "resource_packs/Actions-And-Stuff-1.5.1",
+        "uuid": "2cf066eb-1254-4b7d-affb-80fe3216b18c",
+        "version": "1.1.13"
+    },
+    {
+        "file_system": "RawPath",
+        "from_locked_template": false,
+        "from_world_template": false,
+        "path": "behavior_packs/Dynamic_Lightning_V3.3.0",
+        "uuid": "657087d5-3a90-4ea6-b7dc-10ae07e31ce5",
+        "version": "3.3.0"
+    },
+    {
+        "file_system": "RawPath",
+        "from_locked_template": false,
+        "from_world_template": false,
+        "path": "resource_packs/Cave-Dweller-Resource",
+        "uuid": "5ab34fff-ed52-4a92-be6d-0bcbe3a0d678",
+        "version": "1.0.8"
+    },
+    {
+        "file_system": "RawPath",
+        "from_locked_template": false,
+        "from_world_template": false,
+        "path": "behavior_packs/Cave-Dweller-Behavior",
+        "uuid": "efbee398-641d-4fd6-bf36-430d780c4f8f",
+        "version": "1.0.8"
+    }
+]
