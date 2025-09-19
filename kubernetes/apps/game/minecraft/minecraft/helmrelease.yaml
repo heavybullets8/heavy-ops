@@ -23,7 +23,7 @@ spec:
     fullnameOverride: *app
 
     podAnnotations:
-      reloader.stakater.com/auto: "true"
+      configmap.reloader.stakater.com/reload: "minecraft-pack-configs"
 
     resources:
       requests:
@@ -64,19 +64,37 @@ spec:
         enabled: true
         existingClaim: *app
 
-      pack-configs:
-        type: configMap
-        name: minecraft-pack-configs
-        globalMounts:
-          - path: /data/worlds/level/world_resource_packs.json
-            subPath: world_resource_packs.json
-            readOnly: false
-          - path: /data/worlds/level/world_behavior_packs.json
-            subPath: world_behavior_packs.json
-            readOnly: false
-          - path: /data/valid_known_packs.json
-            subPath: valid_known_packs.json
-            readOnly: false
-
     serviceAnnotations:
       lbipam.cilium.io/ips: "${MINECRAFT_IP}"
+
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: minecraft-minecraft-bedrock
+            patch: |
+              - op: add
+                path: /spec/template/spec/volumes/-
+                value:
+                  name: pack-configs
+                  configMap:
+                    name: minecraft-pack-configs
+              - op: add
+                path: /spec/template/spec/containers/0/volumeMounts/-
+                value:
+                  name: pack-configs
+                  mountPath: /data/worlds/level/world_resource_packs.json
+                  subPath: world_resource_packs.json
+              - op: add
+                path: /spec/template/spec/containers/0/volumeMounts/-
+                value:
+                  name: pack-configs
+                  mountPath: /data/worlds/level/world_behavior_packs.json
+                  subPath: world_behavior_packs.json
+              - op: add
+                path: /spec/template/spec/containers/0/volumeMounts/-
+                value:
+                  name: pack-configs
+                  mountPath: /data/valid_known_packs.json
+                  subPath: valid_known_packs.json
