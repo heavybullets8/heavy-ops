@@ -29,7 +29,7 @@
         "from_world_template": false,
         "path": "resource_packs/Cave-Dweller-Resource",
         "uuid": "5ab34fff-ed52-4a92-be6d-0bcbe3a0d678",
-        "version": "1.0.8"
+        "version": "1.0.21"
     },
     {
         "file_system": "RawPath",
@@ -37,7 +37,7 @@
         "from_world_template": false,
         "path": "behavior_packs/Cave-Dweller-Behavior",
         "uuid": "efbee398-641d-4fd6-bf36-430d780c4f8f",
-        "version": "1.0.8"
+        "version": "1.0.21"
     },
     {
         "file_system": "RawPath",
