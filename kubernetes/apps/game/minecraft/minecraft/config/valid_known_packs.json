@@ -102,5 +102,21 @@
         "path": "behavior_packs/Essentials-Behavior",
         "uuid": "47a58c9a-1d18-4761-9323-35a01254ef67",
         "version": "1.0.24"
+    },
+    {
+        "file_system": "RawPath",
+        "from_locked_template": false,
+        "from_world_template": false,
+        "path": "resource_packs/Villagers-Plus-Plus-Resource",
+        "uuid": "364d3ae0-4b45-426a-9054-9441fa662903",
+        "version": "1.0.12"
+    },
+    {
+        "file_system": "RawPath",
+        "from_locked_template": false,
+        "from_world_template": false,
+        "path": "behavior_packs/Villagers-Plus-Plus-Behavior",
+        "uuid": "82b5aab3-53d9-41f5-a077-27649f6b3425",
+        "version": "1.0.12"
     }
 ]

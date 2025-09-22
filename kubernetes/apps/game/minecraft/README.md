@@ -5,34 +5,56 @@ server running in Kubernetes.
 
 ## Currently Installed Addons
 
+**Loading Order (last loaded = highest priority):**
+
 ### Resource Packs
 
-| Addon Name            | Version | UUID                                   | Description                                           |
-| --------------------- | ------- | -------------------------------------- | ----------------------------------------------------- |
-| **Dynamic Lightning** | 3.3.0   | `f94c7e73-0928-4acf-904f-70920c796729` | Torch helmet lighting effects and visual enhancements |
-| **Actions and Stuff** | 1.5.1   | `2cf066eb-1254-4b7d-affb-80fe3216b18c` | Custom textures, animations, and visual improvements  |
-| **Cave Dweller**      | 1.0.8   | `5ab34fff-ed52-4a92-be6d-0bcbe3a0d678` | Horror creature textures, sounds, and visual effects  |
+| Load Order | Addon Name              | Version | UUID                                   | Description                                           |
+| ---------- | ----------------------- | ------- | -------------------------------------- | ----------------------------------------------------- |
+| 1          | **Actions and Stuff**   | 1.1.13  | `2cf066eb-1254-4b7d-affb-80fe3216b18c` | Custom textures, animations, and visual improvements |
+| 2          | **Dynamic Lightning**   | 3.4.0   | `f94c7e73-0928-4acf-904f-70920c796729` | Torch helmet lighting effects and visual enhancements |
+| 3          | **Structure Generation** | 1.1.5   | `68ac942e-3470-4d14-a430-d12ceb49e93f` | Enhanced structure generation and world features     |
+| 4          | **Cave Biomes**         | 1.0.7   | `67d777ab-847c-45ca-8ba8-91a9fd92171f` | New cave biome types and underground environments    |
+| 5          | **Essentials**          | 1.0.24  | `24188c69-3fc5-47a7-b41b-23847c67adf5` | Core gameplay enhancements and utility features      |
+| 6          | **Crops & Farms**       | 1.1.4   | `d916218f-5397-4435-b2e7-6f573cbd2cbf` | Enhanced farming, crops, and agricultural features   |
+| 7          | **Villagers++**         | 1.0.12  | `364d3ae0-4b45-426a-9054-9441fa662903` | Advanced villager types, trading, and village systems |
+| 8          | **Cave Dweller**        | 1.0.21  | `5ab34fff-ed52-4a92-be6d-0bcbe3a0d678` | Horror creature textures, sounds, and visual effects |
 
 ### Behavior Packs
 
-| Addon Name            | Version | UUID                                   | Description                                           |
-| --------------------- | ------- | -------------------------------------- | ----------------------------------------------------- |
-| **Dynamic Lightning** | 3.3.0   | `657087d5-3a90-4ea6-b7dc-10ae07e31ce5` | Torch mechanics, offhand placement, and functionality |
-| **Cave Dweller**      | 1.0.8   | `efbee398-641d-4fd6-bf36-430d780c4f8f` | Cave dweller entity AI, spawning, and game mechanics  |
+| Load Order | Addon Name              | Version | UUID                                   | Description                                           |
+| ---------- | ----------------------- | ------- | -------------------------------------- | ----------------------------------------------------- |
+| 1          | **Dynamic Lightning**   | 3.4.0   | `657087d5-3a90-4ea6-b7dc-10ae07e31ce5` | Torch mechanics, offhand placement, and functionality |
+| 2          | **Structure Generation** | 1.1.5   | `50ce70da-8091-4ef9-8c71-539c3d7d8654` | Custom structure spawning and world generation logic |
+| 3          | **Cave Biomes**         | 1.0.7   | `72924636-47ee-43f0-a36b-03efa792756f` | Cave biome generation and underground mechanics      |
+| 4          | **Essentials**          | 1.0.24  | `47a58c9a-1d18-4761-9323-35a01254ef67` | Core gameplay mechanics and utility functions        |
+| 5          | **Crops & Farms**       | 1.1.4   | `d5de6bb3-8857-47a1-9375-b239c0f95ad3` | Enhanced farming mechanics and crop behaviors        |
+| 6          | **Villagers++**         | 1.0.12  | `82b5aab3-53d9-41f5-a077-27649f6b3425` | Advanced villager AI, jobs, and interaction systems |
+| 7          | **Cave Dweller**        | 1.0.21  | `efbee398-641d-4fd6-bf36-430d780c4f8f` | Cave dweller entity AI, spawning, and game mechanics |
 
 ## Server File Structure
 
 ```
 /data/
 ├── behavior_packs/
-│   ├── Dynamic_Lightning_V3.3.0/     # Torch functionality
-│   ├── Cave-Dweller-Behavior/        # Cave dweller entity mechanics
-│   └── vanilla*/                     # Default Minecraft behavior packs
+│   ├── Dynamic-Lightning-Behavior/     # Torch functionality and mechanics
+│   ├── Structure-Generation-Behavior/  # Custom structure generation
+│   ├── Cave-Biomes-Behavior/          # Cave biome mechanics
+│   ├── Essentials-Behavior/           # Core gameplay enhancements
+│   ├── Crops-Farms-Behavior/          # Enhanced farming systems
+│   ├── Villagers-Plus-Plus-Behavior/  # Advanced villager systems
+│   ├── Cave-Dweller-Behavior/         # Cave dweller entity mechanics
+│   └── vanilla*/                      # Default Minecraft behavior packs
 ├── resource_packs/
-│   ├── Dynamic_Lightning_V3.3.0/     # Torch visual effects
-│   ├── Actions-And-Stuff-1.5.1/      # Custom textures/animations
-│   ├── Cave-Dweller-Resource/        # Cave dweller visuals/sounds
-│   └── vanilla*/                     # Default Minecraft resource packs
+│   ├── Actions-Stuff-Resource/        # Custom textures and animations
+│   ├── Dynamic-Lightning-Resource/    # Torch visual effects
+│   ├── Structure-Generation-Resource/ # Structure textures and models
+│   ├── Cave-Biomes-Resource/          # Cave biome visuals
+│   ├── Essentials-Resource/           # Core visual enhancements
+│   ├── Crops-Farms-Resource/          # Farming textures and models
+│   ├── Villagers-Plus-Plus-Resource/  # Advanced villager visuals
+│   ├── Cave-Dweller-Resource/         # Cave dweller visuals and sounds
+│   └── vanilla*/                      # Default Minecraft resource packs
 ├── worlds/
 │   └── level/
 │       ├── world_behavior_packs.json # Behavior pack configuration
@@ -100,6 +122,18 @@ Edit the configuration files in
 2. Flux will automatically reconcile and update the server
 3. Server will restart with new pack configurations
 
+## Pack Loading Priority
+
+**IMPORTANT**: Pack loading order matters! Last loaded = highest priority.
+
+- **Foundation packs** (Actions and Stuff, Essentials) load first
+- **Environmental packs** (Dynamic Lightning, Structure Generation, Cave Biomes) load in middle
+- **Content expansion packs** (Crops & Farms) load after foundation
+- **Complex system packs** (Villagers++) load near the end
+- **Override/horror packs** (Cave Dweller) load last for highest priority
+
+When adding new addons, consider their dependencies and conflicts with existing packs.
+
 ## Configuration Files Explained
 
 ### world_resource_packs.json
@@ -134,13 +168,15 @@ When players join the server with addons installed:
 
 1. Delete the pack folder from the server
 2. Remove entries from all configuration JSON files
-3. Restart the server
+3. Update this README to remove the addon from the lists
+4. Restart the server
 
 ### Updating an Addon
 
 1. Replace the pack folder with the new version
 2. Update version numbers in configuration files
-3. Restart the server
+3. Update this README with new version information
+4. Restart the server
 
 ### Cleanup
 
@@ -159,6 +195,8 @@ bloat.
   `[major, minor, patch]`
 - **Missing dependencies**: Some packs require others - check manifest.json
   dependencies
+- **Pack conflicts**: Check loading order - higher priority packs may override
+  lower priority ones
 
 ### Debugging Commands
 
@@ -183,5 +221,5 @@ kubectl exec -n game minecraft-pod-name -- cat /data/valid_known_packs.json
 
 ---
 
-_Last Updated: September 19, 2025 - Server Version: 1.21.102.1_
-
+_Last Updated: September 22, 2025 - Server Version: 1.21.102.1_
+_Total Addons: 7 (8 behavior packs, 8 resource packs)_
