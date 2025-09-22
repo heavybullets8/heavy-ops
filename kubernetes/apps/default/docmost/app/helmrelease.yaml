@@ -33,7 +33,7 @@ spec:
           app:
             image:
               repository: ghcr.io/ahinko/docmost
-              tag: 0.23.1@sha256:636babe3ab6bd65bd74fe8c59c819c3d0f53c6c989fe5287e623616b81090a24
+              tag: 0.23.2@sha256:1e2bb434e571bed16084b4530faf255873914f0d1bef43482134ed8442425e61
 
             env:
               # General
