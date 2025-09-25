@@ -30,7 +30,7 @@ spec:
         memory: 512Mi
         cpu: 200m
       limits:
-        cpu: 8000m
+        cpu: 16
         memory: 20Gi
 
     minecraftServer:
@@ -47,7 +47,7 @@ spec:
       threads: 0
       viewDistance: 20
       whitelist: true
-      whitelistUsers: BigWizWyatt,DJVelveeta69,HeavyBullets88,BlackafroTTV,MediumYoda,PwNpRo,eelllliiee8368,KeeKs026,JsmallTheFried,ElderSchnibs,HatiMoonPursuer,BigTonez00
+      whitelistUsers: BigWizWyatt,DJVelveeta69,HeavyBullets88,BlackafroTTV,MediumYoda,PwNpRo,eelllliiee8368,KeeKs026,JsmallTheFried,ElderSchnibs,HatiMoonPursuer,BigTonez00,Da Lupster,Pistol 414l,Myuh5852
 
       serviceType: LoadBalancer
       serverPort: 19132
