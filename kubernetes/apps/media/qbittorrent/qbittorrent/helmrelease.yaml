@@ -76,21 +76,6 @@ spec:
                 cpu: 10m
                 memory: 25Mi
 
-          mamapi:
-            dependsOn: app
-            image:
-              repository: ghcr.io/elforkhead/mamapi
-              tag: v2.1.2@sha256:9403628e9c0e773c04bb640743105bdbfca53423033828e13d3f5efc79370493
-            env:
-              TZ: ${TIMEZONE}
-            envFrom: &envFrom
-              - secretRef:
-                  name: qbittorrent-secret
-            resources:
-              requests:
-                cpu: 10m
-                memory: 10Mi
-
         initContainers:
           gluetun:
             image:
@@ -109,7 +94,9 @@ spec:
               VPN_SERVICE_PROVIDER: airvpn
               SERVER_COUNTRIES: "United States"
               WIREGUARD_MTU: 3418
-            envFrom: *envFrom
+            envFrom:
+              - secretRef:
+                  name: qbittorrent-secret
             probes:
               liveness:
                 enabled: true
@@ -204,10 +191,7 @@ spec:
           - path: /media/download/torrent
 
       addons:
-        type: persistentVolumeClaim
-        accessMode: ReadWriteOnce
-        storageClass: openebs-hostpath
-        size: 1Gi
+        existingClaim: qbittorrent-addons
 
       tempmedia:
         type: nfs
@@ -215,14 +199,3 @@ spec:
         path: /mnt/speed/snatch
         globalMounts:
           - path: /speed/snatch
-
-      mamapi-data:
-        type: persistentVolumeClaim
-        accessMode: ReadWriteOnce
-        storageClass: openebs-hostpath
-        size: 1Gi
-        advancedMounts:
-          qbittorrent:
-            mamapi:
-              - path: /data
-
