@@ -38,7 +38,7 @@ spec:
               MAX_PLAYERS: "20"
               ONLINE_MODE: "true"
               WHITE_LIST: "true"
-              WHITE_LIST_USERS: "BigWizWyatt,DJVelveeta69,HeavyBullets88,BlackafroTTV,MediumYoda,PwNpRo,eelllliiee8368,KeeKs026,JsmallTheFried,ElderSchnibs,HatiMoonPursuer,BigTonez00,Da Lupster,Pistol 414l,Myuh5852"
+              WHITE_LIST_USERS: "AKAJuiceBoxBoy,BigWizWyatt,DJVelveeta69,HeavyBullets88,BlackafroTTV,MediumYoda,PwNpRo,eelllliiee8368,KeeKs026,JsmallTheFried,ElderSchnibs,HatiMoonPursuer,BigTonez00,Da Lupster,Pistol 414l,Myuh5852"
               OPS: "2535421636443049,2535410585100219"
               SERVER_NAME: "FrenZone"
               SERVER_PORT: &port "19132"
