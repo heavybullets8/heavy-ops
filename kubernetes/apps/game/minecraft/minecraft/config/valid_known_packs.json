@@ -150,5 +150,21 @@
         "path": "behavior_packs/Cave-Dweller-Behavior",
         "uuid": "efbee398-641d-4fd6-bf36-430d780c4f8f",
         "version": "1.0.21"
+    },
+    {
+        "file_system": "RawPath",
+        "from_locked_template": false,
+        "from_world_template": false,
+        "path": "resource_packs/Backpacks-Plus-Resource",
+        "uuid": "386318e6-9996-471e-ae9e-7fc0bb228521",
+        "version": "1.0.16"
+    },
+    {
+        "file_system": "RawPath",
+        "from_locked_template": false,
+        "from_world_template": false,
+        "path": "behavior_packs/Backpacks-Plus-Behavior",
+        "uuid": "41309d1b-ba75-4d67-b4cb-1514d285a29c",
+        "version": "1.0.16"
     }
 ]

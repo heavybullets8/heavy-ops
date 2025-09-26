@@ -19,6 +19,7 @@ server running in Kubernetes.
 | 6          | **Crops & Farms**       | 1.1.4   | `d916218f-5397-4435-b2e7-6f573cbd2cbf` | Enhanced farming, crops, and agricultural features   |
 | 7          | **Villagers++**         | 1.0.12  | `364d3ae0-4b45-426a-9054-9441fa662903` | Advanced villager types, trading, and village systems |
 | 8          | **Cave Dweller**        | 1.0.21  | `5ab34fff-ed52-4a92-be6d-0bcbe3a0d678` | Horror creature textures, sounds, and visual effects |
+| 9          | **Backpacks Plus**      | 1.0.16  | `386318e6-9996-471e-ae9e-7fc0bb228521` | Backpack inventory expansion and storage system |
 
 ### Behavior Packs
 
@@ -31,6 +32,7 @@ server running in Kubernetes.
 | 5          | **Crops & Farms**       | 1.1.4   | `d5de6bb3-8857-47a1-9375-b239c0f95ad3` | Enhanced farming mechanics and crop behaviors        |
 | 6          | **Villagers++**         | 1.0.12  | `82b5aab3-53d9-41f5-a077-27649f6b3425` | Advanced villager AI, jobs, and interaction systems |
 | 7          | **Cave Dweller**        | 1.0.21  | `efbee398-641d-4fd6-bf36-430d780c4f8f` | Cave dweller entity AI, spawning, and game mechanics |
+| 8          | **Backpacks Plus**      | 1.0.16  | `41309d1b-ba75-4d67-b4cb-1514d285a29c` | Backpack functionality, inventory management |
 
 ## Server File Structure
 
@@ -44,6 +46,7 @@ server running in Kubernetes.
 │   ├── Crops-Farms-Behavior/          # Enhanced farming systems
 │   ├── Villagers-Plus-Plus-Behavior/  # Advanced villager systems
 │   ├── Cave-Dweller-Behavior/         # Cave dweller entity mechanics
+│   ├── Backpacks-Plus-Behavior/       # Backpack functionality and inventory management
 │   └── vanilla*/                      # Default Minecraft behavior packs
 ├── resource_packs/
 │   ├── Actions-Stuff-Resource/        # Custom textures and animations
@@ -54,6 +57,7 @@ server running in Kubernetes.
 │   ├── Crops-Farms-Resource/          # Farming textures and models
 │   ├── Villagers-Plus-Plus-Resource/  # Advanced villager visuals
 │   ├── Cave-Dweller-Resource/         # Cave dweller visuals and sounds
+│   ├── Backpacks-Plus-Resource/       # Backpack textures, models, and UI elements
 │   └── vanilla*/                      # Default Minecraft resource packs
 ├── worlds/
 │   └── level/
@@ -221,5 +225,5 @@ kubectl exec -n game minecraft-pod-name -- cat /data/valid_known_packs.json
 
 ---
 
-_Last Updated: September 22, 2025 - Server Version: 1.21.102.1_
-_Total Addons: 7 (8 behavior packs, 8 resource packs)_
+_Last Updated: September 25, 2025 - Server Version: 1.21.102.1_
+_Total Addons: 8 (9 behavior packs, 9 resource packs)_
