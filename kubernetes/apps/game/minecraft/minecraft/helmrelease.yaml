@@ -81,9 +81,9 @@ spec:
                 spec:
                   exec: *probeCommand
                   initialDelaySeconds: 10
-                  periodSeconds: 5
+                  periodSeconds: 10
                   timeoutSeconds: 5
-                  failureThreshold: 6
+                  failureThreshold: 12
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: false
