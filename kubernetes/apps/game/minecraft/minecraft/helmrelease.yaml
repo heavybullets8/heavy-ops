@@ -30,7 +30,7 @@ spec:
             env:
               TZ: ${TIMEZONE}
               UID: "1000"
-              GID: "2000"
+              GID: "3000"
               EULA: "TRUE"
               GAMEMODE: survival
               DIFFICULTY: normal
@@ -48,45 +48,20 @@ spec:
               MAX_THREADS: "0"
               TEXTUREPACK_REQUIRED: "true"
               # renovate: datasource=custom.bedrock depName=MinecraftBedrockServer versioning=loose
-              VERSION: "1.21.102.1"
+              # VERSION: "1.21.111.1"
             probes:
               liveness:
-                enabled: true
-                custom: true
-                spec:
-                  exec: &probeCommand
-                    command:
-                      - mc-monitor
-                      - status-bedrock
-                      - --host
-                      - 127.0.0.1
-                      - --port
-                      - *port
-                  initialDelaySeconds: 10
-                  periodSeconds: 10
-                  timeoutSeconds: 5
-                  failureThreshold: 3
+                enabled: false
               readiness:
-                enabled: true
-                custom: true
-                spec:
-                  exec: *probeCommand
-                  initialDelaySeconds: 10
-                  periodSeconds: 5
-                  timeoutSeconds: 5
-                  failureThreshold: 3
+                enabled: false
               startup:
-                enabled: true
-                custom: true
-                spec:
-                  exec: *probeCommand
-                  initialDelaySeconds: 10
-                  periodSeconds: 10
-                  timeoutSeconds: 5
-                  failureThreshold: 12
+                enabled: false
             securityContext:
+              capabilities:
+                drop:
+                  - ALL
+              readOnlyRootFilesystem: true
               allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: false
             resources:
               requests:
                 memory: 512Mi
@@ -97,11 +72,12 @@ spec:
 
     defaultPodOptions:
       securityContext:
-        runAsNonRoot: true
         runAsUser: 1000
-        runAsGroup: 2000
+        runAsGroup: 3000
+        runAsNonRoot: true
         fsGroup: 2000
-        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
 
     service:
       app:
@@ -133,3 +109,14 @@ spec:
           - path: /data/valid_known_packs.json
             subPath: valid_known_packs.json
             readOnly: true
+      startup-script:
+        type: configMap
+        name: minecraft-startup-script
+        defaultMode: 0775
+        globalMounts:
+          - path: /opt/bedrock-entry.sh
+            subPath: startup.sh
+            readOnly: true
+      tmp:
+        type: emptyDir
+        medium: Memory
