@@ -23,8 +23,7 @@
   "packageRules": [
     {
       "addLabels": ["renovate/minecraft"],
-      "automerge": true,
-      "automergeType": "branch",
+      "automerge": false,
       "commitMessageExtra": "({{currentVersion}} → {{newVersion}})",
       "commitMessageTopic": "Minecraft Bedrock",
       "ignoreTests": true,
