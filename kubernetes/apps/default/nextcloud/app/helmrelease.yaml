@@ -22,7 +22,7 @@ spec:
     image:
       flavor: fpm-alpine
       # renovate: datasource=docker depName=nextcloud
-      tag: 31.0.9-fpm-alpine
+      tag: 32.0.0-fpm-alpine
     nginx:
       enabled: true
 
