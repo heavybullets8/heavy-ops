@@ -15,7 +15,7 @@
       "description": ["Process Minecraft Bedrock version dependencies"],
       "managerFilePatterns": ["/(^|/)kubernetes/.+\\.ya?ml$/"],
       "matchStrings": [
-        "# renovate: datasource=custom\\.bedrock depName=(?<depName>[^\\s]+)(?:\\s+versioning=(?<versioning>[^\\s]+))?\\s*\\n[^\\n]*version:\\s*[\"']?(?<currentValue>[^\"'\\s]+)"
+        "# renovate: datasource=custom\\.bedrock depName=(?<depName>[^\\s]+)(?:\\s+versioning=(?<versioning>[^\\s]+))?\\s*\\n[^\\n]*VERSION:\\s*[\"']?(?<currentValue>[^\"'\\s]+)"
       ],
       "datasourceTemplate": "custom.bedrock"
     }
