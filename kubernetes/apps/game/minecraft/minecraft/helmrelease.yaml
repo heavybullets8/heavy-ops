@@ -130,22 +130,8 @@ spec:
         globalMounts:
           - path: /data/worlds/level/world_resource_packs.json
             subPath: world_resource_packs.json
-            readOnly: true
           - path: /data/worlds/level/world_behavior_packs.json
             subPath: world_behavior_packs.json
-            readOnly: true
-          - path: /data/valid_known_packs.json
-            subPath: valid_known_packs.json
-            readOnly: true
-      # TODO: Keep until this is reconciled https://github.com/itzg/docker-minecraft-bedrock-server/issues/560
-      startup-script:
-        type: configMap
-        name: minecraft-startup-script
-        defaultMode: 0775
-        globalMounts:
-          - path: /opt/bedrock-entry.sh
-            subPath: startup.sh
-            readOnly: true
       tmp:
         type: emptyDir
         medium: Memory

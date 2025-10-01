@@ -9,11 +9,5 @@ configMapGenerator:
     files:
       - ./addons/world_resource_packs.json
       - ./addons/world_behavior_packs.json
-      - ./addons/valid_known_packs.json
-  - name: minecraft-startup-script
-    files:
-      - ./addons/startup.sh
 generatorOptions:
   disableNameSuffixHash: true
-  annotations:
-    kustomize.toolkit.fluxcd.io/substitute: disabled

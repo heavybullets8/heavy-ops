@@ -20,6 +20,7 @@ server running in Kubernetes.
 | 7          | **Villagers++**         | 1.0.12  | `364d3ae0-4b45-426a-9054-9441fa662903` | Advanced villager types, trading, and village systems |
 | 8          | **Cave Dweller**        | 1.0.21  | `5ab34fff-ed52-4a92-be6d-0bcbe3a0d678` | Horror creature textures, sounds, and visual effects |
 | 9          | **Backpacks Plus**      | 1.0.16  | `386318e6-9996-471e-ae9e-7fc0bb228521` | Backpack inventory expansion and storage system |
+| 10         | **Sit on Everything**   | 2.1.0   | `24715d02-ed1b-444f-947b-106609767627` | Allows players to sit on various blocks and surfaces |
 
 ### Behavior Packs
 
@@ -33,6 +34,7 @@ server running in Kubernetes.
 | 6          | **Villagers++**         | 1.0.12  | `82b5aab3-53d9-41f5-a077-27649f6b3425` | Advanced villager AI, jobs, and interaction systems |
 | 7          | **Cave Dweller**        | 1.0.21  | `efbee398-641d-4fd6-bf36-430d780c4f8f` | Cave dweller entity AI, spawning, and game mechanics |
 | 8          | **Backpacks Plus**      | 1.0.16  | `41309d1b-ba75-4d67-b4cb-1514d285a29c` | Backpack functionality, inventory management |
+| 9          | **Sit on Everything**   | 2.1.0   | `d34900a3-4274-492e-918d-cffa3e9be981` | Sitting mechanics and interaction systems for blocks |
 
 ## Server File Structure
 
@@ -47,6 +49,7 @@ server running in Kubernetes.
 │   ├── Villagers-Plus-Plus-Behavior/  # Advanced villager systems
 │   ├── Cave-Dweller-Behavior/         # Cave dweller entity mechanics
 │   ├── Backpacks-Plus-Behavior/       # Backpack functionality and inventory management
+│   ├── Sit-Everything-Behavior/       # Sitting mechanics and block interaction systems
 │   └── vanilla*/                      # Default Minecraft behavior packs
 ├── resource_packs/
 │   ├── Actions-Stuff-Resource/        # Custom textures and animations
@@ -58,12 +61,12 @@ server running in Kubernetes.
 │   ├── Villagers-Plus-Plus-Resource/  # Advanced villager visuals
 │   ├── Cave-Dweller-Resource/         # Cave dweller visuals and sounds
 │   ├── Backpacks-Plus-Resource/       # Backpack textures, models, and UI elements
+│   ├── Sit-Everything-Resource/       # Sitting animations, textures, and visual effects
 │   └── vanilla*/                      # Default Minecraft resource packs
 ├── worlds/
 │   └── level/
 │       ├── world_behavior_packs.json # Behavior pack configuration
 │       └── world_resource_packs.json # Resource pack configuration
-├── valid_known_packs.json            # Server pack validation
 └── server.properties                 # Server configuration
 ```
 
@@ -108,18 +111,6 @@ Edit the configuration files in
    }
    ```
 
-3. **valid_known_packs.json** - Add entries for each pack:
-   ```json
-   {
-     "file_system": "RawPath",
-     "from_locked_template": false,
-     "from_world_template": false,
-     "path": "resource_packs/Your-Addon-Name",
-     "uuid": "your-pack-uuid",
-     "version": "major.minor.patch"
-   }
-   ```
-
 ### Step 3: Deploy Changes
 
 1. Commit and push your configuration changes to git
@@ -148,11 +139,6 @@ Tells the world which resource packs to load and their versions.
 
 Tells the world which behavior packs to load and their versions.
 
-### valid_known_packs.json
-
-Tells the server which packs are valid and where to find them. This prevents
-"unknown pack" errors.
-
 ### server.properties
 
 - `texturepack-required=true` forces clients to download resource packs
@@ -171,7 +157,7 @@ When players join the server with addons installed:
 ### Removing an Addon
 
 1. Delete the pack folder from the server
-2. Remove entries from all configuration JSON files
+2. Remove entries from world_resource_packs.json and world_behavior_packs.json
 3. Update this README to remove the addon from the lists
 4. Restart the server
 
@@ -191,10 +177,7 @@ bloat.
 
 ### Common Issues
 
-- **"Unknown pack" errors**: Check `valid_known_packs.json` has correct UUIDs
-  and paths
-- **Pack not loading**: Verify UUIDs match between manifest.json and config
-  files
+- **Pack not loading**: Verify UUIDs match between manifest.json and world config files
 - **Version mismatches**: Ensure version arrays match exactly
   `[major, minor, patch]`
 - **Missing dependencies**: Some packs require others - check manifest.json
@@ -214,7 +197,6 @@ kubectl exec -n game minecraft-pod-name -- ls -la /data/behavior_packs/
 
 # Verify configuration files
 kubectl exec -n game minecraft-pod-name -- cat /data/worlds/level/world_*.json
-kubectl exec -n game minecraft-pod-name -- cat /data/valid_known_packs.json
 ```
 
 ## Additional Resources
@@ -225,5 +207,5 @@ kubectl exec -n game minecraft-pod-name -- cat /data/valid_known_packs.json
 
 ---
 
-_Last Updated: September 25, 2025 - Server Version: 1.21.102.1_
-_Total Addons: 8 (9 behavior packs, 9 resource packs)_
+_Last Updated: September 30, 2025 - Server Version: 1.21.111.1_
+_Total Addons: 9 (9 behavior packs, 10 resource packs)_
