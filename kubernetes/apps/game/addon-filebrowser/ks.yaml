@@ -3,7 +3,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app valheim
+  name: &app addon-filebrowser
   namespace: &namespace game
 spec:
   targetNamespace: *namespace
@@ -12,11 +12,12 @@ spec:
       app.kubernetes.io/name: *app
   components:
     - ../../../../components/gatus/guarded
-    - ../../../../components/volsync
   dependsOn:
-    - name: onepassword
-      namespace: external-secrets
-  path: ./kubernetes/apps/game/valheim/app
+    - name: minecraft
+      namespace: *namespace
+    - name: valheim
+      namespace: *namespace
+  path: ./kubernetes/apps/game/addon-filebrowser/app
   prune: true
   retryInterval: 2m
   sourceRef:
@@ -29,5 +30,5 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      VOLSYNC_CAPACITY: 10Gi
+      GATUS_SUBDOMAIN: addon-filebrowser
 

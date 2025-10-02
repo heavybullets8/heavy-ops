@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &app vh-mods
+  name: &app addon-filebrowser
 spec:
   interval: 30m
   chartRef:
@@ -20,7 +20,7 @@ spec:
 
   values:
     controllers:
-      vh-mods:
+      addon-filebrowser:
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
@@ -31,7 +31,7 @@ spec:
             env:
               TZ: ${TIMEZONE}
               FB_DATABASE: /config/filebrowser.db
-              FB_ROOT: /valheim/BepInEx/plugins
+              FB_ROOT: /games
               FB_LOG: stdout
               FB_NOAUTH: true
             probes:
@@ -83,7 +83,7 @@ spec:
           nginx.ingress.kubernetes.io/auth-response-headers: Remote-User,Remote-Name,Remote-Groups,Remote-Email
           nginx.ingress.kubernetes.io/auth-snippet: proxy_set_header X-Forwarded-Method $request_method;
         hosts:
-          - host: "vh-mods.${SECRET_DOMAIN}"
+          - host: "addon-filebrowser.${SECRET_DOMAIN}"
             paths:
               - path: /
                 service:
@@ -94,5 +94,15 @@ spec:
       config:
         type: emptyDir
 
+      minecraft:
+        existingClaim: minecraft
+        globalMounts:
+          - path: /games/minecraft
+            readOnly: false
+
       valheim:
         existingClaim: valheim
+        globalMounts:
+          - path: /games/valheim
+            readOnly: false
+
