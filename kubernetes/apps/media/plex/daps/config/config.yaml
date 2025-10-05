@@ -52,14 +52,13 @@ sync_gdrive:
   token: {}
   gdrive_sa_location: /config/sa.json
   gdrive_list:
+    # =============
+    #  MM2K DRIVES
+    # =============
     # -- Collection of others (Lowest priority)
     - id: 1zWY-ORtJkOLcQChV--oHquxW3JCow1zm
       location: /config/assets/.inputs/solen2
       name: Solen2
-
-    - id: 1-WhCVwRLfV6hxyKF7W5IuzIHIYicCdAv
-      location: /config/assets/.inputs/iamspartacus2
-      name: IamSpartacus2
 
     - id: 15sNlcFZmeDox2OQJyGjVxRwtigtd82Ru
       location: /config/assets/.inputs/majorgiant2
@@ -74,6 +73,14 @@ sync_gdrive:
       location: /config/assets/.inputs/jpalenz77
       name: Jpalenz77
 
+    - id: 1Wz0S18sKOeyBURkJ1uT3RtkEmSsK1-PG
+      location: /config/assets/.inputs/wenisinmood
+      name: WenIsInMood
+
+    - id: 1ejgRXwX6opexs8oAX8CnpSpKQt7Hrf00
+      location: /config/assets/.inputs/darkkazul
+      name: Darkkazul
+
     - id: 1cqDinU27cnHf5sL5rSlfO7o_T6LSxG77
       location: /config/assets/.inputs/reitenth
       name: Reitenth
@@ -82,17 +89,17 @@ sync_gdrive:
       location: /config/assets/.inputs/theotherguy
       name: TheOtherGuy
 
-    - id: 1KJlsnMz-z2RAfNxKZp7sYP_U0SD1V6lS
+    - id: 1XXZL-TpqWqfbKBWCifN2-MRdGDbSzHTj
+      location: /config/assets/.inputs/dweagle79
+      name: Dweagle79
+
+    - id: 1Ec0PVQv_AU6S-2q6UE1Eoivfwo0DUnyS
       location: /config/assets/.inputs/minimyself
       name: MiniMyself
 
     - id: 1KJlsnMz-z2RAfNxKZp7sYP_U0SD1V6lS
       location: /config/assets/.inputs/tokenminal
       name: TokenMinal
-
-    - id: 1hEY9qEdXVDzIbnQ4z9Vpo0SVXXuZBZR-
-      location: /config/assets/.inputs/mareau
-      name: Mareau
 
     # + Homemade (Medium priority)
     - id: 1G77TLQvgs_R7HdMWkMcwHL6vd_96cMp7
@@ -115,7 +122,7 @@ sync_gdrive:
       location: /config/assets/.inputs/lion
       name: LionCityGaming
 
-    - id: 1aRngLdC9yO93gvSrTI2LQ_I9BSoGD-7o
+    - id: 1HjwMWfI6XpQVYH36VBzYiJA4UWfoqcQ9
       location: /config/assets/.inputs/iamspartacus
       name: IamSpartacus
 
@@ -136,6 +143,57 @@ sync_gdrive:
       location: /config/assets/.inputs/Drazz
       name: Drazzilb
 
+    # =============
+    #  CL2K DRIVES
+    # =============
+    - id: 179QKyeP3avZvC_t4Fvk2Mm1nfRyuKvoc
+      location: /config/assets/.inputs/iamspartacus_cl2k
+      name: IamSpartacus_CL2K
+
+    - id: 1R4tDkZVyG7iEbQ4DNbUPiPGfslPkcWmU
+      location: /config/assets/.inputs/dweagle79_cl2k
+      name: Dweagle79_CL2K
+
+    - id: 1X1E8ktIoAXBwuTTImltizEH5_XwBPoz3
+      location: /config/assets/.inputs/darkkazul_cl2k
+      name: Darkkazul_CL2K
+
+    - id: 1l-cuRGy1JDpkmDrBWz46yr_xlT1CWNvQ
+      location: /config/assets/.inputs/confused_cl2k
+      name: Confused_CL2K
+
+    - id: 1Jr8oFEyLvSREHac9l1yRyaw2XCd8OXc7
+      location: /config/assets/.inputs/wenisinmood_cl2k
+      name: WenIsInMood_CL2K
+
+    - id: 1cEIuJRr8AZcthyVWfNn2skxog6R_MPrW
+      location: /config/assets/.inputs/bz_cl2k
+      name: BZ_CL2K
+
+    - id: 1gJ_CXigGfZDJV5C3ZTaTz_yycgkROTJF
+      location: /config/assets/.inputs/lioncitygaming_cl2k
+      name: LionCityGaming_CL2K
+
+    - id: 1FyjcjsP5Yb0w3u6QZHbjJ51j5zTT8lA5
+      location: /config/assets/.inputs/tokenminal_cl2k
+      name: TokenMinal_CL2K
+
+    - id: 1kLvAjMx3jcJbRKjuMYTrUaA4hR4N8wfh
+      location: /config/assets/.inputs/jpalenz77_cl2k
+      name: Jpalenz77_CL2K
+
+    - id: 1MNpR2fVRJt6bW5NIBPR43f6GvINcrw_o
+      location: /config/assets/.inputs/minimyself_cl2k
+      name: MiniMyself_CL2K
+
+    - id: 1sGiSVkabE6NtLuQfoKYEwbwosnRGMQAF
+      location: /config/assets/.inputs/wenisinmood2_cl2k
+      name: WenIsInMood2_CL2K
+
+    - id: 1TDk1DCdYK6RFl-dg-HnNcnUV3MZ3MNwC
+      location: /config/assets/.inputs/mario_cl2k
+      name: Mario_CL2K
+
 # Rename posters to match what Kometa expects
 # Also runs "sync_posters", and "border_replacerr", meaning we only need to run this script
 poster_renamerr:
@@ -149,18 +207,22 @@ poster_renamerr:
   incremental_border_replacerr: false
 
   source_dirs:
+    # =============
+    #  MM2K DRIVES
+    # =============
     # -- Collection of others (Lowest priority)
     - /config/assets/.inputs/solen2
-    - /config/assets/.inputs/iamspartacus2
     - /config/assets/.inputs/majorgiant2
     - /config/assets/.inputs/chrisdc
     # - Homemade (Low priority)
-    - /config/assets/.inputs/tokenminal
-    - /config/assets/.inputs/minimyself
-    - /config/assets/.inputs/theotherguy
-    - /config/assets/.inputs/reitenth
     - /config/assets/.inputs/jpalenz77
-    - /config/assets/.inputs/mareau
+    - /config/assets/.inputs/wenisinmood
+    - /config/assets/.inputs/darkkazul
+    - /config/assets/.inputs/reitenth
+    - /config/assets/.inputs/theotherguy
+    - /config/assets/.inputs/dweagle79
+    - /config/assets/.inputs/minimyself
+    - /config/assets/.inputs/tokenminal
     # + Homemade (Medium priority)
     - /config/assets/.inputs/quafley
     - /config/assets/.inputs/stupifierr
@@ -173,6 +235,24 @@ poster_renamerr:
     - /config/assets/.inputs/zarox
     # ++ Drazzilb drive (High priority)
     - /config/assets/.inputs/Drazz
+    # =============
+    #  CL2K DRIVES
+    # =============
+    # - CL2K (Lower within CL2K)
+    - /config/assets/.inputs/mario_cl2k
+    - /config/assets/.inputs/wenisinmood2_cl2k
+    # + CL2K (Medium within CL2K)
+    - /config/assets/.inputs/minimyself_cl2k
+    - /config/assets/.inputs/jpalenz77_cl2k
+    - /config/assets/.inputs/tokenminal_cl2k
+    - /config/assets/.inputs/lioncitygaming_cl2k
+    - /config/assets/.inputs/bz_cl2k
+    - /config/assets/.inputs/wenisinmood_cl2k
+    - /config/assets/.inputs/confused_cl2k
+    - /config/assets/.inputs/darkkazul_cl2k
+    # ++ CL2K (Highest within CL2K)
+    - /config/assets/.inputs/dweagle79_cl2k
+    - /config/assets/.inputs/iamspartacus_cl2k
   destination_dir: /config/assets/posters
   instances:
     - radarr
