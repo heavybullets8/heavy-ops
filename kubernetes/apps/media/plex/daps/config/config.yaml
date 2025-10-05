@@ -57,91 +57,91 @@ sync_gdrive:
     # =============
     # -- Collection of others (Lowest priority)
     - id: 1zWY-ORtJkOLcQChV--oHquxW3JCow1zm
-      location: /config/assets/.inputs/solen2
-      name: Solen2
+      location: /config/assets/.inputs/solen2_mm2k
+      name: Solen2_MM2K
 
     - id: 15sNlcFZmeDox2OQJyGjVxRwtigtd82Ru
-      location: /config/assets/.inputs/majorgiant2
-      name: MajorGiant2
+      location: /config/assets/.inputs/majorgiant2_mm2k
+      name: MajorGiant2_MM2K
 
     - id: 1oBzEOXXrTHGq6sUY_4RMtzMTt4VHyeJp
-      location: /config/assets/.inputs/chrisdc
-      name: ChrisDC
+      location: /config/assets/.inputs/chrisdc_mm2k
+      name: ChrisDC_MM2K
 
     # - Homemade (Low priority)
     - id: 1qBC7p9K4zur5dOCf3F6VTyUROVvHQoSb
-      location: /config/assets/.inputs/jpalenz77
-      name: Jpalenz77
+      location: /config/assets/.inputs/jpalenz77_mm2k
+      name: Jpalenz77_MM2K
 
     - id: 1Wz0S18sKOeyBURkJ1uT3RtkEmSsK1-PG
-      location: /config/assets/.inputs/wenisinmood
-      name: WenIsInMood
+      location: /config/assets/.inputs/wenisinmood_mm2k
+      name: WenIsInMood_MM2K
 
     - id: 1ejgRXwX6opexs8oAX8CnpSpKQt7Hrf00
-      location: /config/assets/.inputs/darkkazul
-      name: Darkkazul
+      location: /config/assets/.inputs/darkkazul_mm2k
+      name: Darkkazul_MM2K
 
     - id: 1cqDinU27cnHf5sL5rSlfO7o_T6LSxG77
-      location: /config/assets/.inputs/reitenth
-      name: Reitenth
+      location: /config/assets/.inputs/reitenth_mm2k
+      name: Reitenth_MM2K
 
     - id: 1TYVIGKpSwhipLyVQQn_OJHTobM6KaokB
-      location: /config/assets/.inputs/theotherguy
-      name: TheOtherGuy
+      location: /config/assets/.inputs/theotherguy_mm2k
+      name: TheOtherGuy_MM2K
 
     - id: 1XXZL-TpqWqfbKBWCifN2-MRdGDbSzHTj
-      location: /config/assets/.inputs/dweagle79
-      name: Dweagle79
+      location: /config/assets/.inputs/dweagle79_mm2k
+      name: Dweagle79_MM2K
 
     - id: 1Ec0PVQv_AU6S-2q6UE1Eoivfwo0DUnyS
-      location: /config/assets/.inputs/minimyself
-      name: MiniMyself
+      location: /config/assets/.inputs/minimyself_mm2k
+      name: MiniMyself_MM2K
 
     - id: 1KJlsnMz-z2RAfNxKZp7sYP_U0SD1V6lS
-      location: /config/assets/.inputs/tokenminal
-      name: TokenMinal
+      location: /config/assets/.inputs/tokenminal_mm2k
+      name: TokenMinal_MM2K
 
     # + Homemade (Medium priority)
     - id: 1G77TLQvgs_R7HdMWkMcwHL6vd_96cMp7
-      location: /config/assets/.inputs/quafley
-      name: Quafley
+      location: /config/assets/.inputs/quafley_mm2k
+      name: Quafley_MM2K
 
     - id: 1bBbK_3JeXCy3ElqTwkFHaNoNxYgqtLug
-      location: /config/assets/.inputs/stupifierr
-      name: Stupifier
+      location: /config/assets/.inputs/stupifier_mm2k
+      name: Stupifier_MM2K
 
     - id: 1KnwxzwBUQzQyKF1e24q_wlFqcER9xYHM
-      location: /config/assets/.inputs/sahara
-      name: Sahara
+      location: /config/assets/.inputs/sahara_mm2k
+      name: Sahara_MM2K
 
     - id: 1ZfvUgN0qz4lJYkC_iMRjhH-fZ0rDN_Yu
-      location: /config/assets/.inputs/majorgiant
-      name: MajorGiant
+      location: /config/assets/.inputs/majorgiant_mm2k
+      name: MajorGiant_MM2K
 
     - id: 1alseEnUBjH6CjXh77b5L4R-ZDGdtOMFr
-      location: /config/assets/.inputs/lion
-      name: LionCityGaming
+      location: /config/assets/.inputs/lioncitygaming_mm2k
+      name: LionCityGaming_MM2K
 
     - id: 1HjwMWfI6XpQVYH36VBzYiJA4UWfoqcQ9
-      location: /config/assets/.inputs/iamspartacus
-      name: IamSpartacus
+      location: /config/assets/.inputs/iamspartacus_mm2k
+      name: IamSpartacus_MM2K
 
     - id: 1Xg9Huh7THDbmjeanW0KyRbEm6mGn_jm8
-      location: /config/assets/.inputs/bz
-      name: BZ
+      location: /config/assets/.inputs/bz_mm2k
+      name: BZ_MM2K
 
     - id: 1YEuS1pulJAfhKm4L8U9z5-EMtGl-d2s7
-      location: /config/assets/.inputs/solen
-      name: Solen
+      location: /config/assets/.inputs/solen_mm2k
+      name: Solen_MM2K
 
     - id: 1wOhY88zc0wdQU-QQmhm4FzHL9QiCQnpu
-      location: /config/assets/.inputs/zarox
-      name: Zarox
+      location: /config/assets/.inputs/zarox_mm2k
+      name: Zarox_MM2K
 
     # ++ Drazzilb drive (High priority)
     - id: 1fKRkx4Yine5cqkH411FmShdd-wHRMBIF
-      location: /config/assets/.inputs/Drazz
-      name: Drazzilb
+      location: /config/assets/.inputs/drazzilb_mm2k
+      name: Drazzilb_MM2K
 
     # =============
     #  CL2K DRIVES
@@ -211,30 +211,30 @@ poster_renamerr:
     #  MM2K DRIVES
     # =============
     # -- Collection of others (Lowest priority)
-    - /config/assets/.inputs/solen2
-    - /config/assets/.inputs/majorgiant2
-    - /config/assets/.inputs/chrisdc
+    - /config/assets/.inputs/solen2_mm2k
+    - /config/assets/.inputs/majorgiant2_mm2k
+    - /config/assets/.inputs/chrisdc_mm2k
     # - Homemade (Low priority)
-    - /config/assets/.inputs/jpalenz77
-    - /config/assets/.inputs/wenisinmood
-    - /config/assets/.inputs/darkkazul
-    - /config/assets/.inputs/reitenth
-    - /config/assets/.inputs/theotherguy
-    - /config/assets/.inputs/dweagle79
-    - /config/assets/.inputs/minimyself
-    - /config/assets/.inputs/tokenminal
+    - /config/assets/.inputs/jpalenz77_mm2k
+    - /config/assets/.inputs/wenisinmood_mm2k
+    - /config/assets/.inputs/darkkazul_mm2k
+    - /config/assets/.inputs/reitenth_mm2k
+    - /config/assets/.inputs/theotherguy_mm2k
+    - /config/assets/.inputs/dweagle79_mm2k
+    - /config/assets/.inputs/minimyself_mm2k
+    - /config/assets/.inputs/tokenminal_mm2k
     # + Homemade (Medium priority)
-    - /config/assets/.inputs/quafley
-    - /config/assets/.inputs/stupifierr
-    - /config/assets/.inputs/sahara
-    - /config/assets/.inputs/majorgiant
-    - /config/assets/.inputs/lion
-    - /config/assets/.inputs/iamspartacus
-    - /config/assets/.inputs/bz
-    - /config/assets/.inputs/solen
-    - /config/assets/.inputs/zarox
+    - /config/assets/.inputs/quafley_mm2k
+    - /config/assets/.inputs/stupifier_mm2k
+    - /config/assets/.inputs/sahara_mm2k
+    - /config/assets/.inputs/majorgiant_mm2k
+    - /config/assets/.inputs/lioncitygaming_mm2k
+    - /config/assets/.inputs/iamspartacus_mm2k
+    - /config/assets/.inputs/bz_mm2k
+    - /config/assets/.inputs/solen_mm2k
+    - /config/assets/.inputs/zarox_mm2k
     # ++ Drazzilb drive (High priority)
-    - /config/assets/.inputs/Drazz
+    - /config/assets/.inputs/drazzilb_mm2k
     # =============
     #  CL2K DRIVES
     # =============
