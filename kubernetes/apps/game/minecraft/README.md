@@ -11,7 +11,7 @@ server running in Kubernetes.
 
 | Load Order | Addon Name              | Version | UUID                                   | Description                                           |
 | ---------- | ----------------------- | ------- | -------------------------------------- | ----------------------------------------------------- |
-| 1          | **Actions and Stuff**   | 1.1.13  | `2cf066eb-1254-4b7d-affb-80fe3216b18c` | Custom textures, animations, and visual improvements |
+| 1          | **Actions and Stuff**   | 1.1.15  | `2cf066eb-1254-4b7d-affb-80fe3216b18c` | Custom textures, animations, and visual improvements |
 | 2          | **Dynamic Lightning**   | 3.4.0   | `f94c7e73-0928-4acf-904f-70920c796729` | Torch helmet lighting effects and visual enhancements |
 | 3          | **Structure Generation** | 1.1.5   | `68ac942e-3470-4d14-a430-d12ceb49e93f` | Enhanced structure generation and world features     |
 | 4          | **Cave Biomes**         | 1.0.7   | `67d777ab-847c-45ca-8ba8-91a9fd92171f` | New cave biome types and underground environments    |
@@ -24,17 +24,17 @@ server running in Kubernetes.
 
 ### Behavior Packs
 
-| Load Order | Addon Name              | Version | UUID                                   | Description                                           |
-| ---------- | ----------------------- | ------- | -------------------------------------- | ----------------------------------------------------- |
-| 1          | **Dynamic Lightning**   | 3.4.0   | `657087d5-3a90-4ea6-b7dc-10ae07e31ce5` | Torch mechanics, offhand placement, and functionality |
-| 2          | **Structure Generation** | 1.1.5   | `50ce70da-8091-4ef9-8c71-539c3d7d8654` | Custom structure spawning and world generation logic |
-| 3          | **Cave Biomes**         | 1.0.7   | `72924636-47ee-43f0-a36b-03efa792756f` | Cave biome generation and underground mechanics      |
-| 4          | **Essentials**          | 1.0.24  | `47a58c9a-1d18-4761-9323-35a01254ef67` | Core gameplay mechanics and utility functions        |
-| 5          | **Crops & Farms**       | 1.1.4   | `d5de6bb3-8857-47a1-9375-b239c0f95ad3` | Enhanced farming mechanics and crop behaviors        |
-| 6          | **Villagers++**         | 1.0.12  | `82b5aab3-53d9-41f5-a077-27649f6b3425` | Advanced villager AI, jobs, and interaction systems |
-| 7          | **Cave Dweller**        | 1.0.21  | `efbee398-641d-4fd6-bf36-430d780c4f8f` | Cave dweller entity AI, spawning, and game mechanics |
-| 8          | **Backpacks Plus**      | 1.0.16  | `41309d1b-ba75-4d67-b4cb-1514d285a29c` | Backpack functionality, inventory management |
-| 9          | **Sit on Everything**   | 2.1.0   | `d34900a3-4274-492e-918d-cffa3e9be981` | Sitting mechanics and interaction systems for blocks |
+| Load Order | Addon Name               | Version | UUID                                   | Description                                           |
+| ---------- | ------------------------ | ------- | -------------------------------------- | ----------------------------------------------------- |
+| 1          | **Dynamic Lightning**    | 3.4.0   | `657087d5-3a90-4ea6-b7dc-10ae07e31ce5` | Torch mechanics, offhand placement, and functionality |
+| 2          | **Structure Generation** | 1.1.5   | `50ce70da-8091-4ef9-8c71-539c3d7d8654` | Custom structure spawning and world generation logic  |
+| 3          | **Cave Biomes**          | 1.0.7   | `72924636-47ee-43f0-a36b-03efa792756f` | Cave biome generation and underground mechanics       |
+| 4          | **Essentials**           | 1.0.24  | `47a58c9a-1d18-4761-9323-35a01254ef67` | Core gameplay mechanics and utility functions         |
+| 5          | **Crops & Farms**        | 1.1.4   | `d5de6bb3-8857-47a1-9375-b239c0f95ad3` | Enhanced farming mechanics and crop behaviors         |
+| 6          | **Villagers++**          | 1.0.12  | `82b5aab3-53d9-41f5-a077-27649f6b3425` | Advanced villager AI, jobs, and interaction systems   |
+| 7          | **Cave Dweller**         | 1.0.21  | `efbee398-641d-4fd6-bf36-430d780c4f8f` | Cave dweller entity AI, spawning, and game mechanics  |
+| 8          | **Backpacks Plus**       | 1.0.16  | `41309d1b-ba75-4d67-b4cb-1514d285a29c` | Backpack functionality, inventory management          |
+| 9          | **Sit on Everything**    | 2.1.0   | `d34900a3-4274-492e-918d-cffa3e9be981` | Sitting mechanics and interaction systems for blocks  |
 
 ## Server File Structure
 
@@ -122,12 +122,14 @@ Edit the configuration files in
 **IMPORTANT**: Pack loading order matters! Last loaded = highest priority.
 
 - **Foundation packs** (Actions and Stuff, Essentials) load first
-- **Environmental packs** (Dynamic Lightning, Structure Generation, Cave Biomes) load in middle
+- **Environmental packs** (Dynamic Lightning, Structure Generation, Cave Biomes)
+  load in middle
 - **Content expansion packs** (Crops & Farms) load after foundation
 - **Complex system packs** (Villagers++) load near the end
 - **Override/horror packs** (Cave Dweller) load last for highest priority
 
-When adding new addons, consider their dependencies and conflicts with existing packs.
+When adding new addons, consider their dependencies and conflicts with existing
+packs.
 
 ## Configuration Files Explained
 
@@ -177,7 +179,8 @@ bloat.
 
 ### Common Issues
 
-- **Pack not loading**: Verify UUIDs match between manifest.json and world config files
+- **Pack not loading**: Verify UUIDs match between manifest.json and world
+  config files
 - **Version mismatches**: Ensure version arrays match exactly
   `[major, minor, patch]`
 - **Missing dependencies**: Some packs require others - check manifest.json
@@ -207,5 +210,6 @@ kubectl exec -n game minecraft-pod-name -- cat /data/worlds/level/world_*.json
 
 ---
 
-_Last Updated: September 30, 2025 - Server Version: 1.21.111.1_
+_Last Updated: October 6, 2025 - Server Version: 1.21.111.1_
 _Total Addons: 9 (9 behavior packs, 10 resource packs)_
+
