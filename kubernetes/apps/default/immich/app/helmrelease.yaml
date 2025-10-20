@@ -65,7 +65,10 @@ spec:
             dependsOn: immich-server
             image:
               repository: ghcr.io/immich-app/immich-machine-learning
-              tag: v2.1.0
+              tag: v2.1.0-cuda
+            resources:
+              limits:
+                nvidia.com/gpu: 1
 
         defaultContainerOptions:
           env:
