@@ -126,7 +126,6 @@ spec:
           - path: /usr/src/app/upload
 
       cache:
-        type: emptyDir
-        medium: Memory
+        existingClaim: immich-cache
         globalMounts:
           - path: /cache
