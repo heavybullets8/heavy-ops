@@ -12,5 +12,3 @@ spec:
   ref:
     tag: 0.18.0
   url: oci://ghcr.io/home-operations/charts-mirror/nvidia-device-plugin
-  verify:
-    provider: cosign
