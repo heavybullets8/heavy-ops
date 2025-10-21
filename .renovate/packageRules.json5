@@ -4,7 +4,7 @@
     {
       "description": ["Custom schedule for frequently updated container digests"],
       "matchDataSources": ["docker"],
-      "matchPackageNames": ["/postgresql/"],
+      "matchPackageNames": ["/postgresql/", "/vectorchord/"],
       "matchUpdateTypes": ["digest"],
       "schedule": ["every 3 months on the first day of the month"]
     }

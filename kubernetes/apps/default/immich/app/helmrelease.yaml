@@ -80,8 +80,6 @@ spec:
             # Redis
             REDIS_HOSTNAME: dragonfly.database.svc.cluster.local
             REDIS_DBINDEX: "2"
-            # Database
-            DB_VECTOR_EXTENSION: pgvector
           envFrom:
             - secretRef:
                 name: immich-secret

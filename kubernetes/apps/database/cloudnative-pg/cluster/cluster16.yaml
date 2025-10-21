@@ -5,7 +5,7 @@ kind: Cluster
 metadata:
   name: postgres16
 spec:
-  imageName: ghcr.io/cloudnative-pg/postgresql:17.5@sha256:a584c18aa3d292b5bec7d0bce76b26edcd0a53555adbf607d14b145191a7b7fd
+  imageName: ghcr.io/tensorchord/cloudnative-vectorchord:17.6-0.5.3@sha256:bc5fbeba82a75de3f25d06b1dda8a7de42711ab2a0adcfca140d8344bf4d1b62
   instances: 3
   primaryUpdateStrategy: unsupervised
   storage:
@@ -19,6 +19,8 @@ spec:
       max_connections: "400"
       shared_buffers: 512MB
       huge_pages: "on"
+    shared_preload_libraries:
+      - "vchord.so"
   nodeMaintenanceWindow:
     inProgress: false
     reusePVC: true
