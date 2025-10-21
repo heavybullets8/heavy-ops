@@ -59,6 +59,12 @@ spec:
                   periodSeconds: 5
                   successThreshold: 1
                   timeoutSeconds: 1
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 5Gi
 
           immich-ml:
             nameOverride: immich-ml
@@ -67,7 +73,11 @@ spec:
               repository: ghcr.io/immich-app/immich-machine-learning
               tag: v2.1.0-cuda
             resources:
+              requests:
+                cpu: 100m
+                memory: 5Gi # Due to pre-loading models
               limits:
+                memory: 20Gi
                 nvidia.com/gpu: 1
 
         defaultContainerOptions:
@@ -87,12 +97,6 @@ spec:
           envFrom:
             - secretRef:
                 name: immich-secret
-          resources:
-            requests:
-              cpu: 100m
-              memory: 256Mi
-            limits:
-              memory: 12Gi
 
     service:
       app:
