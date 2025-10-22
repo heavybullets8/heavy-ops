@@ -186,6 +186,10 @@ sync_gdrive:
       location: /config/assets/.inputs/minimyself_cl2k
       name: MiniMyself_CL2K
 
+    - id: 1jToV8ee8RhqnG9DhAPYKufEJpb8Ru_7r
+      location: /config/assets/.inputs/berserker_cl2k
+      name: BerserkeR_CL2K
+
     - id: 1sGiSVkabE6NtLuQfoKYEwbwosnRGMQAF
       location: /config/assets/.inputs/wenisinmood2_cl2k
       name: WenIsInMood2_CL2K
@@ -242,6 +246,7 @@ poster_renamerr:
     - /config/assets/.inputs/mario_cl2k
     - /config/assets/.inputs/wenisinmood2_cl2k
     # + CL2K (Medium within CL2K)
+    - /config/assets/.inputs/berserker_cl2k
     - /config/assets/.inputs/minimyself_cl2k
     - /config/assets/.inputs/jpalenz77_cl2k
     - /config/assets/.inputs/tokenminal_cl2k
