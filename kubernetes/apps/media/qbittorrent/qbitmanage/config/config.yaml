@@ -95,8 +95,6 @@ share_limits:
     max_ratio: 4
 
 recyclebin:
-  # TODO: Re-enable later
-  # Need disabled for now so the 'snatches' category thats on ssds, doesnt get transfered to the HDD array
   enabled: false
   empty_after_x_days: 3
   save_torrents: false
