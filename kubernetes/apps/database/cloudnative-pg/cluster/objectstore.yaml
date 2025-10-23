@@ -1,0 +1,23 @@
+---
+# yaml-language-server: $schema=https://schemas.hydaz.com/barmancloud.cnpg.io/objectstore_v1.json
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+metadata:
+  name: postgres-objectstore
+spec:
+  configuration:
+    destinationPath: s3://cloudnative-pg/
+    endpointURL: "${SECRET_R2_HOST}"
+    s3Credentials:
+      accessKeyId:
+        name: cloudnative-pg-secret
+        key: aws-access-key-id
+      secretAccessKey:
+        name: cloudnative-pg-secret
+        key: aws-secret-access-key
+    data:
+      compression: bzip2
+    wal:
+      compression: bzip2
+      maxParallel: 8
+  retentionPolicy: 30d
