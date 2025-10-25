@@ -46,13 +46,22 @@ spec:
                   httpGet:
                     path: /health
                     port: &port 8096
-                  initialDelaySeconds: 0
+                  initialDelaySeconds: 30
                   periodSeconds: 10
-                  timeoutSeconds: 1
-                  failureThreshold: 3
+                  timeoutSeconds: 10
+                  failureThreshold: 5
               readiness: *probes
               startup:
-                enabled: false
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: 8096
+                  initialDelaySeconds: 0
+                  periodSeconds: 5
+                  timeoutSeconds: 10
+                  failureThreshold: 60
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
