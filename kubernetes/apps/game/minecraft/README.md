@@ -11,7 +11,7 @@ server running in Kubernetes.
 
 | Load Order | Addon Name              | Version | UUID                                   | Description                                           |
 | ---------- | ----------------------- | ------- | -------------------------------------- | ----------------------------------------------------- |
-| 1          | **Actions and Stuff**   | 1.1.15  | `2cf066eb-1254-4b7d-affb-80fe3216b18c` | Custom textures, animations, and visual improvements |
+| 1          | **Actions and Stuff**   | 1.1.17  | `2cf066eb-1254-4b7d-affb-80fe3216b18c` | Custom textures, animations, and visual improvements |
 | 2          | **Dynamic Lightning**   | 3.4.0   | `f94c7e73-0928-4acf-904f-70920c796729` | Torch helmet lighting effects and visual enhancements |
 | 3          | **Structure Generation** | 1.1.5   | `68ac942e-3470-4d14-a430-d12ceb49e93f` | Enhanced structure generation and world features     |
 | 4          | **Cave Biomes**         | 1.0.7   | `67d777ab-847c-45ca-8ba8-91a9fd92171f` | New cave biome types and underground environments    |
