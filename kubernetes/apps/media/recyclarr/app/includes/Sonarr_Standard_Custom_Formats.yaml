@@ -106,7 +106,6 @@ custom_formats:
 
       # Optional Streaming Services
       - 43b3cf48cb385cd3eac608ee6bca7f09 # UHD Streaming Boost
-      - d2d299244a92b8a52d4921ce3897a256 # UHD Streaming Cut
 
       # Series Versions
       - 3a4127d8aa781b44120d907f2cd62627 # Hybrid
