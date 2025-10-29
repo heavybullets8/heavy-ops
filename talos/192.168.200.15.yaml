@@ -89,11 +89,6 @@ machine:
     net.ipv4.tcp_mtu_probing: "1"
     user.max_user_namespaces: "11255"
     vm.nr_hugepages: "3072"
-  sysfs:
-    # ZFS ARC Max (89% of total RAM)
-    module.zfs.parameters.zfs_arc_max: "179827979589"
-    # ZFS ARC Free (11% of total RAM)
-    module.zfs.parameters.zfs_arc_sys_free: "22225824443"
   features:
     rbac: true
     stableHostname: true
