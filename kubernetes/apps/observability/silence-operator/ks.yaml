@@ -3,12 +3,12 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: grafana-operator
+  name: silence-operator
   namespace: &namespace observability
 spec:
   targetNamespace: *namespace
   interval: 1h
-  path: ./kubernetes/apps/observability/grafana/app
+  path: ./kubernetes/apps/observability/silence-operator/app
   prune: true
   sourceRef:
     kind: GitRepository
@@ -20,18 +20,14 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: grafana-instance
+  name: silence-operator-silences
   namespace: &namespace observability
 spec:
   targetNamespace: *namespace
   dependsOn:
-    - name: grafana-operator
-    - name: cloudnative-pg-cluster
-      namespace: database
-    - name: onepassword
-      namespace: external-secrets
+    - name: silence-operator
   interval: 1h
-  path: ./kubernetes/apps/observability/grafana/instance
+  path: ./kubernetes/apps/observability/silence-operator/silences
   prune: true
   sourceRef:
     kind: GitRepository

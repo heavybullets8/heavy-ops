@@ -1,0 +1,93 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafana_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: Grafana
+metadata:
+  name: grafana
+  labels:
+    grafana.internal/instance: grafana
+spec:
+  config:
+    analytics:
+      check_for_updates: "false"
+      check_for_plugin_updates: "false"
+      feedback_links_enabled: "false"
+      reporting_enabled: "false"
+    auth:
+      disable_login_form: "false"
+    auth.anonymous:
+      enabled: "false"
+    auth.generic_oauth:
+      enabled: "true"
+      auto_login: "true"
+      icon: signin
+      scopes: openid profile email groups
+      name: Authelia
+      empty_scopes: "false"
+      login_attribute_path: preferred_username
+      groups_attribute_path: groups
+      name_attribute_path: name
+      api_url: https://auth.${SECRET_DOMAIN}/api/oidc/userinfo
+      auth_url: https://auth.${SECRET_DOMAIN}/api/oidc/authorization
+      token_url: https://auth.${SECRET_DOMAIN}/api/oidc/token
+      use_pkce: "true"
+      role_attribute_path: contains(groups, 'admins') && 'Admin' || 'Viewer'
+      allow_assign_grafana_admin: "true"
+    database:
+      type: postgres
+      host: postgres16-rw.database.svc.cluster.local:5432
+      name: grafana
+      ssl_mode: disable
+    log:
+      mode: console
+    metrics:
+      enabled: "true"
+    news:
+      news_feed_enabled: "false"
+    plugins:
+      plugin_admin_enabled: "false"
+    security:
+      angular_support_enabled: "true"
+    server:
+      enable_gzip: "true"
+      root_url: https://grafana.${SECRET_DOMAIN}
+  deployment:
+    spec:
+      strategy:
+        type: Recreate
+      template:
+        spec:
+          initContainers:
+            - name: 01-init-db
+              image: ghcr.io/home-operations/postgres-init:17
+              envFrom:
+                - secretRef:
+                    name: grafana-secret
+          containers:
+            - name: grafana
+              envFrom:
+                - secretRef:
+                    name: grafana-secret
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities: {drop: ["ALL"]}
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            fsGroupChangePolicy: OnRootMismatch
+          volumes:
+            - name: grafana-data
+              persistentVolumeClaim:
+                claimName: grafana-pvc
+  persistentVolumeClaim:
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: openebs-hostpath
+  disableDefaultSecurityContext: All
