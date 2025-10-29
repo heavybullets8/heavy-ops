@@ -11,14 +11,6 @@ spec:
     name: app-template
   driftDetection:
     mode: enabled
-  install:
-    remediation:
-      retries: 3
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      strategy: rollback
-      retries: 3
 
   values:
     controllers:

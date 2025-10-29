@@ -11,14 +11,9 @@ spec:
     name: loki
   install:
     crds: Skip
-    remediation:
-      retries: 3
   upgrade:
-    cleanupOnFail: true
     crds: Skip
-    remediation:
-      strategy: rollback
-      retries: 3
+
   dependsOn:
     - name: openebs
       namespace: openebs-system

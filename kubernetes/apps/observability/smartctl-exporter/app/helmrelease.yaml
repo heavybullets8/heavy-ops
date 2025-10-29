@@ -9,17 +9,10 @@ spec:
   chartRef:
     kind: OCIRepository
     name: smartctl-exporter
-  install:
-    remediation:
-      retries: 3
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      strategy: rollback
-      retries: 3
   dependsOn:
     - name: kube-prometheus-stack
       namespace: observability
+
   values:
     fullnameOverride: *app
     config:
