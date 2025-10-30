@@ -10,5 +10,6 @@ resources:
   - ./coredns/ks.yaml
   - ./generic-device-plugin/ks.yaml
   - ./metrics-server/ks.yaml
+  # - ./nvidia-dra-driver/ks.yaml  # Disabled: Does not work on Talos yet (see helmrelease.yaml for details)
   - ./nvidia-plugin/ks.yaml
   - ./reloader/ks.yaml

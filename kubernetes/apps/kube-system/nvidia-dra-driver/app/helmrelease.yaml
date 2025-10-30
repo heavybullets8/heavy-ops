@@ -1,0 +1,69 @@
+---
+# ⚠️ WARNING: Does not work on Talos yet
+#
+# The DRA driver can't find NVIDIA libraries on Talos. The init container looks for
+# nvidia-smi in /usr/bin but Talos extensions put it in /usr/local/bin. Even after
+# bypassing the init check, the main containers fail with "error locating libnvidia-ml.so.1"
+# because Talos's extension-based setup doesn't match what the chart expects.
+#
+# Tried adding runtimeClassName: nvidia, mounting additional paths, and removing the
+# init container - none of it worked. The chart v25.8.0 just isn't compatible with
+# how Talos handles GPU drivers through system extensions.
+#
+# Keeping this config as a placeholder for when either NVIDIA updates the chart or
+# Talos changes how extensions work. Until then, stick with nvidia-device-plugin.
+#
+# Tested on: Talos v1.11.3, NVIDIA 570.172.08
+#
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nvidia-dra-driver
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: nvidia-dra-driver-gpu
+      version: 25.8.0
+      sourceRef:
+        kind: HelmRepository
+        name: nvidia
+      interval: 30m
+
+  values:
+    # Path to nvidia-cdi-hook on Talos nodes
+    nvidiaCDIHookPath: /usr/local/bin/nvidia-cdi-hook
+
+    # TODO: Enable when Talos support is added (not just when GPU subsystem is stable)
+    # See warning at top of file for why this doesn't work on Talos
+    resources:
+      gpus:
+        enabled: false
+      computeDomains:
+        enabled: false
+
+    controller:
+      priorityClassName: system-node-critical
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: Exists
+
+    # Kubelet plugin configuration
+    kubeletPlugin:
+      priorityClassName: system-node-critical
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: extensions.talos.dev/nvidia-open-gpu-kernel-modules-production
+                    operator: Exists
