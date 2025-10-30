@@ -79,10 +79,6 @@ spec:
             IMMICH_LOG_LEVEL: verbose
             IMMICH_TRUSTED_PROXIES: 10.96.0.0/16
             IMMICH_MACHINE_LEARNING_URL: http://127.0.0.1:3003
-            MACHINE_LEARNING_PRELOAD__CLIP__TEXTUAL: &clip "ViT-SO400M-16-SigLIP2-384__webli"
-            MACHINE_LEARNING_PRELOAD__CLIP__VISUAL: *clip
-            MACHINE_LEARNING_PRELOAD__FACIAL_RECOGNITION__RECOGNITION: &face "antelopev2"
-            MACHINE_LEARNING_PRELOAD__FACIAL_RECOGNITION__DETECTION: *face
             # Redis
             REDIS_HOSTNAME: dragonfly.database.svc.cluster.local
             REDIS_DBINDEX: "2"
