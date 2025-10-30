@@ -26,7 +26,7 @@ spec:
             nameOverride: immich-server
             image:
               repository: ghcr.io/immich-app/immich-server
-              tag: v2.1.0
+              tag: v2.2.0
             probes:
               liveness: &probes
                 enabled: true
@@ -63,7 +63,7 @@ spec:
             dependsOn: immich-server
             image:
               repository: ghcr.io/immich-app/immich-machine-learning
-              tag: v2.1.0-cuda
+              tag: v2.2.0-cuda
             resources:
               requests:
                 cpu: 100m
