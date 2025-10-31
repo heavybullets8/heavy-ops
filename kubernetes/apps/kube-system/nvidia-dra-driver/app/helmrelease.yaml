@@ -1,19 +1,7 @@
 ---
 # ⚠️ WARNING: Does not work on Talos yet
 #
-# The DRA driver can't find NVIDIA libraries on Talos. The init container looks for
-# nvidia-smi in /usr/bin but Talos extensions put it in /usr/local/bin. Even after
-# bypassing the init check, the main containers fail with "error locating libnvidia-ml.so.1"
-# because Talos's extension-based setup doesn't match what the chart expects.
-#
-# Tried adding runtimeClassName: nvidia, mounting additional paths, and removing the
-# init container - none of it worked. The chart v25.8.0 just isn't compatible with
-# how Talos handles GPU drivers through system extensions.
-#
-# Keeping this config as a placeholder for when either NVIDIA updates the chart or
-# Talos changes how extensions work. Until then, stick with nvidia-device-plugin.
-#
-# Tested on: Talos v1.11.3, NVIDIA 570.172.08
+# https://github.com/NVIDIA/k8s-dra-driver-gpu/issues/605
 #
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
 apiVersion: helm.toolkit.fluxcd.io/v2
