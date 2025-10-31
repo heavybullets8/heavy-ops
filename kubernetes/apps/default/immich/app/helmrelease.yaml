@@ -31,7 +31,7 @@ spec:
               liveness: &probes
                 enabled: true
                 custom: true
-                spec:
+                spec: &spec
                   httpGet:
                     path: /api/server/ping
                     port: &server-port 2283
@@ -41,16 +41,12 @@ spec:
                   failureThreshold: 3
               readiness: *probes
               startup:
-                enabled: true
-                custom: true
+                <<: *probes
                 spec:
-                  httpGet:
-                    path: /api/server/ping
-                    port: *server-port
+                  <<: *spec
                   failureThreshold: 30
                   periodSeconds: 5
                   successThreshold: 1
-                  timeoutSeconds: 1
             resources:
               requests:
                 cpu: 100m
@@ -64,10 +60,30 @@ spec:
             image:
               repository: ghcr.io/immich-app/immich-machine-learning
               tag: v2.2.0-cuda
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec: &spec
+                  httpGet:
+                    path: /ping
+                    port: 3003
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+              startup:
+                <<: *probes
+                spec:
+                  <<: *spec
+                  failureThreshold: 30
+                  periodSeconds: 5
+                  successThreshold: 1
             resources:
               requests:
                 cpu: 100m
-                memory: 5Gi # Due to pre-loading models
+                memory: 3Gi
               limits:
                 memory: 20Gi
                 nvidia.com/gpu: 1
@@ -82,6 +98,8 @@ spec:
             # Redis
             REDIS_HOSTNAME: dragonfly.database.svc.cluster.local
             REDIS_DBINDEX: "2"
+            # Database
+            DB_VECTOR_EXTENSION: vectorchord
           envFrom:
             - secretRef:
                 name: immich-secret
@@ -113,6 +131,7 @@ spec:
         globalMounts:
           - path: /usr/src/app/upload
 
+      # Where the machine learning models are stored
       cache:
         existingClaim: immich-cache
         globalMounts:
