@@ -5,3 +5,11 @@ kind: Kustomization
 resources:
   - ./helmrelease.yaml
   - ./helmrepository.yaml
+configMapGenerator:
+  - name: nvidia-dra-configmap
+    files:
+      - kubelet-plugin-prestart.sh=./resource/kubelet-plugin-prestart.sh
+generatorOptions:
+  disableNameSuffixHash: true
+  annotations:
+    kustomize.toolkit.fluxcd.io/substitute: disabled

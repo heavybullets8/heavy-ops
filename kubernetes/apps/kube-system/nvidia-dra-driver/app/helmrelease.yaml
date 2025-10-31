@@ -27,9 +27,11 @@ spec:
     # See warning at top of file for why this doesn't work on Talos
     resources:
       gpus:
-        enabled: false
+        enabled: true
       computeDomains:
         enabled: false
+
+    gpuResourcesEnabledOverride: true
 
     controller:
       priorityClassName: system-node-critical
@@ -55,3 +57,29 @@ spec:
               - matchExpressions:
                   - key: extensions.talos.dev/nvidia-open-gpu-kernel-modules-production
                     operator: Exists
+
+  postRenderers:
+    - kustomize:
+        patches:
+          # Mount custom kubelet-plugin-prestart.sh script for Talos path support
+          - target:
+              kind: DaemonSet
+              name: nvidia-dra-driver-gpu-kubelet-plugin
+            patch: |
+              - op: add
+                path: /spec/template/spec/volumes/-
+                value:
+                  name: prestart-script
+                  configMap:
+                    name: nvidia-dra-configmap
+                    defaultMode: 0755
+          - target:
+              kind: DaemonSet
+              name: nvidia-dra-driver-gpu-kubelet-plugin
+            patch: |
+              - op: add
+                path: /spec/template/spec/initContainers/0/volumeMounts/-
+                value:
+                  name: prestart-script
+                  mountPath: /usr/bin/kubelet-plugin-prestart.sh
+                  subPath: kubelet-plugin-prestart.sh
