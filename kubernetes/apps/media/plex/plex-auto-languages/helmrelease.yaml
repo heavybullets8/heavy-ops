@@ -29,8 +29,8 @@ spec:
         containers:
           app:
             image:
-              repository: ghcr.io/remirigal/plex-auto-languages
-              tag: master@sha256:b05eec08e9f304bfdbd5616c726bbccb159eb423268f202abc6cac09e604aeb9
+              repository: ghcr.io/journeydocker/plex-auto-languages
+              tag: 1.3.15@sha256:ba3818e20c45041d2751638620f16f1fc83d1d1f11a700ac2cf8becf5343aa44
             env:
               TZ: ${TIMEZONE}
               PLEX_URL: http://plex.media.svc.cluster.local:32400
