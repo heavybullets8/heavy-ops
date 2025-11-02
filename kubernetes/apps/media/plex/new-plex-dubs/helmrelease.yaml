@@ -22,7 +22,7 @@ spec:
           app:
             image:
               repository: ghcr.io/heavybullets8/new-plex-dubs
-              tag: latest@sha256:ad92369c9bba7ddd5dbb793e9d48c9661f11bef60ec372587abfedc0fd63f346
+              tag: latest@sha256:0929c829af84261f68e533b55d9c7cc24e2ba0ee8042d2d34c416943738a8e7d
             env:
               TZ: ${TIMEZONE}
               PLEX_URL: http://plex.media.svc.cluster.local:32400
