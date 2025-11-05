@@ -41,7 +41,7 @@ spec:
               MAX_THREADS: "0"
               TEXTUREPACK_REQUIRED: "true"
               # renovate: datasource=custom.bedrock depName=MinecraftBedrockServer versioning=loose
-              VERSION: "1.21.120.4"
+              VERSION: "1.21.121.1"
             probes:
               liveness:
                 enabled: true
