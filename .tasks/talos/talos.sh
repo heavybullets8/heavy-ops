@@ -60,7 +60,7 @@ function main() {
             gum log --structured --level error "Failed to fetch factory image"
             exit 1
         fi
-        if ! talosctl --nodes "${NODE_IP}" upgrade --image="${FACTORY_IMAGE}" --reboot-mode=powercycle --timeout=10m; then
+        if ! talosctl --nodes "${NODE_IP}" upgrade --image="${FACTORY_IMAGE}" --reboot-mode=powercycle --timeout=5m; then
             gum log --structured --level error "Failed to upgrade Talos"
         else
             gum log --structured --level info "Successfully upgraded Talos"

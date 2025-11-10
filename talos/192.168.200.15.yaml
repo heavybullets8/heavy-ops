@@ -47,6 +47,12 @@ machine:
         mtu: 9000
         dhcp: false
     disableSearchDomain: true
+  registries:
+    config:
+      ghcr.io:
+        auth:
+          username: heavybullets8
+          password: op://talos/talos/GITHUB_TOKEN
   install:
     diskSelector:
       model: INTEL SSDPE21D960GA
