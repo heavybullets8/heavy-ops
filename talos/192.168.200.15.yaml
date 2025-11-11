@@ -12,6 +12,8 @@ machine:
     - 127.0.0.1
   kubelet:
     image: "ghcr.io/siderolabs/kubelet:${KUBERNETES_VERSION}"
+    extraArgs:
+      feature-gates: "ImageVolume=true"
     extraConfig:
       maxPods: 150
       serializeImagePulls: false
