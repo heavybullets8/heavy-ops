@@ -14,12 +14,12 @@ spec:
       namespace: openebs-system
   values:
     fullnameOverride: victoria-logs
-    retentionPeriod: 14d
     server:
       persistentVolume:
         enabled: true
         storageClassName: openebs-hostpath
         size: 20Gi
+      retentionPeriod: 14d
       serviceMonitor:
         enabled: true
       ingress:
