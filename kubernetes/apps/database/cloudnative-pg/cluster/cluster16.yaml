@@ -5,7 +5,7 @@ kind: Cluster
 metadata:
   name: postgres16
 spec:
-  imageName: ghcr.io/tensorchord/cloudnative-vectorchord:17.6-0.5.3@sha256:bc5fbeba82a75de3f25d06b1dda8a7de42711ab2a0adcfca140d8344bf4d1b62
+  imageName: ghcr.io/tensorchord/cloudnative-vectorchord:18.0-0.5.3@sha256:267f6cbb32af6e109e138a143c7e9dd5d44d68433ec2303f0c30e745c788d1a9
   instances: 3
   primaryUpdateStrategy: unsupervised
   storage:
