@@ -39,12 +39,12 @@ spec:
         barmanObjectName: postgres-objectstore
         # Note: serverName version needs to be incremented
         # when recovering from an existing cnpg cluster
-        serverName: postgres16-07
+        serverName: postgres16-08
   # Note: previousCluster needs to be set to the name of the previous
   # cluster when recovering from an existing cnpg cluster
   bootstrap:
     recovery:
-      source: &previousCluster postgres16-06
+      source: &previousCluster postgres16-07
   # Note: externalClusters is needed when recovering from an existing cnpg cluster
   externalClusters:
     - name: *previousCluster
