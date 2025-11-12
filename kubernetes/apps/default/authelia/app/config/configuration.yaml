@@ -7,12 +7,12 @@
 authentication_backend:
   ldap:
     address: ldap://glauth.default.svc.cluster.local:389
-    implementation: custom
+    implementation: glauth
     timeout: 5s
     start_tls: false
     base_dn: "{{ .GLAUTH_BASE_DN }}"
     additional_users_dn: ou=people,ou=users
-    users_filter: (&({username_attribute}={input})(objectClass=posixAccount))
+    users_filter: (&(|({username_attribute}={input})({mail_attribute}={input}))(objectClass=posixAccount)(!(accountStatus=inactive)))
     additional_groups_dn: ou=users
     groups_filter: (&(uniqueMember={dn})(objectClass=posixGroup))
     user: "{{ .GLAUTH_SEARCH_USER }}"
@@ -68,7 +68,8 @@ webauthn:
   disable: false
   display_name: "Authelia"
   attestation_conveyance_preference: "indirect"
-  user_verification: "preferred"
+  selection_criteria:
+    user_verification: "preferred"
   timeout: "60s"
 
 duo_api:
