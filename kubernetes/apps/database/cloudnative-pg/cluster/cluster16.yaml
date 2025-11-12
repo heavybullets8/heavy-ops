@@ -5,7 +5,7 @@ kind: Cluster
 metadata:
   name: postgres16
 spec:
-  imageName: ghcr.io/cloudnative-pg/postgresql:18.0-standard-trixie@sha256:ffd3687c9c71b74d8a19f24c4c56366f42ee96f7c516ad2bf31fbeec5b0f9747
+  imageName: ghcr.io/tensorchord/cloudnative-vectorchord:17.6-0.5.3@sha256:bc5fbeba82a75de3f25d06b1dda8a7de42711ab2a0adcfca140d8344bf4d1b62
   instances: 3
   primaryUpdateStrategy: unsupervised
   storage:
@@ -20,15 +20,7 @@ spec:
       shared_buffers: 512MB
       huge_pages: "on"
     shared_preload_libraries:
-      - "vchord"
-    extensions:
-      - name: vchord
-        image:
-          reference: ghcr.io/tensorchord/vchord-scratch:pg18-v1.0.0@sha256:a45360a7dc448a562069a566011d5ac58ed189357317386244e77facbc2de917
-        dynamic_library_path:
-          - /usr/lib/postgresql/18/lib/
-        extension_control_path:
-          - /usr/share/postgresql/18/
+      - "vchord.so"
   nodeMaintenanceWindow:
     inProgress: false
     reusePVC: true
