@@ -34,7 +34,7 @@ spec:
           app:
             image:
               repository: ghcr.io/heavybullets8/radarr
-              tag: 5.28.0.10274@sha256:b6fe556f508a4d2145b63efcfd06718c51529349ab872a9d2feb9c8deae00ebb
+              tag: 6.0.4.10291@sha256:8716235307d8d15724748dc1a34c2c70b48e6f463d03f1e9cc12a46644d754b8
             env:
               RADARR__APP__INSTANCENAME: Radarr
               RADARR__APP__THEME: dark
