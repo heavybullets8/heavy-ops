@@ -6,6 +6,7 @@ namespace: default
 components:
   - ../../components/common
 resources:
+  - ./atuin/ks.yaml
   - ./authelia/ks.yaml
   - ./bookstack/ks.yaml
   - ./docmost/ks.yaml
