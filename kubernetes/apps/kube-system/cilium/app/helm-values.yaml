@@ -40,7 +40,8 @@ loadBalancer:
   acceleration: native # WARN: Requires compatible NIC and compatible MTU
   algorithm: maglev
   mode: dsr
-localRedirectPolicy: true
+  localRedirectPolicies:
+    enabled: true
 operator:
   rollOutPods: true
   replicas: 1
