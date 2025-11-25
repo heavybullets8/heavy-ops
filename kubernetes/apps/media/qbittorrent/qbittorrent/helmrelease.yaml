@@ -124,6 +124,10 @@ spec:
                 add:
                   - NET_ADMIN
               allowPrivilegeEscalation: false
+            lifecycle:
+              postStart:
+                exec:
+                  command: ["/bin/sh", "-c", "(ip rule del table 51820; ip -6 rule del table 51820) || true"]
             resources:
               limits:
                 kernel.org/tun: 1
