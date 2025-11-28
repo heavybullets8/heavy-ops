@@ -19,3 +19,4 @@ resources:
   - ./stirling-pdf/ks.yaml
   - ./theme-park/ks.yaml
   - ./vaultwarden/ks.yaml
+  - ./vikunja/ks.yaml
