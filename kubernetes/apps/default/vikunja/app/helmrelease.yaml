@@ -26,7 +26,7 @@ spec:
           app:
             image:
               repository: vikunja/vikunja
-              tag: 0.24.6@sha256:d2b74bc26dbbb03c6de93ba54ea8e3db9b3dc59bc6ddd13c88ba1c4a94e63d60
+              tag: 0.24.6@sha256:ed1f3ed467fecec0b57e9de7bc6607f8bbcbb23ffced6a81f5dfefc794cdbe3b
 
             env:
               # General Service Configuration
