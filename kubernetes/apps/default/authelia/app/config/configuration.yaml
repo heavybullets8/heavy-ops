@@ -132,3 +132,16 @@ identity_providers:
           - "profile"
           - "email"
         userinfo_signed_response_alg: "none"
+      - client_id: "{{ .VIKUNJA_OIDC_CLIENT_ID }}"
+        client_secret: "{{ .VIKUNJA_OIDC_CLIENT_SECRET_ENC }}"
+        client_name: "Vikunja"
+        public: false
+        authorization_policy: two_factor
+        redirect_uris:
+          - "https://tasks.${SECRET_DOMAIN}/auth/openid/authelia"
+        scopes:
+          - "openid"
+          - "profile"
+          - "email"
+          - "groups"
+        userinfo_signed_response_alg: "none"
