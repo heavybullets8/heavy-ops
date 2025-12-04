@@ -11,7 +11,7 @@ server running in Kubernetes.
 
 | Load Order | Addon Name              | Version | UUID                                   | Description                                           |
 | ---------- | ----------------------- | ------- | -------------------------------------- | ----------------------------------------------------- |
-| 1          | **Actions and Stuff**   | 1.1.17  | `2cf066eb-1254-4b7d-affb-80fe3216b18c` | Custom textures, animations, and visual improvements |
+| 1          | **Actions and Stuff**   | 1.1.21  | `2cf066eb-1254-4b7d-affb-80fe3216b18c` | Custom textures, animations, and visual improvements |
 | 2          | **Dynamic Lightning**   | 3.4.0   | `f94c7e73-0928-4acf-904f-70920c796729` | Torch helmet lighting effects and visual enhancements |
 | 3          | **Structure Generation** | 1.1.5   | `68ac942e-3470-4d14-a430-d12ceb49e93f` | Enhanced structure generation and world features     |
 | 4          | **Cave Biomes**         | 1.0.7   | `67d777ab-847c-45ca-8ba8-91a9fd92171f` | New cave biome types and underground environments    |
@@ -20,7 +20,6 @@ server running in Kubernetes.
 | 7          | **Villagers++**         | 1.0.12  | `364d3ae0-4b45-426a-9054-9441fa662903` | Advanced villager types, trading, and village systems |
 | 8          | **Cave Dweller**        | 1.0.21  | `5ab34fff-ed52-4a92-be6d-0bcbe3a0d678` | Horror creature textures, sounds, and visual effects |
 | 9          | **Backpacks Plus**      | 1.0.16  | `386318e6-9996-471e-ae9e-7fc0bb228521` | Backpack inventory expansion and storage system |
-| 10         | **Sit on Everything**   | 2.1.0   | `24715d02-ed1b-444f-947b-106609767627` | Allows players to sit on various blocks and surfaces |
 
 ### Behavior Packs
 
@@ -34,7 +33,6 @@ server running in Kubernetes.
 | 6          | **Villagers++**          | 1.0.12  | `82b5aab3-53d9-41f5-a077-27649f6b3425` | Advanced villager AI, jobs, and interaction systems   |
 | 7          | **Cave Dweller**         | 1.0.21  | `efbee398-641d-4fd6-bf36-430d780c4f8f` | Cave dweller entity AI, spawning, and game mechanics  |
 | 8          | **Backpacks Plus**       | 1.0.16  | `41309d1b-ba75-4d67-b4cb-1514d285a29c` | Backpack functionality, inventory management          |
-| 9          | **Sit on Everything**    | 2.1.0   | `d34900a3-4274-492e-918d-cffa3e9be981` | Sitting mechanics and interaction systems for blocks  |
 
 ## Server File Structure
 
@@ -49,7 +47,6 @@ server running in Kubernetes.
 │   ├── Villagers-Plus-Plus-Behavior/  # Advanced villager systems
 │   ├── Cave-Dweller-Behavior/         # Cave dweller entity mechanics
 │   ├── Backpacks-Plus-Behavior/       # Backpack functionality and inventory management
-│   ├── Sit-Everything-Behavior/       # Sitting mechanics and block interaction systems
 │   └── vanilla*/                      # Default Minecraft behavior packs
 ├── resource_packs/
 │   ├── Actions-Stuff-Resource/        # Custom textures and animations
@@ -61,7 +58,6 @@ server running in Kubernetes.
 │   ├── Villagers-Plus-Plus-Resource/  # Advanced villager visuals
 │   ├── Cave-Dweller-Resource/         # Cave dweller visuals and sounds
 │   ├── Backpacks-Plus-Resource/       # Backpack textures, models, and UI elements
-│   ├── Sit-Everything-Resource/       # Sitting animations, textures, and visual effects
 │   └── vanilla*/                      # Default Minecraft resource packs
 ├── worlds/
 │   └── level/
@@ -210,6 +206,6 @@ kubectl exec -n game minecraft-pod-name -- cat /data/worlds/level/world_*.json
 
 ---
 
-_Last Updated: October 6, 2025 - Server Version: 1.21.111.1_
-_Total Addons: 9 (9 behavior packs, 10 resource packs)_
+_Last Updated: December 3, 2025 - Server Version: 1.21.111.1_
+_Total Addons: 8 (8 behavior packs, 9 resource packs)_
 
