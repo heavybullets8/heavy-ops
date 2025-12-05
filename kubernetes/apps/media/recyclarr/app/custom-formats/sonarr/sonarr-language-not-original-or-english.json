@@ -1,0 +1,30 @@
+{
+  "trash_id": "sx3svtff83uwe0e7t9uee9682lutdf70",
+  "trash_scores": {
+    "default": -10000
+  },
+  "name": "(CUSTOM) Language: Not Original or English",
+  "includeCustomFormatWhenRenaming": false,
+  "specifications": [
+    {
+      "name": "Not Original",
+      "implementation": "LanguageSpecification",
+      "negate": true,
+      "required": true,
+      "fields": {
+        "value": -2,
+        "exceptLanguage": false
+      }
+    },
+    {
+      "name": "Not English",
+      "implementation": "LanguageSpecification",
+      "negate": true,
+      "required": true,
+      "fields": {
+        "value": 1,
+        "exceptLanguage": false
+      }
+    }
+  ]
+}

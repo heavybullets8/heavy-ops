@@ -5,6 +5,7 @@ kind: Kustomization
 resources:
   - ./externalsecret.yaml
   - ./helmrelease.yaml
+  - ./pvc.yaml
 configMapGenerator:
   - name: recyclarr-configmap
     files:
@@ -18,5 +19,9 @@ configMapGenerator:
       - ./includes/Sonarr_Anime_Custom_Formats.yaml
       - ./includes/Sonarr_Standard_Quality_Profiles.yaml
       - ./includes/Sonarr_Standard_Custom_Formats.yaml
+      - ./custom-formats/radarr/radarr-custom-release-title-dubbed.json
+      - ./custom-formats/radarr/radarr-language-not-original-or-english.json
+      - ./custom-formats/sonarr/sonarr-custom-release-title-dubbed.json
+      - ./custom-formats/sonarr/sonarr-language-not-original-or-english.json
 generatorOptions:
   disableNameSuffixHash: true

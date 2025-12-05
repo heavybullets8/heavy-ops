@@ -1,0 +1,19 @@
+{
+  "trash_id": "4arrcn29jyxi3mosfq8sdj6zngmbn8z5",
+  "trash_scores": {
+    "default": -10000
+  },
+  "name": "(CUSTOM) Release Title: Dubbed",
+  "includeCustomFormatWhenRenaming": false,
+  "specifications": [
+    {
+      "name": "(CUSTOM) Dubbed",
+      "implementation": "ReleaseTitleSpecification",
+      "negate": false,
+      "required": true,
+      "fields": {
+        "value": "^(?!.*\\b(eng|english)\\b).*\\b(Dual|Multi|Dub|Dubbed)\\b.*"
+      }
+    }
+  ]
+}

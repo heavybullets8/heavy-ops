@@ -1,6 +1,12 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/recyclarr/recyclarr/master/schemas/settings-schema.json
 
-repositories:
-  trash_guides:
-      clone_url: https://github.com/Heavybullets8/custom-formats
-      branch: master
+resource_providers:
+  - name: custom-radarr
+    type: custom-formats
+    service: radarr
+    path: /config/custom-formats/radarr
+
+  - name: custom-sonarr
+    type: custom-formats
+    service: sonarr
+    path: /config/custom-formats/sonarr
