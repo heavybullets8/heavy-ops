@@ -16,8 +16,6 @@ spec:
       namespace: media
     - name: openebs
       namespace: openebs-system
-    - name: volsync
-      namespace: volsync-system
 
   values:
     controllers:
