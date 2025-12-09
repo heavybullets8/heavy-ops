@@ -24,11 +24,27 @@
       "datasourceTemplate": "{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}"
     },
     {
+      customType: "regex",
+      description: "Process OCI dependencies",
+      managerFilePatterns: [
+        "/\\.yaml(?:\\.j2)?$/",
+      ],
+      matchStrings: [
+        "oci://(?<depName>[^:]+):(?<currentValue>\\S+)",
+      ],
+      datasourceTemplate: "docker",
+    },
+    {
       "customType": "regex",
       "description": ["Process any imageName keys in YAML files (cloudnative-pg)"],
-      "managerFilePatterns": ["(^|/)kubernetes/.+\\.ya?ml$"],
-      "matchStrings": ["imageName: (?<depName>[^\\s:]+):(?<currentValue>\\S+)(@(?<currentDigest>sha256:\\S+)?)"],
-      "datasourceTemplate": "docker"
+      "managerFilePatterns": [
+        "/\\.yaml(?:\\.j2)?$/",
+      ],
+      "matchStrings": [
+        "(?:imageName|reference):\\s+(?<depName>[^\\s:]+):(?<currentValue>[^\\s@]+)(?:@(?<currentDigest>sha256:[^\\s]+))?"
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
     }
   ]
 }
