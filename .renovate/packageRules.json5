@@ -4,9 +4,30 @@
     {
       "description": ["Custom schedule for frequently updated container digests"],
       "matchDataSources": ["docker"],
-      "matchPackageNames": ["/postgresql/", "/vectorchord/"],
+      "matchPackageNames": ["/postgresql/", "/tensorchord/"],
       "matchUpdateTypes": ["digest"],
       "schedule": ["every 3 months on the first day of the month"]
+    },
+    {
+      "description": ["PostgreSQL"],
+      "matchDatasources": ["docker"],
+      "matchDepNames": ["ghcr.io/cloudnative-pg/postgresql"],
+      "versioning": "loose"
+    },
+    {
+      "description": ["vchord-scratch"],
+      "matchDatasources": ["docker"],
+      "matchDepNames": ["ghcr.io/tensorchord/vchord-scratch"],
+      "versioning": "regex:^pg(?<major>\\d+)-v(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)$"
+    },
+    {
+      "description": ["Group Postgres/vchord updates"],
+      "matchDatasources": ["docker"],
+      "matchDepNames": [
+        "ghcr.io/cloudnative-pg/postgresql",
+        "ghcr.io/tensorchord/vchord-scratch"
+      ],
+      "groupName": "CloudNativePG"
     }
   ]
 }
