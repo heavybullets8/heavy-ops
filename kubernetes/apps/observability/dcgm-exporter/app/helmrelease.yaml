@@ -22,8 +22,9 @@ spec:
                     operator: Exists
     resources:
       requests:
-        memory: 128Mi
+        memory: 256Mi
       limits:
+        memory: 768Mi
         nvidia.com/gpu: 1
     serviceMonitor:
       interval: 15s
