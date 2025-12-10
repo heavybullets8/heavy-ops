@@ -29,7 +29,7 @@ authentication_backend:
 
 server:
   buffers:
-    read: 8192
+    read: 32768
 
 session:
   secret: "{{ .AUTHELIA_SESSION_SECRET }}"
