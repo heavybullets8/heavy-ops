@@ -124,8 +124,8 @@ identity_providers:
         client_name: "immich"
         public: false
         redirect_uris:
-          - "https://photos.${SECRET_DOMAIN}.com/auth/login"
-          - "https://photos.${SECRET_DOMAIN}.com/user-settings"
+          - "https://photos.${SECRET_DOMAIN}/auth/login"
+          - "https://photos.${SECRET_DOMAIN}/user-settings"
           - "app.immich:///oauth-callback"
         scopes:
           - "openid"
