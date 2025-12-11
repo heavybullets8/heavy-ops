@@ -58,6 +58,6 @@ spec:
       manga:
         type: nfs
         server: ${TRUENAS_IP}
-        path: /mnt/tank/media/library/books
+        path: /mnt/tank/media/library/manga
         globalMounts:
           - path: /manga
