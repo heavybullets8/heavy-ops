@@ -18,7 +18,7 @@ spec:
           app:
             image:
               repository: ghcr.io/hotio/cloudflareddns
-              tag: latest@sha256:0d5da9f389a60f12f1154cfd0c3e062d5dbe997dd235280c017a5ca679230b7c
+              tag: latest@sha256:78fe73ff62a805b89ce57571104177fa8059291bbff45ddcf5be22fc1e4f2895
             env:
               TZ: ${TIMEZONE}
               PUID: 568
