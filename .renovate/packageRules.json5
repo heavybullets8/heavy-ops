@@ -9,6 +9,13 @@
       "schedule": ["every 3 months on the first day of the month"]
     },
     {
+      "description": ["Throttle hotio/cloudflareddns digest updates to weekly"],
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["ghcr.io/hotio/cloudflareddns"],
+      "matchUpdateTypes": ["digest"],
+      "schedule": ["every week"]
+    },
+    {
       "description": ["PostgreSQL"],
       "matchDatasources": ["docker"],
       "matchDepNames": ["ghcr.io/cloudnative-pg/postgresql"],

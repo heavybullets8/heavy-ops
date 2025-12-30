@@ -7,7 +7,7 @@
       automerge: true,
       automergeType: "pr",
       matchUpdateTypes: ["digest"],
-      matchPackageNames: ["/home-operations/", "/hotio/cloudflareddns/"],
+      matchPackageNames: ["/home-operations/"],
       ignoreTests: false,
     },
     {
