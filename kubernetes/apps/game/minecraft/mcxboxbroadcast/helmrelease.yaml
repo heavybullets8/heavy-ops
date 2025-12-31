@@ -30,7 +30,7 @@ spec:
           app:
             image:
               repository: ghcr.io/mcxboxbroadcast/standalone
-              tag: latest@sha256:d14e993320e16ca44bae9d62182249fd9e53a1c8f18f14fde360ac377bb8986c
+              tag: latest@sha256:060bfdda3757ab6ac59faf4700344ea8850007c8c2071052d403b37c4bcc9794
             env:
               TZ: ${TIMEZONE}
             resources:
