@@ -39,7 +39,7 @@ friend-sync:
   initial-invite: true
 
   # Should we unfriend people that haven't joined the server in a while
-  should-expire: true
+  should-expire: false
 
   # The amount of time in days before a friend is considered expired
   expire-days: 150
