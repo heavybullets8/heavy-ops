@@ -92,8 +92,8 @@ collections:
     visible_shared: range(07/01-07/05)
     #schedule: range(07/01-07/05)
     sort_title: +++++++_Independence Day
-    imdb_list:
-      - https://www.imdb.com/list/ls552600367/
+    trakt_list:
+      - https://trakt.tv/users/pterisaur/lists/new-year-s-eve
     summary: This collection revolves around the plot involving New Year's Eve.
 
   Valentine's Day Movies:
