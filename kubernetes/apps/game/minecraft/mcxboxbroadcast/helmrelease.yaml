@@ -15,10 +15,10 @@ spec:
       automountServiceAccountToken: false
       enableServiceLinks: false
       securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
+        runAsUser: 1001
+        runAsGroup: 1001
         runAsNonRoot: true
-        fsGroup: 1000
+        fsGroup: 1001
         fsGroupChangePolicy: OnRootMismatch
 
     controllers:
@@ -44,6 +44,10 @@ spec:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
               capabilities: { drop: ["ALL"] }
+            lifecycle:
+              postStart:
+                exec:
+                  command: ["/bin/sh", "-c", "cp /config-template/config.yml /opt/app/config/config.yml"]
 
     persistence:
       config:
@@ -55,9 +59,9 @@ spec:
         type: configMap
         name: mcxboxbroadcast-configmap
         globalMounts:
-          - path: /opt/app/config/config.yml
+          - path: /config-template/config.yml
             subPath: config.yml
-            readOnly: false
+            readOnly: true
 
       tmp:
         type: emptyDir
