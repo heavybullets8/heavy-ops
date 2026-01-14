@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/siderolabs/talos/v1.12.1/pkg/machinery/config/schemas/config.schema.json
 ---
 apiVersion: v1alpha1
 kind: EthernetConfig
@@ -29,3 +30,46 @@ provisioning:
     match: system_disk
   minSize: 500GiB
   grow: true
+---
+apiVersion: v1alpha1
+kind: HostnameConfig
+hostname: heavy-control
+---
+# Outbound - enp130s0f0np0
+apiVersion: v1alpha1
+kind: LinkConfig
+name: enp130s0f0np0
+up: true
+# Max XDP MTU
+mtu: 3458
+---
+apiVersion: v1alpha1
+kind: DHCPv4Config
+name: enp130s0f0np0
+clientIdentifier: mac
+---
+apiVersion: v1alpha1
+kind: Layer2VIPConfig
+name: 192.168.200.16
+link: enp130s0f0np0
+---
+# Direct Connect to TrueNAS - enp130s0f1np1
+apiVersion: v1alpha1
+kind: LinkConfig
+name: enp130s0f1np1
+up: true
+# Jumbo Frames
+mtu: 9000
+addresses:
+  - address: 10.10.10.1/30
+---
+apiVersion: v1alpha1
+kind: ResolverConfig
+searchDomains:
+  disableDefault: true
+---
+apiVersion: v1alpha1
+kind: RegistryAuthConfig
+name: ghcr.io
+username: heavybullets8
+password: op://talos/talos/GITHUB_TOKEN

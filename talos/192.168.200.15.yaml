@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/siderolabs/talos/v1.11.3/pkg/machinery/config/schemas/config.schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/siderolabs/talos/v1.12.1/pkg/machinery/config/schemas/config.schema.json
 version: v1alpha1
 debug: false
 machine:
@@ -29,32 +29,6 @@ machine:
       - name: nvidia_drm
       - name: nvidia_modeset
       - name: zfs
-  network:
-    hostname: heavy-control
-    interfaces:
-      # Outbound - enp130s0f0np0
-      - deviceSelector:
-          hardwareAddr: b8:3f:d2:48:88:2e
-        # Max XDP MTU
-        mtu: 3498
-        dhcp: true
-        vip:
-          ip: 192.168.200.16
-      # Direct Connect to TrueNAS - enp130s0f1np1
-      - deviceSelector:
-          hardwareAddr: b8:3f:d2:48:88:2f
-        addresses:
-          - 10.10.10.1/30
-        # Jumbo Frames
-        mtu: 9000
-        dhcp: false
-    disableSearchDomain: true
-  registries:
-    config:
-      ghcr.io:
-        auth:
-          username: heavybullets8
-          password: op://talos/talos/GITHUB_TOKEN
   install:
     diskSelector:
       model: INTEL SSDPE21D960GA
@@ -98,8 +72,6 @@ machine:
     user.max_user_namespaces: "11255"
     vm.nr_hugepages: "3072"
   features:
-    rbac: true
-    stableHostname: true
     kubernetesTalosAPIAccess:
       enabled: true
       allowedRoles:
@@ -107,7 +79,6 @@ machine:
       allowedKubernetesNamespaces:
         - kube-system
         - actions-runner-system
-    apidCheckExtKeyUsage: true
     diskQuotaSupport: true
     kubePrism:
       enabled: true
@@ -149,7 +120,6 @@ cluster:
     certSANs:
       - 192.168.200.16
       - 127.0.0.1
-    disablePodSecurityPolicy: true
     auditPolicy:
       apiVersion: audit.k8s.io/v1
       kind: Policy
