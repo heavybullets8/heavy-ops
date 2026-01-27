@@ -5,7 +5,7 @@ kind: Cluster
 metadata:
   name: postgres16
 spec:
-  imageName: ghcr.io/cloudnative-pg/postgresql:18.1-standard-trixie@sha256:2fc5696eb0b684921f7d976b134e9c2419313aa4bbf8b1d79f8591b452787792
+  imageName: ghcr.io/cloudnative-pg/postgresql:18.1-standard-trixie@sha256:f445b2f8e9b4b3b9a4df56d944c976a2d7eb9b50280f3a6986b0fc7c422f7f27
   instances: 3
   primaryUpdateStrategy: unsupervised
   storage:
@@ -24,7 +24,7 @@ spec:
     extensions:
       - name: vchord
         image:
-          reference: ghcr.io/tensorchord/vchord-scratch:pg18-v0.5.3@sha256:c310ede47f7f82bd257c3e53806d60680d5899c318ca946fb313efad9a90a78e
+          reference: ghcr.io/tensorchord/vchord-scratch:pg18-v1.0.0@sha256:a45360a7dc448a562069a566011d5ac58ed189357317386244e77facbc2de917
         dynamic_library_path:
           - /usr/lib/postgresql/18/lib/
         extension_control_path:
