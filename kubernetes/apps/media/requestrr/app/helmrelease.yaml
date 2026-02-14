@@ -10,7 +10,7 @@ spec:
     kind: OCIRepository
     name: app-template
   dependsOn:
-    - name: jellyseerr
+    - name: seerr
       namespace: media
     - name: openebs
       namespace: openebs-system
