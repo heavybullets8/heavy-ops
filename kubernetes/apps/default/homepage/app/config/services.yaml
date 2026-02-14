@@ -72,16 +72,17 @@
           key: "{{ .PROWLARR_API_KEY }}"
           fields: ["numberOfGrabs", "numberOfFailGrabs", "numberOfFailQueries"]
 
-    - Jellyseerr:
+    # TODO: Move to Seerr when supported
+    - Seerr:
         href: https://request.${SECRET_DOMAIN}
         icon: jellyseerr.png
         description: Requests
         namespace: media
-        app: jellyseerr
+        app: seerr
         widget:
           type: jellyseerr
-          url: http://jellyseerr.media.svc.cluster.local
-          key: "{{ .JELLYSEERR_API_KEY }}"
+          url: http://seerr.media.svc.cluster.local
+          key: "{{ .SEERR_API_KEY }}"
           fields: ["available", "processing"]
 
 - Reading:
