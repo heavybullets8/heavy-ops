@@ -5,7 +5,7 @@ bandwidthManager:
   bbr: true
 bpf:
   masquerade: true
-  tproxy: true
+  tproxy: false
   preallocateMaps: true
   datapathMode: netkit
   distributedLRU:
