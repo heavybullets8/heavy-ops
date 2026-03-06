@@ -19,7 +19,6 @@ sonarr:
         anime: default
 
     delete_old_custom_formats: true
-    replace_existing_custom_formats: true
 
     include:
       - config: Sonarr_Anime_Quality_Profiles.yaml
@@ -42,7 +41,6 @@ radarr:
         standard: jellyfin-anime-tmdb
 
     delete_old_custom_formats: true
-    replace_existing_custom_formats: true
 
     include:
       - config: Radarr_Anime_Quality_Profiles.yaml
