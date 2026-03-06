@@ -29,15 +29,6 @@
       "matchDatasources": ["docker"],
       "matchDepNames": ["ghcr.io/tensorchord/vchord-scratch"],
       "versioning": "regex:^pg(?<major>\\d+)-v(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)$"
-    },
-    {
-      "description": ["Group Postgres/vchord updates"],
-      "matchDatasources": ["docker"],
-      "matchDepNames": [
-        "ghcr.io/cloudnative-pg/postgresql",
-        "ghcr.io/tensorchord/vchord-scratch"
-      ],
-      "groupName": "CloudNativePG"
     }
   ]
 }
