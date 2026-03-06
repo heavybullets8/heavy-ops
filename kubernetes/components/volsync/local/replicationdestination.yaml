@@ -22,3 +22,9 @@ spec:
     cleanupCachePVC: true
     cleanupTempPVC: true
     enableFileDeletion: true
+    moverVolumes:
+      - mountPath: repository
+        volumeSource:
+          nfs:
+            server: "${TRUENAS_IP}"
+            path: "/mnt/tank/volsync"
