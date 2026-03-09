@@ -20,13 +20,14 @@ spec:
           app:
             image:
               repository: ghcr.io/heavybullets8/fcc-spam-reporter
-              tag: latest@sha256:af0148d8ab3e09397b0c208157cda378813d4ac727dea4b98931ada14c44989b
+              tag: latest@sha256:2f0dc446a4af3c3d8be67d60cfdeb3f83114e3dfc205624ebe01c3343e78f66c
               pullPolicy: IfNotPresent
 
             env:
               TZ: ${TIMEZONE}
               HOST: 0.0.0.0
               PORT: &port 8080
+              LOG_LEVEL: debug
               DATA_DIR: /app/data
               FLARESOLVERR_URL: http://flaresolverr.media.svc.cluster.local:8191/v1
               SUBMIT: true
