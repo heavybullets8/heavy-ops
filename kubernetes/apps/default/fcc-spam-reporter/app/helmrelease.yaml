@@ -1,0 +1,111 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app fcc-spam-reporter
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+
+  values:
+    controllers:
+      fcc-spam-reporter:
+        annotations:
+          reloader.stakater.com/auto: "true"
+
+        containers:
+          app:
+            image:
+              repository: ghcr.io/heavybullets8/fcc-spam-reporter
+              tag: latest@sha256:af0148d8ab3e09397b0c208157cda378813d4ac727dea4b98931ada14c44989b
+              pullPolicy: IfNotPresent
+
+            env:
+              TZ: ${TIMEZONE}
+              HOST: 0.0.0.0
+              PORT: &port 8080
+              DATA_DIR: /app/data
+              FLARESOLVERR_URL: http://flaresolverr.media.svc.cluster.local:8191/v1
+              SUBMIT: true
+              FCC_ADMIN_TOKEN: ""
+            envFrom:
+              - secretRef:
+                  name: fcc-spam-reporter-secret
+
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: *port
+                  failureThreshold: 30
+                  periodSeconds: 5
+
+            resources:
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                cpu: 2
+                memory: 2Gi
+
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities: { drop: ["ALL"] }
+
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: *port
+
+    ingress:
+      app:
+        className: external
+        hosts:
+          - host: "{{ .Release.Name }}.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  identifier: app
+                  port: http
+
+    persistence:
+      data:
+        type: emptyDir
+        globalMounts:
+          - path: /app/data
+
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
+
+      dshm:
+        type: emptyDir
+        medium: Memory
+        globalMounts:
+          - path: /dev/shm
