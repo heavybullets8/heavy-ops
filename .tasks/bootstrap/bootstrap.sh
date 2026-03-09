@@ -3,11 +3,18 @@
 function apply_talos_config() {
     local config_file="${TALOS_DIR}/${NODE_IP}.yaml"
     local machine_config
+    local config_patch_file
     gum log --structured --level info "Applying Talos configuration"
     machine_config=$(render_template "$config_file")
     gum log --structured --level info "Talos config rendered successfully"
+    config_patch_file=$(mktemp)
+    trap 'rm -f "${config_patch_file}"' RETURN
+    if ! render_template "${TALOS_DIR}/patches/patches.yaml" >"${config_patch_file}"; then
+        gum log --structured --level error "Failed to render Talos config patch"
+        exit 1
+    fi
     local output
-    if ! output=$(echo "$machine_config" | talosctl --nodes "$NODE_IP" apply-config --insecure --file /dev/stdin --config-patch "@${TALOS_DIR}/patches/patches.yaml" 2>&1); then
+    if ! output=$(echo "$machine_config" | talosctl --nodes "$NODE_IP" apply-config --insecure --file /dev/stdin --config-patch "@${config_patch_file}" 2>&1); then
         if [[ "$output" == *"certificate required"* ]]; then
             gum log --structured --level warn "Talos already has an applied configuration..."
         else

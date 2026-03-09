@@ -43,7 +43,14 @@ function main() {
         gum log --structured --level info "Applying Talos config to node ${NODE_IP}"
         generate_schematic
         op_signin
-        if ! op inject -i "${CONFIG_FILE}" | envsubst | talosctl --nodes "${NODE_IP}" apply-config --mode auto --file /dev/stdin --config-patch "@${TALOS_DIR}/patches/patches.yaml"; then
+        local config_patch_file
+        config_patch_file=$(mktemp)
+        trap 'rm -f "${config_patch_file}"' RETURN
+        if ! op inject -i "${TALOS_DIR}/patches/patches.yaml" >"${config_patch_file}"; then
+            gum log --structured --level error "Failed to render Talos config patch"
+            return 1
+        fi
+        if ! op inject -i "${CONFIG_FILE}" | envsubst | talosctl --nodes "${NODE_IP}" apply-config --mode auto --file /dev/stdin --config-patch "@${config_patch_file}"; then
             gum log --structured --level error "Failed to apply Talos config"
         else
             gum log --structured --level info "Successfully applied Talos config"

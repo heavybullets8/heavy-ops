@@ -67,3 +67,9 @@ apiVersion: v1alpha1
 kind: ResolverConfig
 searchDomains:
   disableDefault: true
+---
+apiVersion: v1alpha1
+kind: RegistryAuthConfig
+name: ghcr.io
+username: heavybullets8
+password: op://talos/ghcr-read-token/GHCR_READ_TOKEN
