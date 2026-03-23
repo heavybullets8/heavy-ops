@@ -110,6 +110,8 @@ identity_providers:
     claims_policies:
       grafana:
         id_token: ['email', 'name', 'groups', 'preferred_username']
+      flux-web:
+        id_token: ['email', 'groups']
     clients:
       - client_id: "{{ .GRAFANA_OAUTH_CLIENT_ID }}"
         claims_policy: 'grafana'
@@ -148,6 +150,20 @@ identity_providers:
         authorization_policy: two_factor
         redirect_uris:
           - "https://tasks.${SECRET_DOMAIN}/auth/openid/authelia"
+        scopes:
+          - "openid"
+          - "profile"
+          - "email"
+          - "groups"
+        userinfo_signed_response_alg: "none"
+      - client_id: "{{ .FLUX_WEB_OAUTH_CLIENT_ID }}"
+        client_secret: "{{ .FLUX_WEB_OAUTH_CLIENT_SECRET_ENC }}"
+        client_name: "Flux Web"
+        claims_policy: 'flux-web'
+        public: false
+        authorization_policy: two_factor
+        redirect_uris:
+          - "https://flux.${SECRET_DOMAIN}/oauth2/callback"
         scopes:
           - "openid"
           - "profile"

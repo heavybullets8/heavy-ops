@@ -12,3 +12,11 @@ spec:
   valuesFrom:
     - kind: ConfigMap
       name: flux-operator-helm-values
+    - kind: Secret
+      name: flux-web-client
+      valuesKey: client-id
+      targetPath: web.config.authentication.oauth2.clientID
+    - kind: Secret
+      name: flux-web-client
+      valuesKey: client-secret
+      targetPath: web.config.authentication.oauth2.clientSecret

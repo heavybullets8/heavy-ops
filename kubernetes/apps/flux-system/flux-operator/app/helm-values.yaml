@@ -4,3 +4,23 @@ serviceMonitor:
 web:
   networkPolicy:
     create: false
+  config:
+    baseURL: "https://flux.${SECRET_DOMAIN}"
+    authentication:
+      type: OAuth2
+      oauth2:
+        provider: OIDC
+        issuerURL: "https://auth.${SECRET_DOMAIN}"
+        scopes:
+          - openid
+          - profile
+          - email
+          - groups
+  ingress:
+    enabled: true
+    className: external
+    hosts:
+      - host: "flux.${SECRET_DOMAIN}"
+        paths:
+          - path: /
+            pathType: Prefix
