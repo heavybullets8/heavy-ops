@@ -1,0 +1,130 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app minecraft-rotational
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+
+  values:
+    controllers:
+      minecraft-rotational:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: itzg/minecraft-bedrock-server
+              tag: 2026.3.1@sha256:f02d1faadafe81a51f34df7e2cd71923f7ec97c4f80d1cbd0b07e0187fbb8e96
+            env:
+              TZ: ${TIMEZONE}
+              UID: "1000"
+              GID: "3000"
+              EULA: "TRUE"
+              GAMEMODE: survival
+              DIFFICULTY: normal
+              ALLOW_CHEATS: "false"
+              MAX_PLAYERS: "20"
+              ONLINE_MODE: "true"
+              WHITE_LIST: "true"
+              WHITE_LIST_USERS: "BoozeGuz,AKAJuiceBoxBoy,BigWizWyatt,DJVelveeta69,HeavyBullets88,BlackafroTTV,MediumYoda,PwNpRo,eelllliiee8368,KeeKs026,JsmallTheFried,ElderSchnibs,HatiMoonPursuer,BigTonez00,Da Lupster,Pistol 414l,Myuh5852"
+              OPS: "2535421636443049,2535410585100219"
+              SERVER_NAME: "Frenzone Rotate"
+              SERVER_PORT: &port "19132"
+              VIEW_DISTANCE: "15"
+              TICK_DISTANCE: "4"
+              PLAYER_IDLE_TIMEOUT: "30"
+              MAX_THREADS: "0"
+              TEXTUREPACK_REQUIRED: "false"
+              # renovate: datasource=custom.bedrock depName=MinecraftBedrockServer versioning=loose
+              VERSION: "1.26.10.4"
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  exec: &probeCommand
+                    command:
+                      - mc-monitor
+                      - status-bedrock
+                      - --host
+                      - 127.0.0.1
+                      - --port
+                      - *port
+                  initialDelaySeconds: 10
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  exec: *probeCommand
+                  initialDelaySeconds: 10
+                  periodSeconds: 5
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  exec: *probeCommand
+                  initialDelaySeconds: 10
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 12
+            securityContext:
+              capabilities:
+                drop:
+                  - ALL
+              readOnlyRootFilesystem: true
+              allowPrivilegeEscalation: false
+            resources:
+              requests:
+                memory: 512Mi
+                cpu: 200m
+              limits:
+                cpu: 16
+                memory: 20Gi
+
+    defaultPodOptions:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 3000
+        runAsNonRoot: true
+        fsGroup: 2000
+        seccompProfile:
+          type: RuntimeDefault
+
+    service:
+      app:
+        controller: *app
+        type: LoadBalancer
+        annotations:
+          lbipam.cilium.io/ips: "${MINECRAFT_ROTATIONAL_IP}"
+        ports:
+          minecraft:
+            port: *port
+            protocol: UDP
+            targetPort: *port
+
+    persistence:
+      data:
+        existingClaim: *app
+        globalMounts:
+          - path: /data
+      pack-configs:
+        type: configMap
+        name: minecraft-rotational-pack-configs
+        globalMounts:
+          - path: /data/worlds/level/world_resource_packs.json
+            subPath: world_resource_packs.json
+          - path: /data/worlds/level/world_behavior_packs.json
+            subPath: world_behavior_packs.json
+      tmp:
+        type: emptyDir
+        medium: Memory

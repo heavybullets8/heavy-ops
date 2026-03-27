@@ -92,6 +92,12 @@ spec:
           - path: /games/minecraft
             readOnly: false
 
+      minecraft-rotational:
+        existingClaim: minecraft-rotational
+        globalMounts:
+          - path: /games/minecraft-rotational
+            readOnly: false
+
       valheim:
         existingClaim: valheim
         globalMounts:

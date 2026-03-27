@@ -1,0 +1,13 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./helmrelease.yaml
+configMapGenerator:
+  - name: minecraft-rotational-pack-configs
+    files:
+      - ./addons/world_resource_packs.json
+      - ./addons/world_behavior_packs.json
+generatorOptions:
+  disableNameSuffixHash: true
