@@ -39,7 +39,7 @@ spec:
               TICK_DISTANCE: "4"
               PLAYER_IDLE_TIMEOUT: "30"
               MAX_THREADS: "0"
-              TEXTUREPACK_REQUIRED: "false"
+              TEXTUREPACK_REQUIRED: "true"
               # renovate: datasource=custom.bedrock depName=MinecraftBedrockServer versioning=loose
               VERSION: "1.26.10.4"
             probes:
