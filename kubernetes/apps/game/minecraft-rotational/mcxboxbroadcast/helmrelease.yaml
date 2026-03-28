@@ -31,8 +31,22 @@ spec:
             image:
               repository: ghcr.io/mcxboxbroadcast/standalone
               tag: latest@sha256:9df81df47a7bf0f6e7f87b9d21a894f764c79e937585412355aa78fecac9619b
+            command: ["/bin/sh", "-c", "java -jar /opt/app/MCXboxBroadcastStandalone.jar 2>&1 | tee /tmp/app.log"]
             env:
               TZ: ${TIMEZONE}
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - /bin/sh
+                      - -c
+                      - find /tmp/app.log -mmin -5 | grep -q .
+                  initialDelaySeconds: 300
+                  periodSeconds: 60
+                  failureThreshold: 3
             resources:
               limits:
                 cpu: 500m
