@@ -20,7 +20,7 @@ spec:
           app:
             image:
               repository: ghcr.io/heavybullets8/fcc-spam-reporter
-              tag: latest@sha256:4110d015aaed8c7c12fc66aa278c37a53084a09c43c0c305fbf9e5b7cc026208
+              tag: latest@sha256:02acfb11ff59496c3764db2c2b40dd4845969b9717aeec4df9013d317aafc77c
               pullPolicy: IfNotPresent
 
             env:
