@@ -47,8 +47,8 @@ notifications:
 # gdrive list pulled from: https://github.com/christophedc0/Dump/blob/main/DAPS/gdrives.md
 sync_gdrive:
   log_level: info
-  client_id: "{{ .GDRIVE_CLIENT_ID }}"
-  client_secret: "{{ .GDRIVE_CLIENT_SECRET }}"
+  client_id: ""
+  client_secret: ""
   token: {}
   gdrive_sa_location: /config/sa.json
   gdrive_list:
