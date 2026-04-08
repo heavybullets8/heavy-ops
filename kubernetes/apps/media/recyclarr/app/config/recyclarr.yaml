@@ -45,6 +45,7 @@ radarr:
     quality_profiles:
       - trash_id: 90a3370d2d30cbaf08d9c23b856a12c8 # [SQP] SQP-1 WEB (1080p)
         name: SQP-1 WEB (1080p)
+        min_format_score: 0
         qualities:
           - name: Bluray|WEB-1080p
             qualities:
