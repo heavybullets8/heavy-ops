@@ -42,8 +42,67 @@ radarr:
 
     delete_old_custom_formats: true
 
+    quality_profiles:
+      - trash_id: 90a3370d2d30cbaf08d9c23b856a12c8 # [SQP] SQP-1 WEB (1080p)
+        name: SQP-1 WEB (1080p)
+        qualities:
+          - name: Bluray|WEB-1080p
+            qualities:
+              - Bluray-1080p
+              - WEBDL-1080p
+              - WEBRip-1080p
+          - name: Bluray-720p
+
+          - name: WEB 720p
+            qualities:
+              - WEBDL-720p
+              - WEBRip-720p
+
+          - name: HDTV
+            qualities:
+              - HDTV-1080p
+              - HDTV-720p
+
+          - name: Bluray SD
+            qualities:
+              - Bluray-576p
+              - Bluray-480p
+
+          - name: DVD
+
+          - name: WEB SD
+            qualities:
+              - WEBDL-480p
+              - WEBRip-480p
+
+          - name: SDTV
+
+    custom_formats:
+      # Optional
+      - trash_ids:
+          - b6832f586342ef70d9c128d40c07b872 # Bad Dual Groups
+          - ae9b7c9ebde1f3bd336a8cbd1ec4c5e5 # No-RlsGroup
+          - 7357cf5161efbf8c4d5d0c30b4815ee2 # Obfuscated
+          - 5c44f52a8714fdd79bb4d98e2673be1f # Retags
+          - c465ccc73923871b3eb1802042331306 # Line/Mic Dubbed
+          - f537cf427b64c38c8e36298f657e4828 # Scene
+        assign_scores_to:
+          - name: SQP-1 WEB (1080p)
+
+      # Custom
+      - trash_ids:
+          - v1r7ud31dhtt9k36z27p79ce89kxus3r # (CUSTOM) Language: Not Original or English
+          - br3sw43roitosvons30zbdiwo2nmbpne # (CUSTOM) Release Title: Dubbed
+        assign_scores_to:
+          - name: SQP-1 WEB (1080p)
+
+      # Multi
+      - trash_ids:
+          - 4b900e171accbfb172729b63323ea8ca # Multi
+        assign_scores_to:
+          - name: SQP-1 WEB (1080p)
+            score: -10000
+
     include:
       - config: Radarr_Anime_Quality_Profiles.yaml
       - config: Radarr_Anime_Custom_Formats.yaml
-      - config: Radarr_Standard_Quality_Profiles.yaml
-      - config: Radarr_Standard_Custom_Formats.yaml

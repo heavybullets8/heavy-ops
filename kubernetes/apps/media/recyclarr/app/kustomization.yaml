@@ -13,8 +13,6 @@ configMapGenerator:
       - ./config/settings.yaml
       - ./includes/Radarr_Anime_Quality_Profiles.yaml
       - ./includes/Radarr_Anime_Custom_Formats.yaml
-      - ./includes/Radarr_Standard_Quality_Profiles.yaml
-      - ./includes/Radarr_Standard_Custom_Formats.yaml
       - ./includes/Sonarr_Anime_Quality_Profiles.yaml
       - ./includes/Sonarr_Anime_Custom_Formats.yaml
       - ./includes/Sonarr_Standard_Quality_Profiles.yaml
