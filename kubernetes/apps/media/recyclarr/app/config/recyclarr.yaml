@@ -86,7 +86,6 @@ radarr:
           - 7357cf5161efbf8c4d5d0c30b4815ee2 # Obfuscated
           - 5c44f52a8714fdd79bb4d98e2673be1f # Retags
           - c465ccc73923871b3eb1802042331306 # Line/Mic Dubbed
-          - f537cf427b64c38c8e36298f657e4828 # Scene
         assign_scores_to:
           - name: SQP-1 WEB (1080p)
 
@@ -96,6 +95,16 @@ radarr:
           - br3sw43roitosvons30zbdiwo2nmbpne # (CUSTOM) Release Title: Dubbed
         assign_scores_to:
           - name: SQP-1 WEB (1080p)
+
+      # Template Overrides
+      - trash_ids:
+          - dc98083864ea246d05a42df0d05f81cc # x265 (HD)
+          - a5d148168c4506b55cf53984107c396e # 10bit
+          - cae4ca30163749b891686f95532519bd # AV1
+          - f537cf427b64c38c8e36298f657e4828 # Scene
+        assign_scores_to:
+          - name: SQP-1 WEB (1080p)
+            score: 0
 
       # Multi
       - trash_ids:
