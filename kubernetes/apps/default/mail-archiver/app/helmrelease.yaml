@@ -1,0 +1,126 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app mail-archiver
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+
+  values:
+    controllers:
+      mail-archiver:
+        annotations:
+          reloader.stakater.com/auto: "true"
+
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/home-operations/postgres-init
+              tag: 18
+            envFrom: &envFrom
+              - secretRef:
+                  name: mail-archiver-secret
+
+        containers:
+          app:
+            image:
+              repository: docker.io/s1t5/mailarchiver
+              tag: 2603.3@sha256:10cde29eb60456f53fdf3c7332fc294baf0d387b4d11850e7c0efbd6fea85514
+
+            env:
+              # General
+              TZ: ${TIMEZONE}
+              TimeZone__DisplayTimeZoneId: ${TIMEZONE}
+              AllowedHosts: "mail.${SECRET_DOMAIN}"
+
+              # Authentication
+              Authentication__SessionTimeoutMinutes: "60"
+              Authentication__CookieName: MailArchiverAuth
+              Authentication__CookieSameSite: Lax
+
+              # Mail Sync
+              MailSync__IntervalMinutes: "15"
+              MailSync__TimeoutMinutes: "60"
+              MailSync__ConnectionTimeoutSeconds: "180"
+              MailSync__CommandTimeoutSeconds: "300"
+              MailSync__AlwaysForceFullSync: "false"
+              MailSync__IgnoreSelfSignedCert: "false"
+
+              # Upload
+              Upload__MaxFileSizeGB: "10"
+              Upload__KeepAliveTimeoutHours: "4"
+              Upload__RequestHeadersTimeoutHours: "2"
+
+              # Database Maintenance
+              DatabaseMaintenance__Enabled: "true"
+              DatabaseMaintenance__DailyExecutionTime: "02:00"
+              DatabaseMaintenance__TimeoutMinutes: "30"
+
+              # Npgsql
+              Npgsql__CommandTimeout: "900"
+
+            envFrom: *envFrom
+
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: &port 5000
+                    httpHeaders:
+                      - name: Host
+                        value: mail.${SECRET_DOMAIN}
+                  initialDelaySeconds: 30
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness: *probes
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: *port
+                    httpHeaders:
+                      - name: Host
+                        value: mail.${SECRET_DOMAIN}
+                  failureThreshold: 30
+                  periodSeconds: 5
+
+            resources:
+              requests:
+                cpu: 50m
+                memory: 256Mi
+              limits:
+                memory: 2Gi
+
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: *port
+
+    ingress:
+      app:
+        className: external
+        hosts:
+          - host: mail.${SECRET_DOMAIN}
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
+
+    persistence:
+      config:
+        existingClaim: *app
+        globalMounts:
+          - path: /app/DataProtection-Keys

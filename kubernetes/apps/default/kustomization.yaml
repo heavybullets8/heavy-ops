@@ -15,6 +15,7 @@ resources:
   - ./glauth/ks.yaml
   - ./homepage/ks.yaml
   - ./immich/ks.yaml
+  - ./mail-archiver/ks.yaml
   - ./nesting/ks.yaml
   - ./nextcloud/ks.yaml
   - ./stirling-pdf/ks.yaml
