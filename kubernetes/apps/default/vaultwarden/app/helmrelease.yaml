@@ -58,16 +58,13 @@ spec:
           http:
             port: &port 80
 
-    ingress:
+    route:
       app:
-        className: external
-        hosts:
-          - host: "vault.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: *port
+        hostnames:
+          - "vault.${SECRET_DOMAIN}"
+        parentRefs:
+          - name: envoy-external
+            namespace: network
 
     persistence:
       config:

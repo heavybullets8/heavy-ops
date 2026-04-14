@@ -23,17 +23,6 @@ spec:
       serviceMonitor:
         enabled: true
       ingress:
-        enabled: true
-        ingressClassName: external
-        annotations:
-          nginx.ingress.kubernetes.io/auth-method: GET
-          nginx.ingress.kubernetes.io/auth-url: "https://auth.${SECRET_DOMAIN}/api/verify"
-          nginx.ingress.kubernetes.io/auth-signin: "https://auth.${SECRET_DOMAIN}/?rm=$request_method"
-          nginx.ingress.kubernetes.io/auth-response-headers: Remote-User,Remote-Name,Remote-Groups,Remote-Email
-          nginx.ingress.kubernetes.io/auth-snippet: proxy_set_header X-Forwarded-Method $request_method;
-        hosts:
-          - name: victoria-logs.${SECRET_DOMAIN}
-            path: /
-            pathType: Prefix
+        enabled: false
     dashboards:
       enabled: true

@@ -83,16 +83,13 @@ spec:
           http:
             port: 32400
 
-    ingress:
+    route:
       app:
-        className: external
-        hosts:
-          - host: "{{ .Release.Name }}.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: http
+        hostnames:
+          - "plex.${SECRET_DOMAIN}"
+        parentRefs:
+          - name: envoy-external
+            namespace: network
 
     persistence:
       config:

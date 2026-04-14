@@ -11,6 +11,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   components:
+    - ../../../../components/forward-auth
     - ../../../../components/gatus/guarded
   wait: false
   path: ./kubernetes/apps/media/media-roller/app
@@ -24,4 +25,5 @@ spec:
   timeout: 5m
   postBuild:
     substitute:
-      APP: "dl"
+      APP: *app
+      GATUS_SUBDOMAIN: dl

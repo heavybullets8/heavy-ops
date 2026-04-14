@@ -107,16 +107,13 @@ spec:
           http:
             port: 3456
 
-    ingress:
+    route:
       app:
-        className: external
-        hosts:
-          - host: tasks.${SECRET_DOMAIN}
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: http
+        hostnames:
+          - "tasks.${SECRET_DOMAIN}"
+        parentRefs:
+          - name: envoy-external
+            namespace: network
 
     persistence:
       data:

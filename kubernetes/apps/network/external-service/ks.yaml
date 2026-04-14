@@ -7,6 +7,8 @@ metadata:
   namespace: &namespace network
 spec:
   targetNamespace: *namespace
+  components:
+    - ../../../../components/forward-auth
   path: ./kubernetes/apps/network/external-service/truenas
   prune: true
   retryInterval: 2m
@@ -17,3 +19,6 @@ spec:
   wait: true
   interval: 30m
   timeout: 5m
+  postBuild:
+    substitute:
+      APP: truenas

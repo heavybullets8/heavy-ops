@@ -1,0 +1,22 @@
+---
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: envoy-external
+  namespace: network
+spec:
+  endpoints:
+    - dnsName: "external.${SECRET_DOMAIN}"
+      recordType: CNAME
+      targets: ["${SECRET_DOMAIN}"]
+---
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: envoy-internal
+  namespace: network
+spec:
+  endpoints:
+    - dnsName: "internal.${SECRET_DOMAIN}"
+      recordType: CNAME
+      targets: ["${SECRET_DOMAIN}"]

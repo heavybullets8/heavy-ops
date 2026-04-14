@@ -73,16 +73,13 @@ spec:
           http:
             port: *port
 
-    ingress:
+    route:
       app:
-        className: external
-        hosts:
-          - host: "{{ .Release.Name }}.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: http
+        hostnames:
+          - "tautulli.${SECRET_DOMAIN}"
+        parentRefs:
+          - name: envoy-external
+            namespace: network
 
     persistence:
       config:

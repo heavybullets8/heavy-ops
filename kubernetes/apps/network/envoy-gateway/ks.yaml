@@ -3,7 +3,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app nginx-certificates
+  name: &app envoy-gateway
   namespace: &namespace network
 spec:
   targetNamespace: *namespace
@@ -11,9 +11,9 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
-    - name: onepassword
-      namespace: external-secrets
-  path: ./kubernetes/apps/network/nginx/certificates
+    - name: certificates
+      namespace: network
+  path: ./kubernetes/apps/network/envoy-gateway/app
   prune: true
   retryInterval: 2m
   sourceRef:
@@ -28,7 +28,7 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app nginx-external
+  name: &app envoy-gateway-config
   namespace: &namespace network
 spec:
   targetNamespace: *namespace
@@ -36,36 +36,9 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
-    - name: onepassword
-      namespace: external-secrets
-    - name: nginx-certificates
+    - name: envoy-gateway
       namespace: network
-  path: ./kubernetes/apps/network/nginx/external
-  prune: true
-  retryInterval: 2m
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  wait: false
-  interval: 30m
-  timeout: 5m
----
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: &app nginx-internal
-  namespace: &namespace network
-spec:
-  targetNamespace: *namespace
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
-  dependsOn:
-    - name: nginx-certificates
-      namespace: network
-  path: ./kubernetes/apps/network/nginx/internal
+  path: ./kubernetes/apps/network/envoy-gateway/config
   prune: true
   retryInterval: 2m
   sourceRef:

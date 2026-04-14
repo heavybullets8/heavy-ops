@@ -5,5 +5,5 @@ kind: Kustomization
 resources:
   - ./grafana.yaml
   - ./grafanadatasource.yaml
-  - ./ingress.yaml
+  - ./httproute.yaml
   - ./servicemonitor.yaml

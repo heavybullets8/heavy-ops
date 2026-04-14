@@ -124,19 +124,15 @@ spec:
           http:
             port: *server-port
 
-    ingress:
+    route:
       app:
-        className: external
         annotations:
           external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
-          nginx.ingress.kubernetes.io/proxy-body-size: "0"
-        hosts:
-          - host: photos.${SECRET_DOMAIN}
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: http
+        hostnames:
+          - "photos.${SECRET_DOMAIN}"
+        parentRefs:
+          - name: envoy-external
+            namespace: network
 
     persistence:
       library:

@@ -88,10 +88,6 @@ access_control:
         - "^/web/index.html$"
         - "^/api/system/status$"
       policy: bypass
-    - domain: "theme-park.${SECRET_DOMAIN}"
-      resources:
-        - "^/css/(addons|base)/.*\\.css$"
-      policy: bypass
 
 identity_validation:
   reset_password:

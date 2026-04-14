@@ -17,10 +17,4 @@ web:
           - email
           - groups
   ingress:
-    enabled: true
-    className: external
-    hosts:
-      - host: "flux.${SECRET_DOMAIN}"
-        paths:
-          - path: /
-            pathType: Prefix
+    enabled: false
