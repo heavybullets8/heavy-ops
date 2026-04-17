@@ -11,5 +11,5 @@ spec:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
   ref:
-    tag: v1.7.1 # renovate: datasource=docker depName=envoyproxy/gateway-helm
+    tag: 1.7.2 # renovate: datasource=docker depName=envoyproxy/gateway-helm
   url: oci://mirror.gcr.io/envoyproxy/gateway-helm
