@@ -110,6 +110,8 @@ spec:
 
     route:
       app:
+        annotations:
+          external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
         hostnames:
           - "mail.${SECRET_DOMAIN}"
         parentRefs:
