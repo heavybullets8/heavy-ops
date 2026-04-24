@@ -1,0 +1,18 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/cert-manager.io/certificate_v1.json
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: bighornbyte-com
+spec:
+  secretName: bighornbyte-com-tls
+  issuerRef:
+    group: cert-manager.k8s.cloudflare.com
+    kind: ClusterOriginIssuer
+    name: cloudflare-origin-ca
+  commonName: "*.bighornbyte.com"
+  dnsNames:
+    - "*.bighornbyte.com"
+  # Origin CA certs have long validity; renew conservatively.
+  duration: 8760h # 1 year
+  renewBefore: 720h # 30 days

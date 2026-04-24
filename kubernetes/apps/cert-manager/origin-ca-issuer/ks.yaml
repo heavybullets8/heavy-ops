@@ -3,7 +3,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app certificates-import
+  name: &app origin-ca-issuer
   namespace: &namespace cert-manager
 spec:
   targetNamespace: *namespace
@@ -11,9 +11,14 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
-    - name: onepassword
-      namespace: external-secrets
-  path: ./kubernetes/apps/cert-manager/certificates/import
+    - name: cert-manager
+      namespace: *namespace
+  healthCheckExprs:
+    - apiVersion: apps/v1
+      kind: Deployment
+      failed: status.conditions.filter(e, e.type == 'Available').all(e, e.status == 'False')
+      current: status.conditions.filter(e, e.type == 'Available').all(e, e.status == 'True')
+  path: ./kubernetes/apps/cert-manager/origin-ca-issuer/app
   prune: true
   retryInterval: 2m
   sourceRef:
@@ -28,7 +33,7 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app certificates-export
+  name: &app origin-ca-issuer-issuers
   namespace: &namespace cert-manager
 spec:
   targetNamespace: *namespace
@@ -36,14 +41,16 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
-    # - name: certificates-import
-    - name: cert-manager-issuers
-      namespace: cert-manager
-    - name: origin-ca-issuer-issuers
-      namespace: cert-manager
+    - name: origin-ca-issuer
+      namespace: *namespace
     - name: onepassword
       namespace: external-secrets
-  path: ./kubernetes/apps/cert-manager/certificates/export
+  healthCheckExprs:
+    - apiVersion: cert-manager.k8s.cloudflare.com/v1
+      kind: ClusterOriginIssuer
+      failed: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'False')
+      current: status.conditions.filter(e, e.type == 'Ready').all(e, e.status == 'True')
+  path: ./kubernetes/apps/cert-manager/origin-ca-issuer/issuers
   prune: true
   retryInterval: 2m
   sourceRef:
@@ -51,10 +58,5 @@ spec:
     name: flux-system
     namespace: flux-system
   wait: true
-  healthCheckExprs:
-    - apiVersion: external-secrets.io/v1alpha1
-      kind: PushSecret
-      failed: "false"
-      current: "true"
   interval: 30m
   timeout: 5m

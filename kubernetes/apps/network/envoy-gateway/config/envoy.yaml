@@ -69,6 +69,7 @@ spec:
     - name: https
       protocol: HTTPS
       port: 443
+      hostname: "*.${SECRET_DOMAIN}"
       allowedRoutes:
         namespaces:
           from: All
@@ -76,6 +77,17 @@ spec:
         certificateRefs:
           - kind: Secret
             name: ${SECRET_DOMAIN//./-}-tls
+    - name: https-bighornbyte
+      protocol: HTTPS
+      port: 443
+      hostname: "*.bighornbyte.com"
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        certificateRefs:
+          - kind: Secret
+            name: bighornbyte-com-tls
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/gateway.networking.k8s.io/gateway_v1.json
 apiVersion: gateway.networking.k8s.io/v1

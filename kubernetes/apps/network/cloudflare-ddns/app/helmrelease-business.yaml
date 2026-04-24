@@ -1,0 +1,50 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: cloudflare-ddns-business
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  interval: 30m
+  values:
+    controllers:
+      cloudflare-ddns-business:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/hotio/cloudflareddns
+              tag: latest@sha256:85e8b753ec9769db68fbda8dbcd2869f3ed0e5e00a76a6a2fcc9bac43b6dc2c1
+            env:
+              TZ: ${TIMEZONE}
+              PUID: 568
+              PGID: 568
+              INTERVAL: 300
+              DETECTION_MODE: dig-whoami.cloudflare
+              CF_HOSTS: home.bighornbyte.com
+              CF_ZONES: bighornbyte.com
+              CF_RECORDTYPES: A
+            envFrom:
+              - secretRef:
+                  name: cloudflare-ddns-business-secret
+            probes:
+              liveness:
+                enabled: false
+              readiness:
+                enabled: false
+              startup:
+                enabled: false
+            resources:
+              requests:
+                cpu: 5m
+                memory: 10Mi
+              limits:
+                memory: 1Gi
+
+    persistence:
+      config:
+        type: emptyDir

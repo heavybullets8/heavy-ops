@@ -8,3 +8,4 @@ components:
 resources:
   - ./cert-manager/ks.yaml
   - ./certificates/ks.yaml
+  - ./origin-ca-issuer/ks.yaml

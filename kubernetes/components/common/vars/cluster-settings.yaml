@@ -6,7 +6,6 @@ metadata:
 data:
   CLUSTER_NAME: main
   TIMEZONE: "America/Denver"
-  CLUSTER_CLOUDFLARE_TUNNEL_ID: 7ef045bc-4f17-41fc-950f-9113413da56a
 
   TRUENAS_IP:         10.10.10.2
   TRUENAS_O_IP:       192.168.200.10

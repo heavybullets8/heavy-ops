@@ -1,0 +1,23 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: origin-ca-issuer
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: origin-ca-issuer
+
+  values:
+    controller:
+      image:
+        repository: docker.io/cloudflare/origin-ca-issuer
+        tag: v0.14.0
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+        limits:
+          memory: 256Mi

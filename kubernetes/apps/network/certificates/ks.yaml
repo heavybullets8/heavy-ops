@@ -13,6 +13,8 @@ spec:
   dependsOn:
     - name: onepassword
       namespace: external-secrets
+    - name: certificates-export
+      namespace: cert-manager
   path: ./kubernetes/apps/network/certificates
   prune: true
   retryInterval: 2m
