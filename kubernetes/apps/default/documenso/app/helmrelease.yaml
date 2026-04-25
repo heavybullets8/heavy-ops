@@ -32,6 +32,7 @@ spec:
               PORT: &port 3000
               NEXT_PUBLIC_WEBAPP_URL: https://sign.bighornbyte.com
               NEXT_PRIVATE_INTERNAL_WEBAPP_URL: http://localhost:3000
+              NEXT_PUBLIC_DISABLE_SIGNUP: "true"
 
               NEXT_PRIVATE_SIGNING_LOCAL_FILE_PATH: /opt/documenso/cert.p12
 
