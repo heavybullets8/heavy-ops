@@ -25,7 +25,7 @@ spec:
           app:
             image:
               repository: docker.io/documenso/documenso
-              tag: v2.9.0@sha256:b7126b2cde5d6a171f502d851d86706af4591887bdd8fcc87b484856bf1dbc55
+              tag: v2.9.1@sha256:d842cf77d169a571cf8ea67f26a64d2c3c8dbf793aa86d547703dc6cb2bfcd64
 
             env:
               TZ: ${TIMEZONE}
