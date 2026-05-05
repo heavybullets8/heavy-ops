@@ -11,6 +11,9 @@ spec:
     name: app-template
 
   values:
+    defaultPodOptions:
+      automountServiceAccountToken: true
+
     controllers:
       homepage:
         strategy: RollingUpdate
