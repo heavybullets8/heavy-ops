@@ -132,9 +132,10 @@ custom_formats:
     assign_scores_to:
       - name: Standard
 
-  # Multi
+  # Unwatnted
   - trash_ids:
       - 7ba05c6e0e14e793538174c679126996 # Multi
+      - 44ccbcbc74506f208973e1463b11705f # WiTH AD
     assign_scores_to:
       - name: Standard
         score: -10000
