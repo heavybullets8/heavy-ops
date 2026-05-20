@@ -10,5 +10,5 @@ spec:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
   ref:
-    tag: 0.6.7
+    tag: 0.6.8
   url: oci://ghcr.io/cloudflare/origin-ca-issuer-charts/origin-ca-issuer
