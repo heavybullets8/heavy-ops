@@ -25,7 +25,7 @@ spec:
             nameOverride: *app
             image:
               repository: thomst08/requestrr
-              tag: v2.1.9@sha256:81f07c1f99d46bbf3b926ee7a0cc8f4729f049bc37fb6bba8a5428042fc856df
+              tag: v2.1.10@sha256:4e0b3f9d770d166043ea8d064cd57869548153b954ee19919b50e823eb78c817
               pullPolicy: IfNotPresent
             env:
               TZ: ${TIMEZONE}
