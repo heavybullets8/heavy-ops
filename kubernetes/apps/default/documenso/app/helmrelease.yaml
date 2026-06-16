@@ -25,7 +25,7 @@ spec:
           app:
             image:
               repository: ghcr.io/documenso/documenso
-              tag: v2.10.1@sha256:6507cd03d220a90512a8b5fb5fb82b6b4e63e0eaa69668bd06ca7eea83614e99
+              tag: v2.12.0@sha256:332268e7c34fbaa65589046f4d88e22cdfb01c775f4e6cf3d6832ec26bec5c44
 
             env:
               TZ: ${TIMEZONE}
