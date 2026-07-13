@@ -10,6 +10,7 @@ web:
       type: OAuth2
       oauth2:
         provider: OIDC
+        autoLogin: true
         issuerURL: "https://auth.${SECRET_DOMAIN}"
         scopes:
           - openid
