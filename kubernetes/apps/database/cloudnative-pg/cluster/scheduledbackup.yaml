@@ -15,4 +15,4 @@ spec:
     name: barman-cloud.cloudnative-pg.io
     parameters:
       barmanObjectName: postgres-objectstore
-      serverName: postgres16-07
+      serverName: postgres16-08
