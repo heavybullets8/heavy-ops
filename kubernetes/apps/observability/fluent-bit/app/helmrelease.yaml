@@ -37,6 +37,7 @@ spec:
         [FILTER]
           name kubernetes
           match kubernetes.*
+          buffer_size 0
           merge_log on
           kube_tag_prefix kubernetes.var.log.containers.
           k8s-logging.parser on
