@@ -77,6 +77,10 @@ function main() {
     "Upgrade Kubernetes" | "upgrade-k8s")
         check_env NODE_IP CONFIG_FILE KUBERNETES_VERSION
         check_cli talosctl
+        gum log --structured --level info "Restarting kubelet so static pod updates apply (kubelet ignores staticPodURL changes until restarted)"
+        if ! talosctl --nodes "${NODE_IP}" service kubelet restart; then
+            gum log --structured --level warn "Failed to restart kubelet"
+        fi
         gum log --structured --level info "Upgrading Kubernetes on node ${NODE_IP} to version ${KUBERNETES_VERSION}"
         if ! talosctl --nodes "${NODE_IP}" upgrade-k8s --to "${KUBERNETES_VERSION}"; then
             gum log --structured --level error "Failed to upgrade Kubernetes"
