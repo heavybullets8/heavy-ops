@@ -59,12 +59,14 @@ pack's `LiquidSettings` import, which otherwise aborts its script at startup.
 | ----- | ----- | ------- | ----------- |
 | 1 | Actions & Stuff | 1.1.39 | `2cf066eb-1254-4b7d-affb-80fe3216b18c` |
 | 2 | Bedrock Reimagined addon resources | 1.0.3036 | `badcc305-8f0d-48bf-acea-9b3a903d06e0` |
+| 3 | Create Bedrock | 1.0.1 | `1f819372-f7a9-4bdf-bf8b-ff2ae6c6ad15` |
 
 ### Behavior Packs
 
 | Order | Addon | Version | Header UUID |
 | ----- | ----- | ------- | ----------- |
 | 1 | Bedrock Reimagined | 1.0.3036 | `de800d74-c768-4926-9ec3-c8c3bb205eee` |
+| 2 | Create Bedrock | 1.0.1 | `fcc16ff6-9255-406b-96ce-6af2c90311f3` |
 
 The Bedrock Reimagined archive's marketing filename is `v1.0.95`; the world
 pack lists intentionally use the internal manifest versions shown above. Its
