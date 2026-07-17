@@ -28,4 +28,5 @@ spec:
         nvidia.com/gpu: 1
     serviceMonitor:
       interval: 15s
+      scrapeTimeout: 10s
       honorLabels: true
