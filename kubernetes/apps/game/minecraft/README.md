@@ -60,6 +60,7 @@ pack's `LiquidSettings` import, which otherwise aborts its script at startup.
 | 1 | Actions & Stuff | 1.1.39 | `2cf066eb-1254-4b7d-affb-80fe3216b18c` |
 | 2 | Bedrock Reimagined addon resources | 1.0.3036 | `badcc305-8f0d-48bf-acea-9b3a903d06e0` |
 | 3 | Create Bedrock | 1.0.1 | `1f819372-f7a9-4bdf-bf8b-ff2ae6c6ad15` |
+| 4 | Gravestone | 1.0.6 | `33530fcd-9d09-b79e-ee8a-7d850cfd52ed` |
 
 ### Behavior Packs
 
@@ -67,6 +68,7 @@ pack's `LiquidSettings` import, which otherwise aborts its script at startup.
 | ----- | ----- | ------- | ----------- |
 | 1 | Bedrock Reimagined | 1.0.3036 | `de800d74-c768-4926-9ec3-c8c3bb205eee` |
 | 2 | Create Bedrock | 1.0.1 | `fcc16ff6-9255-406b-96ce-6af2c90311f3` |
+| 3 | Gravestone | 1.0.6 | `d0fe9016-fb59-bb31-421a-fd4c01feac95` |
 
 The Bedrock Reimagined archive's marketing filename is `v1.0.95`; the world
 pack lists intentionally use the internal manifest versions shown above. Its
@@ -251,4 +253,4 @@ kubectl exec -n game minecraft-pod-name -- cat /data/worlds/level/world_*.json
 
 ---
 
-_Last Updated: July 17, 2026 - Server Version: 1.26.33.2_
+_Last Updated: July 19, 2026 - Server Version: 1.26.33.2_
