@@ -17,6 +17,8 @@ machine:
     extraConfig:
       maxPods: 150
       serializeImagePulls: false
+      imageGCHighThresholdPercent: 70
+      imageGCLowThresholdPercent: 65
     defaultRuntimeSeccompProfileEnabled: true
     nodeIP:
       validSubnets:
