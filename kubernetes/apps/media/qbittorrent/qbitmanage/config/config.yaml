@@ -49,6 +49,12 @@ nohardlinks:
       exclude_tags:
         - MaM
         - Materialize
+  - cross-seed:
+      exclude_tags:
+        - MaM
+        - Materialize
+  - series
+  - movies
 
 share_limits:
   # Torrents not in use by plex, and not "ignored" or "other"
