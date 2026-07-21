@@ -4,12 +4,13 @@ name: Renovate
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
     paths:
       - .renovaterc.json5
       - .renovate/**.json5
   schedule:
-    - cron: "0 * * * *"
+    - cron: 20 * * * *
   workflow_dispatch:
     inputs:
       dryRun:
@@ -34,34 +35,47 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.number || github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   main:
     name: Renovate
     runs-on: ubuntu-latest
+    permissions:
+      packages: read
     steps:
       - name: Generate Token
         uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         id: app-token
         with:
-          app-id: "${{ secrets.BOT_APP_ID }}"
-          private-key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
+          client-id: ${{ secrets.BOT_APP_CLIENT_ID }}
+          private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+          permission-checks: write
+          permission-contents: write
+          permission-issues: write
+          permission-pull-requests: write
+          permission-statuses: write
+          permission-vulnerability-alerts: read
+          permission-workflows: write
 
       - name: Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          token: "${{ steps.app-token.outputs.token }}"
+          persist-credentials: false
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Run Renovate
-        uses: renovatebot/github-action@22e0a16091fc706b04affe6ae53d5e3358ac4023 # v46.1.19
+        uses: renovatebot/github-action@3064367f740a1a91cca218698a63902689cce200 # v46.1.20
         env:
-          LOG_LEVEL: "${{ inputs.logLevel || 'debug' }}"
+          LOG_LEVEL: ${{ inputs.logLevel || 'debug' }}
           RENOVATE_AUTODISCOVER: true
-          RENOVATE_AUTODISCOVER_FILTER: "${{ github.repository }}"
-          RENOVATE_DRY_RUN: "${{ inputs.dryRun }}"
+          RENOVATE_AUTODISCOVER_FILTER: ${{ github.repository }}
+          RENOVATE_DRY_RUN: ${{ inputs.dryRun }}
           RENOVATE_INTERNAL_CHECKS_FILTER: strict
           RENOVATE_PLATFORM: github
           RENOVATE_PLATFORM_COMMIT: true
           RENOVATE_HOST_RULES: '[{"matchHost":"ghcr.io","hostType":"docker","username":"heavybullets8","password":"${{ secrets.GHCR_TOKEN }}"}]'
         with:
-          token: "${{ steps.app-token.outputs.token }}"
-          renovate-version: "${{ inputs.version || 'latest' }}"
+          token: ${{ steps.app-token.outputs.token }}
+          renovate-version: ${{ inputs.version || 'latest' }}
