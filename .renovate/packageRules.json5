@@ -29,6 +29,13 @@
       "matchDatasources": ["docker"],
       "matchDepNames": ["ghcr.io/tensorchord/vchord-scratch"],
       "versioning": "regex:^pg(?<major>\\d+)-v(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)$"
+    },
+    {
+      "description": ["Separate minor and patch updates for Talos and Kubernetes"],
+      "matchDatasources": ["docker"],
+      "matchDepNames": ["ghcr.io/siderolabs/installer", "ghcr.io/siderolabs/kubelet"],
+      "separateMajorMinor": true,
+      "separateMinorPatch": true
     }
   ]
 }
