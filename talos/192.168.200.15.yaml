@@ -79,6 +79,7 @@ machine:
       allowedKubernetesNamespaces:
         - kube-system
         - actions-runner-system
+        - system-upgrade
     diskQuotaSupport: true
     kubePrism:
       enabled: true
