@@ -12,6 +12,7 @@ spec:
       app.kubernetes.io/name: *app
   components:
     - ../../../../components/gatus/guarded
+    - ../../../../components/volsync
   dependsOn:
     - name: onepassword
       namespace: external-secrets
@@ -29,3 +30,4 @@ spec:
     substitute:
       APP: *app
       GATUS_PATH: /healthz
+      VOLSYNC_CAPACITY: 1Gi

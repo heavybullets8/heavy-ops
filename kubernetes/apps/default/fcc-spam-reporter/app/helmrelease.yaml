@@ -20,7 +20,7 @@ spec:
           app:
             image:
               repository: ghcr.io/heavybullets8/fcc-spam-reporter
-              tag: latest@sha256:02acfb11ff59496c3764db2c2b40dd4845969b9717aeec4df9013d317aafc77c
+              tag: latest@sha256:bcdd6842b8409c63928698173551829326113daf901f6e09e5894cb21bfe1668
               pullPolicy: IfNotPresent
 
             env:
@@ -31,7 +31,7 @@ spec:
               DATA_DIR: /app/data
               FLARESOLVERR_URL: http://flaresolverr.media.svc.cluster.local:8191/v1
               SUBMIT: true
-              FCC_ADMIN_TOKEN: ""
+              QUO_COMMAND_MAX_AGE_MINUTES: "360"
             envFrom:
               - secretRef:
                   name: fcc-spam-reporter-secret
@@ -92,7 +92,7 @@ spec:
 
     persistence:
       data:
-        type: emptyDir
+        existingClaim: *app
         globalMounts:
           - path: /app/data
 
