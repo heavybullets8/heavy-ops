@@ -73,3 +73,9 @@ kind: RegistryAuthConfig
 name: ghcr.io
 username: heavybullets8
 password: op://talos/ghcr-read-token/GHCR_READ_TOKEN
+---
+# Hardware watchdog (SP5100 TCO) - auto-reboots the node if the server freezes
+apiVersion: v1alpha1
+kind: WatchdogTimerConfig
+device: /dev/watchdog0
+timeout: 5m
