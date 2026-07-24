@@ -22,7 +22,7 @@ spec:
           app:
             image:
               repository: ghcr.io/heavybullets8/fcc-spam-reporter
-              tag: latest@sha256:4a51d765c40013d6270481fee7a7abb8dab4b2b94f2c1a40b8973fe7bb4a6427
+              tag: latest@sha256:33989a8e9b4f2ea10c03bd3d2abfbf6d105ef110e1dfbe706bd0d59509dea582
               pullPolicy: IfNotPresent
 
             env:
@@ -39,24 +39,34 @@ spec:
                   name: fcc-spam-reporter-secret
 
             probes:
-              liveness: &probes
+              liveness:
                 enabled: true
                 custom: true
                 spec:
                   httpGet:
-                    path: /healthz
+                    path: /livez
                     port: *port
                   initialDelaySeconds: 0
                   periodSeconds: 10
                   timeoutSeconds: 1
                   failureThreshold: 3
-              readiness: *probes
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /readyz
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
               startup:
                 enabled: true
                 custom: true
                 spec:
                   httpGet:
-                    path: /healthz
+                    path: /readyz
                     port: *port
                   failureThreshold: 30
                   periodSeconds: 5
@@ -76,6 +86,7 @@ spec:
     defaultPodOptions:
       automountServiceAccountToken: false
       enableServiceLinks: false
+      terminationGracePeriodSeconds: 45
 
     service:
       app:
