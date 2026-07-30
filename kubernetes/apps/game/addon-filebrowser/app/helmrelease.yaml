@@ -95,3 +95,9 @@ spec:
           - path: /games/valheim
             readOnly: false
 
+      palworld:
+        existingClaim: palworld
+        globalMounts:
+          - path: /games/palworld
+            readOnly: false
+

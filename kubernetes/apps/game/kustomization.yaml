@@ -9,4 +9,5 @@ resources:
   - ./minecraft/ks.yaml
   - ./minecraft-rotational/ks.yaml
   - ./valheim/ks.yaml
+  - ./palworld/ks.yaml
   - ./addon-filebrowser/ks.yaml
