@@ -20,6 +20,7 @@ resources:
   - ./mail-archiver/ks.yaml
   - ./nesting/ks.yaml
   - ./nextcloud/ks.yaml
+  - ./nextcloud-rec-1/ks.yaml
   - ./stirling-pdf/ks.yaml
   - ./vaultwarden/ks.yaml
   - ./vikunja/ks.yaml
