@@ -74,25 +74,31 @@ spec:
       hooks:
         before-starting: |-
           #!/bin/sh
-          set -eu
           OCC="php /var/www/html/occ"
-          ADMIN="${NEXTCLOUD_ADMIN_USER:-admin}"
-          $OCC app:enable files_external
+          $OCC app:enable files_external || true
 
-          ensure_mount() {
-            NAME="$1"; DIR="$2"
-            if $OCC files_external:list --all --output=json 2>/dev/null | grep -q "$DIR"; then
-              return 0
-            fi
-            ID=$($OCC files_external:create "$NAME" local null::null \
-                   -c datadir="$DIR" --user "$ADMIN" \
-                 | sed -n 's/.*id[: ]*\([0-9][0-9]*\).*/\1/p')
-            $OCC files_external:option "$ID" readonly true
-            $OCC files_external:option "$ID" enable_sharing true
+          mid() {
+            php -r '$n=$argv[1];$j=json_decode(stream_get_contents(STDIN),true);if(is_array($j))foreach($j as $m){if(isset($m["mount_point"])&&strpos($m["mount_point"],$n)!==false){echo $m["mount_id"];break;}}' "$1" 2>/dev/null
           }
 
-          ensure_mount "Tailey (private)" /family-data/tailey
-          ensure_mount "Family recovery"  /family-data/family
+          ensure() {
+            NAME="$1"; DIR="$2"
+            if ! $OCC files_external:list --all --output=json 2>/dev/null | grep -q "$DIR"; then
+              $OCC files_external:create "$NAME" local null::null -c datadir="$DIR" >/dev/null 2>&1
+            fi
+            ID=$($OCC files_external:list --all --output=json 2>/dev/null | mid "$NAME")
+            if [ -n "$ID" ]; then
+              $OCC files_external:option "$ID" readonly true >/dev/null 2>&1
+              $OCC files_external:option "$ID" enable_sharing true >/dev/null 2>&1
+              echo "ensured external mount '$NAME' (id=$ID) -> $DIR"
+            else
+              echo "WARN: '$NAME' present/created but could not read id to set options"
+            fi
+          }
+
+          ensure "Tailey (private)" /family-data/tailey
+          ensure "Family recovery"  /family-data/family
+          exit 0
 
     internalDatabase:
       enabled: true
