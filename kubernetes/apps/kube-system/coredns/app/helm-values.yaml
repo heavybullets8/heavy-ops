@@ -31,6 +31,15 @@ servers:
           fallthrough in-addr.arpa ip6.arpa
       - name: autopath
         parameters: "@kubernetes"
+      # TODO: remove once the ISP provides IPv6 and Cilium enable-ipv6 is turned on.
+      # The cluster is IPv4-only, so AAAA answers are unroutable. Go resolves A and
+      # AAAA in parallel and only errors if both fail, so a dropped A response leaves
+      # an IPv6-only address list and the dial fails with "network is unreachable".
+      # Returning NODATA for AAAA forces a clean fallback to A.
+      - name: template
+        parameters: IN AAAA .
+        configBlock: |-
+          rcode NOERROR
       - name: forward
         parameters: ". tls://1.1.1.1 tls://1.0.0.1"
         configBlock: |-
