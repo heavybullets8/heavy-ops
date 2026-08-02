@@ -69,12 +69,55 @@ pack's `LiquidSettings` import, which otherwise aborts its script at startup.
 | 1 | Bedrock Reimagined | 1.0.3036 | `de800d74-c768-4926-9ec3-c8c3bb205eee` |
 | 2 | Create Bedrock | 1.0.1 | `fcc16ff6-9255-406b-96ce-6af2c90311f3` |
 | 3 | Gravestone | 1.0.6 | `d0fe9016-fb59-bb31-421a-fd4c01feac95` |
+| 4 | FrenZone Player Fishing Perks | 1.0.0 | `4268c647-1b2b-453c-8b98-a8a651dfc4bc` |
 
 The Bedrock Reimagined archive's marketing filename is `v1.0.95`; the world
 pack lists intentionally use the internal manifest versions shown above. Its
 standalone `Bedrock_Reimagined_RP.mcpack` (`ac3cfbf4-115d-41bc-9bdf-375eedb33540`)
 is intentionally disabled for Actions & Stuff compatibility. The paired
 `BR_RP.mcpack` remains required by the behavior pack.
+
+### Player-specific fishing perk
+
+`FrenZone Player Fishing Perks` is a companion behavior pack for Bedrock
+Reimagined `1.0.3036`. It currently targets the exact Gamertag
+`SpeedMcCheez`. Every confirmed fishing catch for that player is replaced from
+a dedicated table containing only an enchanted book, enchanted bow, or
+enchanted fishing rod. Fish, junk, and Bedrock Reimagined's surprise creature
+catches are therefore disabled for that player. The table mirrors Bedrock
+Reimagined's 6:5:5 relative weights, level-30 treasure enchantments, and
+bow/rod damage ranges. Outside the overlapping-bobber edge case documented
+below, fishing remains unchanged for every other player.
+
+Catch attribution requires the fishing item and its owning hook to disappear
+in the same tick window and location. A same-tick fishing-rod use is supporting
+owner evidence. If two players reel genuinely overlapping bobbers at the same
+instant and the events remain indistinguishable, the companion refuses to
+guess ownership. Players should separate bobbers for deterministic rewards.
+
+The companion tags that player's fishing hooks. Before Minecraft starts, the
+`patch-bedrock-reimagined` init container verifies the exact upstream
+`imports.js` SHA-256, writes a minimally patched copy to an `emptyDir`, and
+mounts only that file over the original in the server container. The patch
+makes Bedrock Reimagined skip its creature roll when its stored hook owner is
+`SpeedMcCheez`, with the companion's hook tag as a fallback, so no creature is
+spawned. The PVC copy is never modified, making rollback a pod restart after
+removing the overlay. An unexpected upstream checksum fails the init container
+rather than applying an unsafe patch.
+
+Bedrock Reimagined selects nearby hooks before it knows which player owns a
+spawned catch item. To preserve the no-creature guarantee, a catch within its
+1.5-block matching radius of a tagged `SpeedMcCheez` bobber also skips the
+creature branch. This can suppress only that branch for another player's
+simultaneous overlapping catch; their normal fishing item is not rerolled by
+the companion.
+
+The source is in
+`minecraft-rotational/minecraft/addons/player-fishing-perks/` and is mounted
+read-only from the `minecraft-rotational-player-fishing-pack` ConfigMap. Add
+another exact Gamertag to `TARGET_PLAYER_NAMES` in `main.js` to grant the same
+perk. Re-check `FISHING_OUTPUT_IDS`, the guarded patch checksums, and the
+Bedrock Reimagined manifest dependency whenever that addon is upgraded.
 
 ## Server File Structure
 
@@ -92,6 +135,10 @@ is intentionally disabled for Actions & Stuff compatibility. The paired
 The persistent PVC is mounted at `/data` in `minecraft`; the rotational PVC is
 mounted at `/data` in `minecraft-rotational`. The addon file browser exposes
 them as `/games/minecraft` and `/games/minecraft-rotational`, respectively.
+The Git-managed player fishing pack is a read-only ConfigMap mount nested under
+the rotational server's `behavior_packs` directory rather than a PVC copy. The
+single-file Bedrock Reimagined runtime overlay is generated in an `emptyDir`;
+the third-party pack stored on the PVC remains unchanged.
 
 ## How to Add New Addons
 
@@ -253,4 +300,4 @@ kubectl exec -n game minecraft-pod-name -- cat /data/worlds/level/world_*.json
 
 ---
 
-_Last Updated: July 19, 2026 - Server Version: 1.26.33.2_
+_Last Updated: August 2, 2026 - Server Version: 1.26.36.1_

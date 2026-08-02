@@ -15,11 +15,29 @@ spec:
       minecraft-rotational:
         annotations:
           reloader.stakater.com/auto: "true"
-        containers:
-          app:
-            image:
+        initContainers:
+          patch-bedrock-reimagined:
+            image: &serverImage
               repository: itzg/minecraft-bedrock-server
               tag: 2026.7.6@sha256:0bbd0562679ecef9e17c7f76f6dcc43e567ed7821e976caa4a47300798db1b49
+            command:
+              - /usr/bin/sh
+              - /frenzone-patch/patch-bedrock-reimagined.sh
+            securityContext:
+              capabilities:
+                drop:
+                  - ALL
+              readOnlyRootFilesystem: true
+              allowPrivilegeEscalation: false
+            resources:
+              requests:
+                memory: 32Mi
+                cpu: 5m
+              limits:
+                memory: 256Mi
+        containers:
+          app:
+            image: *serverImage
             env:
               TZ: ${TIMEZONE}
               UID: "1000"
@@ -116,16 +134,56 @@ spec:
     persistence:
       data:
         existingClaim: *app
-        globalMounts:
-          - path: /data
+        advancedMounts:
+          minecraft-rotational:
+            app:
+              - path: /data
+            patch-bedrock-reimagined:
+              - path: /data
+                readOnly: true
       pack-configs:
         type: configMap
         name: minecraft-rotational-pack-configs
-        globalMounts:
-          - path: /data/worlds/level/world_resource_packs.json
-            subPath: world_resource_packs.json
-          - path: /data/worlds/level/world_behavior_packs.json
-            subPath: world_behavior_packs.json
+        advancedMounts:
+          minecraft-rotational:
+            app:
+              - path: /data/worlds/level/world_resource_packs.json
+                subPath: world_resource_packs.json
+              - path: /data/worlds/level/world_behavior_packs.json
+                subPath: world_behavior_packs.json
+      player-fishing-pack:
+        type: configMap
+        name: minecraft-rotational-player-fishing-pack
+        items:
+          - key: manifest.json
+            path: manifest.json
+          - key: main.js
+            path: main.js
+          - key: treasure.json
+            path: loot_tables/frenzone/player_fishing_treasure.json
+        advancedMounts:
+          minecraft-rotational:
+            app:
+              - path: /data/behavior_packs/FrenZone-Player-Fishing-Perks
+                readOnly: true
+      bedrock-reimagined-patch:
+        type: configMap
+        name: minecraft-rotational-bedrock-reimagined-patch
+        advancedMounts:
+          minecraft-rotational:
+            patch-bedrock-reimagined:
+              - path: /frenzone-patch
+                readOnly: true
+      patched-bedrock-reimagined:
+        type: emptyDir
+        advancedMounts:
+          minecraft-rotational:
+            patch-bedrock-reimagined:
+              - path: /patched-bedrock-reimagined
+            app:
+              - path: /data/behavior_packs/Bedrock-Reimagined-Behavior/scripts/imports.js
+                subPath: imports.js
+                readOnly: true
       tmp:
         type: emptyDir
         medium: Memory

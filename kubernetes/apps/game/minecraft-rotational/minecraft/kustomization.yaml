@@ -9,5 +9,13 @@ configMapGenerator:
     files:
       - ./addons/world_resource_packs.json
       - ./addons/world_behavior_packs.json
+  - name: minecraft-rotational-player-fishing-pack
+    files:
+      - ./addons/player-fishing-perks/manifest.json
+      - ./addons/player-fishing-perks/main.js
+      - ./addons/player-fishing-perks/treasure.json
+  - name: minecraft-rotational-bedrock-reimagined-patch
+    files:
+      - ./addons/player-fishing-perks/patch-bedrock-reimagined.sh
 generatorOptions:
   disableNameSuffixHash: true
