@@ -161,7 +161,7 @@ spec:
           - key: manifest.json
             path: manifest.json
           - key: main.js
-            path: main.js
+            path: scripts/main.js
           - key: treasure.json
             path: loot_tables/frenzone/player_fishing_treasure.json
         advancedMounts:
