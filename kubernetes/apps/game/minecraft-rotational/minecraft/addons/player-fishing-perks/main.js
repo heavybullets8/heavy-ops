@@ -17,6 +17,7 @@ import {
  * @property {number} castTick
  * @property {boolean} caught
  * @property {string} dimensionId
+ * @property {Vector3} spawnLocation
  * @property {Vector3} lastLocation
  * @property {number | undefined} removedTick
  * @property {number | undefined} catchTick
@@ -33,6 +34,15 @@ import {
  * @property {string} dimensionId
  * @property {Vector3} location
  * @property {boolean} claimed
+ */
+
+/**
+ * @typedef {object} PendingFishingCast
+ * @property {Player} player
+ * @property {number} tick
+ * @property {string} dimensionId
+ * @property {Vector3} location
+ * @property {boolean} confirmed
  */
 
 /**
@@ -70,6 +80,7 @@ const HOOK_REMOVAL_WINDOW_TICKS = 1;
 const REMOVED_HOOK_RETENTION_TICKS = 5;
 const PENDING_ITEM_RETENTION_TICKS = 5;
 const REEL_EVIDENCE_WINDOW_TICKS = 2;
+const OWNER_BIND_DISTANCE_SQUARED = 8 * 8;
 const GENERATED_ITEM_IGNORE_TICKS = 5;
 
 const ALLOWED_TREASURE_IDS = new Set([
@@ -144,9 +155,11 @@ const FISHING_OUTPUT_IDS = new Set([
   "5fs_br:yellow_flowered_lilypad",
   "5fs_br:yellow_torch",
   "minecraft:bamboo",
+  "minecraft:black_dye",
   "minecraft:bone",
   "minecraft:book",
   "minecraft:bowl",
+  "minecraft:brown_dye",
   "minecraft:clownfish",
   "minecraft:cocoa_beans",
   "minecraft:cod",
@@ -179,6 +192,10 @@ const trackedHooks = new Map();
 const pendingFishingItems = new Map();
 /** @type {Map<string, number>} */
 const recentFishingRodUses = new Map();
+/** @type {Map<string, PendingFishingCast>} */
+const pendingFishingCasts = new Map();
+/** @type {Set<number>} */
+const scheduledOwnerBindingTicks = new Set();
 /** @type {Map<string, number>} */
 const ignoredGeneratedItems = new Map();
 /** @type {Set<string>} */
@@ -212,6 +229,27 @@ function distanceSquared(first, second) {
 }
 
 /**
+ * @param {string} playerId
+ * @returns {Player | undefined}
+ */
+function getPlayerById(playerId) {
+  try {
+    const entity = world.getEntity(playerId);
+    if (entity instanceof Player && entity.isValid) return entity;
+  } catch {
+    // Fall back to the live player list below.
+  }
+
+  try {
+    return world.getAllPlayers().find((player) =>
+      player.id === playerId && player.isValid
+    );
+  } catch {
+    return undefined;
+  }
+}
+
+/**
  * @param {HookState} state
  * @returns {Vector3}
  */
@@ -232,7 +270,9 @@ function getHookLocation(state) {
 function getHookOwner(hook) {
   try {
     const owner = hook.getComponent(EntityComponentTypes.Projectile)?.owner;
-    return owner instanceof Player ? owner : undefined;
+    if (!owner) return undefined;
+    if (owner instanceof Player && owner.isValid) return owner;
+    return getPlayerById(owner.id);
   } catch {
     return undefined;
   }
@@ -262,27 +302,221 @@ function tagTargetHook(hook, owner) {
 }
 
 /**
+ * @param {string} playerId
+ */
+function hasActiveHookForPlayer(playerId) {
+  for (const state of trackedHooks.values()) {
+    if (state.ownerId === playerId && state.removedTick === undefined) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * @param {HookState} state
+ * @param {Player} owner
+ * @param {string} source
+ */
+function setHookOwner(state, owner, source) {
+  const newlyResolved = state.ownerId !== owner.id;
+  state.ownerId = owner.id;
+  state.ownerIsTarget = TARGET_PLAYER_NAMES.has(owner.name);
+  pendingFishingCasts.delete(owner.id);
+
+  if (state.ownerIsTarget && !state.hookTagged) {
+    state.hookTagged = tagTargetHook(state.hook, owner);
+  } else if (!state.ownerIsTarget && state.hookTagged) {
+    try {
+      if (state.hook?.isValid && state.hook.hasTag(NO_CREATURE_HOOK_TAG)) {
+        state.hook.removeTag(NO_CREATURE_HOOK_TAG);
+      }
+      state.hookTagged = false;
+    } catch (error) {
+      warnOnce(
+        "hook-untag-failed",
+        "Could not restore creature catches after correcting a hook owner.",
+        error,
+      );
+    }
+  }
+
+  if (newlyResolved && state.ownerIsTarget) {
+    console.log(
+      "[FrenZone Fishing Perks] Bound target hook for " + owner.name +
+        " using " + source + ".",
+    );
+  }
+}
+
+/**
+ * Binds only mutually unique, successful rod uses and hook spawns from the
+ * closed tick. This refuses ambiguous simultaneous casts instead of assigning
+ * another player's hook to the target.
+ *
+ * @param {number} castTick
+ */
+function reconcilePendingCastOwners(castTick) {
+  const casts = [...pendingFishingCasts.values()].filter((cast) =>
+    cast.tick === castTick && cast.confirmed && cast.player?.isValid
+  );
+  const states = [...trackedHooks.values()].filter((state) =>
+    state.castTick === castTick &&
+    !state.ownerId &&
+    state.removedTick === undefined &&
+    state.hook?.isValid
+  );
+
+  /** @type {Map<HookState, PendingFishingCast[]>} */
+  const castsByState = new Map();
+  /** @type {Map<PendingFishingCast, HookState[]>} */
+  const statesByCast = new Map();
+
+  for (const state of states) {
+    for (const cast of casts) {
+      if (
+        cast.dimensionId !== state.dimensionId ||
+        distanceSquared(cast.location, state.spawnLocation) >
+          OWNER_BIND_DISTANCE_SQUARED
+      ) {
+        continue;
+      }
+
+      const stateCasts = castsByState.get(state) ?? [];
+      stateCasts.push(cast);
+      castsByState.set(state, stateCasts);
+
+      const castStates = statesByCast.get(cast) ?? [];
+      castStates.push(state);
+      statesByCast.set(cast, castStates);
+    }
+  }
+
+  for (const [state, stateCasts] of castsByState) {
+    if (stateCasts.length !== 1) continue;
+    const cast = stateCasts[0];
+    if (statesByCast.get(cast)?.length !== 1) continue;
+    setHookOwner(state, cast.player, "confirmed rod cast");
+  }
+}
+
+/**
+ * Defers ownership until every rod use and hook spawn from this tick is known.
+ * Eager binding can mistake a reel for a later player's cast in the same tick.
+ *
+ * @param {number} castTick
+ */
+function scheduleOwnerBinding(castTick) {
+  if (scheduledOwnerBindingTicks.has(castTick)) return;
+  scheduledOwnerBindingTicks.add(castTick);
+
+  function finalizeOwnerBinding() {
+    // system.run normally advances a tick; guard the boundary explicitly in
+    // case this callback is scheduled while the current tick still has work.
+    if (system.currentTick <= castTick) {
+      system.run(finalizeOwnerBinding);
+      return;
+    }
+
+    try {
+      try {
+        reconcilePendingCastOwners(castTick);
+      } catch (error) {
+        warnOnce(
+          "owner-reconciliation-failed",
+          "Could not reconcile fishing-hook ownership.",
+          error,
+        );
+      }
+
+      for (const [playerId, cast] of pendingFishingCasts) {
+        if (cast.tick !== castTick) continue;
+        if (
+          cast.confirmed &&
+          cast.player?.isValid &&
+          TARGET_PLAYER_NAMES.has(cast.player.name)
+        ) {
+          console.warn(
+            "[FrenZone Fishing Perks] Could not uniquely bind a rod use for " +
+              cast.player.name + " to a newly spawned hook.",
+          );
+        }
+        pendingFishingCasts.delete(playerId);
+      }
+    } finally {
+      scheduledOwnerBindingTicks.delete(castTick);
+    }
+  }
+
+  system.run(finalizeOwnerBinding);
+}
+
+/**
+ * @param {Player} player
+ */
+function recordFishingRodUseBefore(player) {
+  recentFishingRodUses.set(player.id, system.currentTick);
+  if (hasActiveHookForPlayer(player.id)) {
+    pendingFishingCasts.delete(player.id);
+    return;
+  }
+
+  pendingFishingCasts.set(player.id, {
+    player,
+    tick: system.currentTick,
+    dimensionId: player.dimension.id,
+    location: { ...player.location },
+    confirmed: false,
+  });
+  scheduleOwnerBinding(system.currentTick);
+}
+
+/**
+ * @param {Player} player
+ */
+function recordFishingRodUseAfter(player) {
+  recentFishingRodUses.set(player.id, system.currentTick);
+  const cast = pendingFishingCasts.get(player.id);
+  if (!cast) return;
+
+  cast.confirmed = true;
+  scheduleOwnerBinding(cast.tick);
+}
+
+/**
  * @param {Entity} hook
  */
 function trackHook(hook) {
   if (!hook?.isValid || trackedHooks.has(hook.id)) return;
-  const owner = getHookOwner(hook);
-  const ownerIsTarget = owner ? TARGET_PLAYER_NAMES.has(owner.name) : undefined;
-  const hookTagged = tagTargetHook(hook, owner);
-  trackedHooks.set(hook.id, {
+  const projectileOwner = getHookOwner(hook);
+  /** @type {HookState} */
+  const state = {
     hook,
-    ownerId: owner?.id,
+    ownerId: undefined,
     castTick: system.currentTick,
     caught: false,
     dimensionId: hook.dimension.id,
+    spawnLocation: { ...hook.location },
     lastLocation: { ...hook.location },
     removedTick: undefined,
     catchTick: undefined,
     caughtItem: undefined,
     delivered: false,
-    hookTagged,
-    ownerIsTarget,
-  });
+    hookTagged: false,
+    ownerIsTarget: undefined,
+  };
+  trackedHooks.set(hook.id, state);
+
+  if (projectileOwner) {
+    setHookOwner(
+      state,
+      projectileOwner,
+      "projectile owner",
+    );
+  } else {
+    scheduleOwnerBinding(state.castTick);
+  }
 }
 
 /**
@@ -593,14 +827,16 @@ function processPendingCatches() {
         continue;
       }
 
+      const owner = resolveHookOwner(candidate.state);
+      if (!owner) continue;
+
       candidate.item.claimed = true;
       candidate.state.caught = true;
       candidate.state.catchTick = candidate.item.tick;
       candidate.state.caughtItem = candidate.item.entity;
       pendingFishingItems.delete(candidate.item.entity.id);
 
-      const owner = resolveHookOwner(candidate.state);
-      if (!owner || !TARGET_PLAYER_NAMES.has(owner.name)) continue;
+      if (!TARGET_PLAYER_NAMES.has(owner.name)) continue;
 
       candidate.state.ownerId = owner.id;
       candidate.state.ownerIsTarget = true;
@@ -615,19 +851,13 @@ function processPendingCatches() {
  */
 function resolveHookOwner(state) {
   if (state.ownerId) {
-    try {
-      const storedOwner = world.getEntity(state.ownerId);
-      if (storedOwner instanceof Player && storedOwner.isValid) {
-        return storedOwner;
-      }
-    } catch {
-      // Try the live projectile owner below.
-    }
+    const storedOwner = getPlayerById(state.ownerId);
+    if (storedOwner) return storedOwner;
   }
 
   const projectileOwner = getHookOwner(state.hook);
   if (projectileOwner) {
-    state.ownerId = projectileOwner.id;
+    setHookOwner(state, projectileOwner, "late projectile owner");
     return projectileOwner;
   }
 
@@ -775,10 +1005,9 @@ function resolveConfirmedCatch(state) {
       ?.itemStack;
     if (!itemStack || !FISHING_OUTPUT_IDS.has(itemStack.typeId)) return;
 
-    const owner = state.ownerId ? world.getEntity(state.ownerId) : undefined;
+    const owner = state.ownerId ? getPlayerById(state.ownerId) : undefined;
     if (
-      !(owner instanceof Player) ||
-      !owner.isValid ||
+      !owner ||
       !TARGET_PLAYER_NAMES.has(owner.name)
     ) {
       return;
@@ -798,6 +1027,10 @@ function resolveConfirmedCatch(state) {
     state.caughtItem.remove();
     state.delivered = true;
     deliverReplacement(owner, replacement);
+    console.log(
+      "[FrenZone Fishing Perks] Replaced a fishing catch for " + owner.name +
+        " with " + replacement.typeId + ".",
+    );
   } catch (error) {
     warnOnce(
       "replacement-failed",
@@ -851,14 +1084,33 @@ world.afterEvents.entityRemove.subscribe(({ removedEntityId, typeId }) => {
   processPendingCatches();
 });
 
+world.beforeEvents.entityRemove.subscribe(({ removedEntity }) => {
+  if (removedEntity.typeId !== FISHING_HOOK_TYPE) return;
+
+  const state = trackedHooks.get(removedEntity.id);
+  if (!state) return;
+
+  try {
+    state.lastLocation = { ...removedEntity.location };
+    const owner = getHookOwner(removedEntity);
+    if (owner) {
+      state.ownerId = owner.id;
+      state.ownerIsTarget = TARGET_PLAYER_NAMES.has(owner.name);
+      pendingFishingCasts.delete(owner.id);
+    }
+  } catch {
+    // The after-remove handler can still use the last per-tick snapshot.
+  }
+});
+
 world.beforeEvents.itemUse.subscribe(({ itemStack, source }) => {
   if (itemStack.typeId !== "minecraft:fishing_rod") return;
-  recentFishingRodUses.set(source.id, system.currentTick);
+  recordFishingRodUseBefore(source);
 });
 
 world.afterEvents.itemUse.subscribe(({ itemStack, source }) => {
   if (itemStack.typeId !== "minecraft:fishing_rod") return;
-  recentFishingRodUses.set(source.id, system.currentTick);
+  recordFishingRodUseAfter(source);
   processPendingCatches();
 });
 
@@ -869,11 +1121,7 @@ system.runInterval(() => {
         state.lastLocation = { ...state.hook.location };
         const owner = getHookOwner(state.hook);
         if (owner) {
-          state.ownerId = owner.id;
-          state.ownerIsTarget = TARGET_PLAYER_NAMES.has(owner.name);
-          if (state.ownerIsTarget && !state.hookTagged) {
-            state.hookTagged = tagTargetHook(state.hook, owner);
-          }
+          setHookOwner(state, owner, "projectile owner refresh");
         }
       }
     } catch {

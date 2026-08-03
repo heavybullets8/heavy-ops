@@ -89,11 +89,13 @@ Reimagined's 6:5:5 relative weights, level-30 treasure enchantments, and
 bow/rod damage ranges. Outside the overlapping-bobber edge case documented
 below, fishing remains unchanged for every other player.
 
-Catch attribution requires the fishing item and its owning hook to disappear
-in the same tick window and location. A same-tick fishing-rod use is supporting
-owner evidence. If two players reel genuinely overlapping bobbers at the same
-instant and the events remain indistinguishable, the companion refuses to
-guess ownership. Players should separate bobbers for deterministic rewards.
+Bedrock does not always expose a fishing hook's projectile owner. The companion
+therefore pairs a successful fishing-rod use with a mutually unique hook that
+spawned in the same tick, dimension, and vicinity, then retains that ownership
+for the catch. Catch attribution also requires the fishing item and its hook to
+disappear in the same tick window and location. If simultaneous nearby events
+remain indistinguishable, the companion refuses to guess ownership. Players
+should separate bobbers for deterministic rewards.
 
 The companion tags that player's fishing hooks. Before Minecraft starts, the
 `patch-bedrock-reimagined` init container verifies the exact upstream
@@ -118,6 +120,9 @@ read-only from the `minecraft-rotational-player-fishing-pack` ConfigMap. Add
 another exact Gamertag to `TARGET_PLAYER_NAMES` in `main.js` to grant the same
 perk. Re-check `FISHING_OUTPUT_IDS`, the guarded patch checksums, and the
 Bedrock Reimagined manifest dependency whenever that addon is upgraded.
+Script API content output is enabled in the server console. A successful test
+logs the target hook binding and the replacement item; an unresolved owner or
+runtime/content error is visible through the normal pod logs.
 
 ## Server File Structure
 

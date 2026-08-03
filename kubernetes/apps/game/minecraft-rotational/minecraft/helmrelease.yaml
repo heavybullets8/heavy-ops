@@ -59,6 +59,9 @@ spec:
               PLAYER_IDLE_TIMEOUT: "30"
               MAX_THREADS: "0"
               TEXTUREPACK_REQUIRED: "true"
+              # Keep Script API startup/runtime diagnostics visible in pod logs.
+              CONTENT_LOG_CONSOLE_OUTPUT_ENABLED: "true"
+              CONTENT_LOG_LEVEL: info
               # renovate: datasource=custom.bedrock depName=MinecraftBedrockServer versioning=loose
               VERSION: "1.26.36.1"
             probes:
