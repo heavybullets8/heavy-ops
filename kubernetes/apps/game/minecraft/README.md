@@ -115,8 +115,17 @@ simultaneous overlapping catch; their normal fishing item is not rerolled by
 the companion.
 
 The source is in
-`minecraft-rotational/minecraft/addons/player-fishing-perks/` and is mounted
-read-only from the `minecraft-rotational-player-fishing-pack` ConfigMap. Add
+`minecraft-rotational/minecraft/addons/player-fishing-perks/` and ships in the
+`minecraft-rotational-player-fishing-pack` ConfigMap. That ConfigMap is not
+mounted into the server directly: Bedrock resolves a script module's `entry`
+through its own pack index, which is rooted at the pack's `scripts/` directory
+and cannot load a module through Kubernetes' atomic-writer symlinks. The
+`stage-fishing-pack` init container therefore copies the ConfigMap into an
+`emptyDir` as ordinary files (`manifest.json`, `scripts/main.js`,
+`loot_tables/frenzone/player_fishing_treasure.json`), and only that `emptyDir`
+is mounted read-only over `behavior_packs/FrenZone-Player-Fishing-Perks`. Both
+halves are required — a root-level `entry` logs `does not contain main file`,
+and a symlinked `scripts/` logs `could not load main`. Add
 another exact Gamertag to `TARGET_PLAYER_NAMES` in `main.js` to grant the same
 perk. Re-check `FISHING_OUTPUT_IDS`, the guarded patch checksums, and the
 Bedrock Reimagined manifest dependency whenever that addon is upgraded.
