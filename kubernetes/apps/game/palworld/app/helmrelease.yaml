@@ -27,6 +27,8 @@ spec:
               PORT: &port "8211"
               QUERY_PORT: &queryPort "27015"
               PLAYERS: "16"
+              BASE_CAMP_WORKER_MAX_NUM: "30"  # default 15
+              BASE_CAMP_MAX_NUM_IN_GUILD: "10"  # default 4
               SERVER_NAME: "FrenZone"
               SERVER_DESCRIPTION: "FrenZone Palworld server"
               # community browser. Required for Xbox/PS5 players: consoles cannot
