@@ -35,6 +35,34 @@ spec:
                 cpu: 5m
               limits:
                 memory: 256Mi
+          # Bedrock resolves script entries through its own pack index, which
+          # does not cope with the ConfigMap atomic-writer symlink farm. Stage
+          # the pack as ordinary files and directories instead.
+          stage-fishing-pack:
+            image: *serverImage
+            command:
+              - /usr/bin/sh
+              - -c
+              - |
+                set -eu
+                mkdir -p /frenzone-pack/scripts /frenzone-pack/loot_tables/frenzone
+                cp -L /frenzone-source/manifest.json /frenzone-pack/manifest.json
+                cp -L /frenzone-source/main.js /frenzone-pack/scripts/main.js
+                cp -L /frenzone-source/treasure.json \
+                  /frenzone-pack/loot_tables/frenzone/player_fishing_treasure.json
+                echo "Staged FrenZone fishing pack as regular files."
+            securityContext:
+              capabilities:
+                drop:
+                  - ALL
+              readOnlyRootFilesystem: true
+              allowPrivilegeEscalation: false
+            resources:
+              requests:
+                memory: 32Mi
+                cpu: 5m
+              limits:
+                memory: 256Mi
         containers:
           app:
             image: *serverImage
@@ -157,15 +185,17 @@ spec:
       player-fishing-pack:
         type: configMap
         name: minecraft-rotational-player-fishing-pack
-        items:
-          - key: manifest.json
-            path: manifest.json
-          - key: main.js
-            path: scripts/main.js
-          - key: treasure.json
-            path: loot_tables/frenzone/player_fishing_treasure.json
         advancedMounts:
           minecraft-rotational:
+            stage-fishing-pack:
+              - path: /frenzone-source
+                readOnly: true
+      staged-fishing-pack:
+        type: emptyDir
+        advancedMounts:
+          minecraft-rotational:
+            stage-fishing-pack:
+              - path: /frenzone-pack
             app:
               - path: /data/behavior_packs/FrenZone-Player-Fishing-Perks
                 readOnly: true
