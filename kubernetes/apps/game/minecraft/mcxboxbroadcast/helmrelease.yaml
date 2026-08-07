@@ -34,6 +34,9 @@ spec:
             command: ["/bin/sh", "-c", "java -jar /opt/app/MCXboxBroadcastStandalone.jar 2>&1 | tee /tmp/app.log"]
             env:
               TZ: ${TIMEZONE}
+            # Broadcaster can zombie its Xbox websocket without logging anything.
+            # RTA events land every 30s and stop when it dies, so 10m of silence
+            # means it's gone. Reconnect cadence (normally <3h) is the backstop.
             probes:
               liveness:
                 enabled: true
@@ -43,7 +46,19 @@ spec:
                     command:
                       - /bin/sh
                       - -c
-                      - find /tmp/app.log -mmin -5 | grep -q .
+                      - |
+                        set -e
+                        find /tmp/app.log -mmin -5 | grep -q .
+                        A=$(grep -ac 'RTA Websocket .* event:' /tmp/app.log || true)
+                        if [ "$A" -gt 0 ]; then
+                          [ "$A" = "$(cat /tmp/hb-rta 2>/dev/null)" ] || echo "$A" > /tmp/hb-rta
+                          find /tmp/hb-rta -mmin -10 | grep -q .
+                        fi
+                        WS='WebSocket session reconnected'
+                        WS="$WS\|NetherNet Broadcaster started on ID"
+                        B=$(grep -ac "$WS" /tmp/app.log || true)
+                        [ "$B" = "$(cat /tmp/hb-ws 2>/dev/null)" ] || echo "$B" > /tmp/hb-ws
+                        find /tmp/hb-ws -mmin -240 | grep -q .
                   initialDelaySeconds: 300
                   periodSeconds: 60
                   failureThreshold: 3
