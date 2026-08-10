@@ -34,9 +34,10 @@ spec:
             command: ["/bin/sh", "-c", "java -jar /opt/app/MCXboxBroadcastStandalone.jar 2>&1 | tee /tmp/app.log"]
             env:
               TZ: ${TIMEZONE}
-            # Broadcaster can zombie its Xbox websocket without logging anything.
-            # RTA events land every 30s and stop when it dies, so 10m of silence
-            # means it's gone. Reconnect cadence (normally <3h) is the backstop.
+            # checkConnection() only checks RTA and a local UDP bind, so NetherNet
+            # can stop taking joins while everything still looks healthy. A good
+            # join logs a nonce then a transfer ~6s later, so a nonce with no
+            # transfer means it's wedged. RTA/reconnect are just backstops.
             probes:
               liveness:
                 enabled: true
@@ -59,8 +60,14 @@ spec:
                         B=$(grep -ac "$WS" /tmp/app.log || true)
                         [ "$B" = "$(cat /tmp/hb-ws 2>/dev/null)" ] || echo "$B" > /tmp/hb-ws
                         find /tmp/hb-ws -mmin -240 | grep -q .
+                        N=$(grep -ac 'Generated nonce for XUID' /tmp/app.log || true)
+                        T=$(grep -ac 'Transferred bedrock client' /tmp/app.log || true)
+                        if [ "$N" -le "$T" ] || [ "$T" != "$(cat /tmp/hb-join 2>/dev/null)" ]; then
+                          echo "$T" > /tmp/hb-join
+                        fi
+                        find /tmp/hb-join -mmin -2 | grep -q .
                   initialDelaySeconds: 300
-                  periodSeconds: 60
+                  periodSeconds: 30
                   failureThreshold: 3
             resources:
               limits:
