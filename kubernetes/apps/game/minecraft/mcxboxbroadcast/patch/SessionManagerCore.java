@@ -377,17 +377,28 @@ public abstract class SessionManagerCore {
         boolean rtaIsOpen = this.rtaWebsocket != null && this.rtaWebsocket.isOpen();
         boolean rtcIsOpen = this.netherNetChannel != null && this.netherNetChannel.isOpen();
 
-        // heavy-ops: observe only, on purpose. Joins ride the signaling websocket, but
-        // this method never looks at it -- netherNetChannel is a local bind(0) and so is
-        // always open. We have no evidence it reports closed during a wedge, so log it
-        // and correlate against the nonce timestamps before letting it force anything.
-        logSignalingState();
+        // heavy-ops: joins ride the signaling websocket, but this method only ever
+        // looked at netherNetChannel -- a local bind(0) that is always open. Measured
+        // on a wedged pod 2026-08-10: the signaling TLS connection simply vanishes with
+        // nothing reconnecting it, while RTA keeps the very same socket and the session
+        // carries on updating. Rebuild on it, rate limited so a flap can't turn into a
+        // reconnect loop against Xbox LIVE.
+        boolean signalingIsOpen = signalingIsOpen();
+        if (!signalingIsOpen) {
+            long now = System.currentTimeMillis();
+            if (now - lastSignalingRebuild < 300_000L) {
+                signalingIsOpen = true;
+            } else {
+                lastSignalingRebuild = now;
+            }
+        }
 
         // Check if the connection is Lost
-        if (!rtaIsOpen || !rtcIsOpen) {
+        if (!rtaIsOpen || !rtcIsOpen || !signalingIsOpen) {
             try {
                 logger.warn("Connection to websocket lost, re-creating session...");
-                logger.debug("WebSocket status: RTA Open: " + rtaIsOpen + " RTC Open: " + rtcIsOpen);
+                logger.debug("WebSocket status: RTA Open: " + rtaIsOpen + " RTC Open: " + rtcIsOpen
+                    + " Signaling Open: " + signalingIsOpen);
 
                 createSession();
                 logger.info("WebSocket session reconnected");
@@ -397,14 +408,19 @@ public abstract class SessionManagerCore {
         }
     }
 
+    /** heavy-ops: last signaling-triggered rebuild, epoch millis. */
+    private volatile long lastSignalingRebuild = 0L;
+
     /**
      * heavy-ops: read the signaling websocket's channel by reflection -- the field is
-     * protected and lives in another package. Purely diagnostic, never changes
-     * behaviour, and swallows everything so it can't take the session down.
+     * protected and lives in another package. Anything unexpected reports open, so a
+     * reflection failure can never manufacture a reconnect on its own.
+     *
+     * @return Whether the signaling websocket is still usable
      */
-    private void logSignalingState() {
+    private boolean signalingIsOpen() {
         if (this.signaling == null) {
-            return;
+            return true;
         }
         try {
             java.lang.reflect.Field field = Class
@@ -412,10 +428,12 @@ public abstract class SessionManagerCore {
                 .getDeclaredField("channel");
             field.setAccessible(true);
             Object channel = field.get(this.signaling);
-            logger.debug("Signaling websocket open: "
-                + (channel instanceof Channel && ((Channel) channel).isOpen()));
+            boolean open = channel instanceof Channel && ((Channel) channel).isOpen();
+            logger.debug("Signaling websocket open: " + open);
+            return open;
         } catch (Throwable t) {
             logger.debug("Could not read signaling state: " + t);
+            return true;
         }
     }
 

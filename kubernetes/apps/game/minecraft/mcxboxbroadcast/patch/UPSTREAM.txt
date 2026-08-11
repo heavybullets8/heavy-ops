@@ -6,16 +6,25 @@ These are upstream files with local changes applied. Every change is marked with
 a "heavy-ops" comment; nothing else is touched.
 
   SessionManagerCore.java
-    logSignalingState()     diagnostic only. Reads the signaling websocket's
-                            channel by reflection and logs it every ~30s.
-                            checkConnection() only ever looked at rtaWebsocket
-                            and netherNetChannel, and netherNetChannel is a
-                            local bind(0) so it is always open. We do NOT act on
-                            this yet -- no evidence it reports closed during a
-                            wedge. Correlate it against the nonce timestamps
-                            first, then decide.
+    signalingIsOpen()       reads the signaling websocket's channel by
+                            reflection and rebuilds the session when it is
+                            closed. checkConnection() only ever looked at
+                            rtaWebsocket and netherNetChannel, and
+                            netherNetChannel is a local bind(0) so it is always
+                            open -- nothing watched the socket joins ride on.
+                            Rate limited to one rebuild per 5 minutes.
     forceRecreateSession()  createSession() is private, so subclasses had no way
                             to rebuild the session.
+
+    Evidence, measured on a wedged pod 2026-08-10 against a healthy baseline
+    taken from the same pod 53 minutes earlier:
+      - two TLS connections (23.54.40.9 Akamai, 20.75.11.111 Azure) present
+        when healthy were gone when wedged, with nothing reconnecting them
+      - RTA was unaffected, still on the identical socket (localport 40962)
+      - the MPSD pair merely re-resolved, which is normal churn
+      - thread dumps were identical, so no thread died: a channel closed and
+        netty kept its event loop
+      - a restart fixes it, and it re-wedged ~63 minutes after the last one
 
   SessionManager.java
     watchJoin()             a good join logs a nonce then a transfer ~6s later,
