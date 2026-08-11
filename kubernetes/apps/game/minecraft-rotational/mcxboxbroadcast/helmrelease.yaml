@@ -28,10 +28,10 @@ spec:
 
         containers:
           app:
-            image:
+            image: &image
               repository: ghcr.io/mcxboxbroadcast/standalone
               tag: latest@sha256:8970858991b51bdbe19d13f6e68da843d99c5ed0e62d520007497feebbc3a428
-            command: ["/bin/sh", "-c", "java -jar /opt/app/MCXboxBroadcastStandalone.jar 2>&1 | tee /tmp/app.log"]
+            command: ["/bin/sh", "-c", "java -jar /patched/MCXboxBroadcastStandalone.jar 2>&1 | tee /tmp/app.log"]
             env:
               TZ: ${TIMEZONE}
             # checkConnection() only checks RTA and a local UDP bind, so NetherNet
@@ -62,12 +62,26 @@ spec:
                         find /tmp/hb-ws -mmin -240 | grep -q .
                         N=$(grep -ac 'Generated nonce for XUID' /tmp/app.log || true)
                         T=$(grep -ac 'Transferred bedrock client' /tmp/app.log || true)
-                        if [ "$N" -le "$T" ] || [ "$T" != "$(cat /tmp/hb-join 2>/dev/null)" ]; then
-                          echo "$T" > /tmp/hb-join
+                        R=$(grep -ac 'Forcing session rebuild' /tmp/app.log || true)
+                        if [ "$N" -le "$T" ] || [ "$T:$R" != "$(cat /tmp/hb-join 2>/dev/null)" ]; then
+                          echo "$T:$R" > /tmp/hb-join
                         fi
-                        find /tmp/hb-join -mmin -2 | grep -q .
+                        find /tmp/hb-join -mmin -2 | grep -q . && exit 0
+                        if [ ! -f /tmp/diag-done ]; then
+                          : > /tmp/diag-done
+                          D=/opt/app/config/diag
+                          mkdir -p "$D" || true
+                          S="$D/wedge-$(date +%Y%m%d-%H%M%S)"
+                          PID=$(jps 2>/dev/null | grep -v Jps | head -1 | cut -d' ' -f1) || true
+                          [ -n "$PID" ] && jstack "$PID" > "$S.jstack" 2>&1 || true
+                          awk 'NR>1 && $4=="01" {print $2, $3}' /proc/net/tcp6 > "$S.sockets" 2>&1 || true
+                          grep -a 'Signaling websocket open\|Generated nonce\|Transferred bedrock\|Forcing session rebuild' \
+                            /tmp/app.log | tail -40 > "$S.tail" 2>&1 || true
+                        fi
+                        exit 1
                   initialDelaySeconds: 300
                   periodSeconds: 30
+                  timeoutSeconds: 10
                   failureThreshold: 3
             resources:
               limits:
@@ -85,7 +99,56 @@ spec:
                 exec:
                   command: ["/bin/sh", "-c", "cp /config-template/config.yml /opt/app/config/config.yml"]
 
+        # Upstream never notices NetherNet dying, so patch two classes into a copy
+        # of the jar: one logs the signaling socket, one rebuilds the session when a
+        # join never lands. Source in ./patch, keep it in sync with the image digest.
+        initContainers:
+          patch:
+            image: *image
+            command:
+              - /bin/sh
+              - -c
+              - |
+                set -u
+                JAR=/opt/app/MCXboxBroadcastStandalone.jar
+                OUT=/patched/MCXboxBroadcastStandalone.jar
+                cp "$JAR" "$OUT"
+                # Fail soft. A Renovate bump can leave the vendored source behind,
+                # and a patch that no longer compiles must fall back to stock
+                # rather than crashloop the server.
+                if javac -nowarn -cp "$JAR" -d /patched/classes /patch-src/*.java \
+                  && (cd /patched/classes && jar uf "$OUT" com); then
+                  echo "patch applied"
+                else
+                  echo "PATCH FAILED - falling back to stock jar"
+                  cp "$JAR" "$OUT"
+                fi
+                rm -rf /patched/classes
+            resources:
+              limits:
+                cpu: 1000m
+                memory: 1Gi
+              requests:
+                cpu: 10m
+                memory: 128Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+
     persistence:
+      patched:
+        type: emptyDir
+        globalMounts:
+          - path: /patched
+
+      patch-src:
+        type: configMap
+        name: mcxboxbroadcast-rotational-patch
+        globalMounts:
+          - path: /patch-src
+            readOnly: true
+
       config:
         existingClaim: *app
         globalMounts:
