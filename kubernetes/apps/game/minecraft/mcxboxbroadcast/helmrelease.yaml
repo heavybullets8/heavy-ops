@@ -34,10 +34,10 @@ spec:
             command: ["/bin/sh", "-c", "java -jar /patched/MCXboxBroadcastStandalone.jar 2>&1 | tee /tmp/app.log"]
             env:
               TZ: ${TIMEZONE}
-            # checkConnection() only checks RTA and a local UDP bind, so NetherNet
-            # can stop taking joins while everything still looks healthy. A good
-            # join logs a nonce then a transfer ~6s later, so a nonce with no
-            # transfer means it's wedged. RTA/reconnect are just backstops.
+            # Backstop to the jar patch, for anything it can't reach: a wedged JVM,
+            # or a rebuild that doesn't take. A good join logs a nonce then a
+            # transfer ~6s later, so a nonce with no transfer means it's stuck.
+            # Dumps jstack + sockets to the PVC before restarting.
             probes:
               liveness:
                 enabled: true
@@ -62,9 +62,8 @@ spec:
                         find /tmp/hb-ws -mmin -240 | grep -q .
                         N=$(grep -ac 'Generated nonce for XUID' /tmp/app.log || true)
                         T=$(grep -ac 'Transferred bedrock client' /tmp/app.log || true)
-                        R=$(grep -ac 'Forcing session rebuild' /tmp/app.log || true)
-                        if [ "$N" -le "$T" ] || [ "$T:$R" != "$(cat /tmp/hb-join 2>/dev/null)" ]; then
-                          echo "$T:$R" > /tmp/hb-join
+                        if [ "$N" -le "$T" ] || [ "$T" != "$(cat /tmp/hb-join 2>/dev/null)" ]; then
+                          echo "$T" > /tmp/hb-join
                         fi
                         find /tmp/hb-join -mmin -2 | grep -q . && exit 0
                         if [ ! -f /tmp/diag-done ]; then
@@ -75,7 +74,7 @@ spec:
                           PID=$(jps 2>/dev/null | grep -v Jps | head -1 | cut -d' ' -f1) || true
                           [ -n "$PID" ] && jstack "$PID" > "$S.jstack" 2>&1 || true
                           awk 'NR>1 && $4=="01" {print $2, $3}' /proc/net/tcp6 > "$S.sockets" 2>&1 || true
-                          grep -a 'Signaling websocket open\|Generated nonce\|Transferred bedrock\|Forcing session rebuild' \
+                          grep -a 'Signaling websocket open\|Generated nonce\|Transferred bedrock' \
                             /tmp/app.log | tail -40 > "$S.tail" 2>&1 || true
                         fi
                         exit 1
@@ -99,9 +98,9 @@ spec:
                 exec:
                   command: ["/bin/sh", "-c", "cp /config-template/config.yml /opt/app/config/config.yml"]
 
-        # Upstream never notices NetherNet dying, so patch two classes into a copy
-        # of the jar: one logs the signaling socket, one rebuilds the session when a
-        # join never lands. Source in ./patch, keep it in sync with the image digest.
+        # checkConnection() never looks at the signaling websocket, so it closes and
+        # nothing reconnects it -- the world stays listed but nobody can join. Patch
+        # that one class into a copy of the jar. Keep ./patch in sync with the digest.
         initContainers:
           patch:
             image: *image

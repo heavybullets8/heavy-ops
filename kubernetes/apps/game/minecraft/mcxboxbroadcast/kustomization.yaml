@@ -12,7 +12,6 @@ configMapGenerator:
   - name: mcxboxbroadcast-patch
     files:
       - ./patch/SessionManagerCore.java
-      - ./patch/SessionManager.java
 generatorOptions:
   disableNameSuffixHash: true
 

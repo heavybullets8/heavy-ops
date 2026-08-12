@@ -1,45 +1,16 @@
-Vendored from rtm516/MCXboxBroadcast @ 202bf81 (build 149, Bedrock 1.26.40),
-matching image digest:
-  sha256:8970858991b51bdbe19d13f6e68da843d99c5ed0e62d520007497feebbc3a428
+Vendored from MCXboxBroadcast/Broadcaster @ 202bf81 (build 149, Bedrock 1.26.40),
+for image digest sha256:8970858991b51bdbe19d13f6e68da843d99c5ed0e62d520007497feebbc3a428.
 
-These are upstream files with local changes applied. Every change is marked with
-a "heavy-ops" comment; nothing else is touched.
+One change, marked "heavy-ops". checkConnection() never looked at the signaling
+websocket, so when it dropped nothing reconnected it and joins died silently.
+Writeup: https://github.com/MCXboxBroadcast/Broadcaster/issues/383
 
-  SessionManagerCore.java
-    signalingIsOpen()       reads the signaling websocket's channel by
-                            reflection and rebuilds the session when it is
-                            closed. checkConnection() only ever looked at
-                            rtaWebsocket and netherNetChannel, and
-                            netherNetChannel is a local bind(0) so it is always
-                            open -- nothing watched the socket joins ride on.
-                            Rate limited to one rebuild per 5 minutes.
-    forceRecreateSession()  createSession() is private, so subclasses had no way
-                            to rebuild the session.
+Re-sync when the digest changes:
+  git clone --depth 1 https://github.com/MCXboxBroadcast/Broadcaster
+  # running build is in the first log line: "Starting MCXboxBroadcast Standalone
+  # build N (git-master-SHA)"
+  # re-apply the heavy-ops block, bump the digest above
 
-    Evidence, measured on a wedged pod 2026-08-10 against a healthy baseline
-    taken from the same pod 53 minutes earlier:
-      - two TLS connections (23.54.40.9 Akamai, 20.75.11.111 Azure) present
-        when healthy were gone when wedged, with nothing reconnecting them
-      - RTA was unaffected, still on the identical socket (localport 40962)
-      - the MPSD pair merely re-resolved, which is normal churn
-      - thread dumps were identical, so no thread died: a channel closed and
-        netty kept its event loop
-      - a restart fixes it, and it re-wedged ~63 minutes after the last one
-
-  SessionManager.java
-    watchJoin()             a good join logs a nonce then a transfer ~6s later,
-                            and the transfer stamps playerHistory().lastSeen().
-                            If lastSeen is still older than the nonce after 60s
-                            the join never landed, so rebuild the session.
-                            Rate limited to one rebuild per 3 minutes.
-
-Re-sync whenever the image digest changes:
-  git clone --depth 1 https://github.com/rtm516/MCXboxBroadcast
-  # the running build is in the first log line: "Starting MCXboxBroadcast
-  # Standalone build N (git-master-SHA)"
-  # re-apply the heavy-ops blocks onto the new upstream files, then bump the
-  # digest recorded above
-
-If the patch stops compiling, the initContainer falls back to the stock jar and
-logs "PATCH FAILED", so a stale patch degrades to upstream behaviour rather than
-crashlooping the server. The liveness probe still covers the wedge either way.
+The initContainer is fail-soft: if the patch stops compiling it runs the stock
+jar and logs "PATCH FAILED". Nothing crashes, the wedges just come back. Check
+for that string after a Renovate bump.

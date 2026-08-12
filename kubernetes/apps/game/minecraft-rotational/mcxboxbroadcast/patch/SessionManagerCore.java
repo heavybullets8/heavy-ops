@@ -376,22 +376,7 @@ public abstract class SessionManagerCore {
     protected void checkConnection() {
         boolean rtaIsOpen = this.rtaWebsocket != null && this.rtaWebsocket.isOpen();
         boolean rtcIsOpen = this.netherNetChannel != null && this.netherNetChannel.isOpen();
-
-        // heavy-ops: joins ride the signaling websocket, but this method only ever
-        // looked at netherNetChannel -- a local bind(0) that is always open. Measured
-        // on a wedged pod 2026-08-10: the signaling TLS connection simply vanishes with
-        // nothing reconnecting it, while RTA keeps the very same socket and the session
-        // carries on updating. Rebuild on it, rate limited so a flap can't turn into a
-        // reconnect loop against Xbox LIVE.
         boolean signalingIsOpen = signalingIsOpen();
-        if (!signalingIsOpen) {
-            long now = System.currentTimeMillis();
-            if (now - lastSignalingRebuild < 300_000L) {
-                signalingIsOpen = true;
-            } else {
-                lastSignalingRebuild = now;
-            }
-        }
 
         // Check if the connection is Lost
         if (!rtaIsOpen || !rtcIsOpen || !signalingIsOpen) {
@@ -408,13 +393,14 @@ public abstract class SessionManagerCore {
         }
     }
 
-    /** heavy-ops: last signaling-triggered rebuild, epoch millis. */
-    private volatile long lastSignalingRebuild = 0L;
-
     /**
-     * heavy-ops: read the signaling websocket's channel by reflection -- the field is
-     * protected and lives in another package. Anything unexpected reports open, so a
-     * reflection failure can never manufacture a reconnect on its own.
+     * heavy-ops: joins ride the signaling websocket, but checkConnection() only ever
+     * looked at rtaWebsocket and netherNetChannel -- and netherNetChannel is a local
+     * bind(0), so it is open even when NetherNet is dead. The signaling socket closes
+     * silently, nothing reconnects it, and the broadcaster keeps advertising a world
+     * nobody can join. The channel field is protected and in another package, so read
+     * it reflectively; anything unexpected reports open so this can never manufacture
+     * a reconnect on its own.
      *
      * @return Whether the signaling websocket is still usable
      */
@@ -434,22 +420,6 @@ public abstract class SessionManagerCore {
         } catch (Throwable t) {
             logger.debug("Could not read signaling state: " + t);
             return true;
-        }
-    }
-
-    /**
-     * heavy-ops: createSession() is private, so subclasses have no way to rebuild the
-     * session when they can see joins failing while every socket still looks healthy.
-     *
-     * @param reason Why the rebuild was triggered, for the log
-     */
-    protected void forceRecreateSession(String reason) {
-        try {
-            logger.warn("Forcing session rebuild: " + reason);
-            createSession();
-            logger.info("WebSocket session reconnected");
-        } catch (SessionCreationException | SessionUpdateException e) {
-            logger.error("Session is dead and hit exception trying to re-create it", e);
         }
     }
 
