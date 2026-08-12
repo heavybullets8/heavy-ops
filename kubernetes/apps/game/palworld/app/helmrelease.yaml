@@ -34,6 +34,9 @@ spec:
               # community browser. Required for Xbox/PS5 players: consoles cannot
               COMMUNITY: "true"
               UPDATE_ON_BOOT: "true"
+              AUTO_UPDATE_ENABLED: "true"
+              AUTO_UPDATE_CRON_EXPRESSION: "30 4-7 * * *"
+              AUTO_UPDATE_WARN_MINUTES: "10"
               # save + graceful shutdown on pod termination go through the REST API,
               # which authenticates as admin:${ADMIN_PASSWORD}
               REST_API_ENABLED: "true"
