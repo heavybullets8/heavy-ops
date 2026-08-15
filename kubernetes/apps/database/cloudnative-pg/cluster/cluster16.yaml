@@ -19,6 +19,8 @@ spec:
       max_connections: "400"
       shared_buffers: 512MB
       huge_pages: "on"
+      # NOTE: some apps are flaky and leave transactions open, this cleans them up
+      idle_in_transaction_session_timeout: "120s"
     shared_preload_libraries:
       - "vchord"
     extensions:
