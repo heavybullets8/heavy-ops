@@ -10,7 +10,7 @@ libraries:
       - file: config/Anime_Collections_All.yaml
         asset_directory: config/assets/anime
     metadata_files:
-      url: "https://github.com/s0len/solen-ops/raw/refs/heads/main/kubernetes/apps/media/plex/kometa/custom/title_cards.yaml"
+      url: "https://raw.githubusercontent.com/s0len/meta-manager-config/main/metadata/series/title_cards.yaml"
     overlay_files:
       - default: languages
         template_variables:
@@ -90,7 +90,7 @@ libraries:
         asset_directory: config/assets/suggestions
 
     metadata_files:
-      url: "https://github.com/s0len/solen-ops/raw/refs/heads/main/kubernetes/apps/media/plex/kometa/custom/title_cards.yaml"
+      url: "https://raw.githubusercontent.com/s0len/meta-manager-config/main/metadata/series/title_cards.yaml"
 
     overlay_files:
       # Status in the top left corner
