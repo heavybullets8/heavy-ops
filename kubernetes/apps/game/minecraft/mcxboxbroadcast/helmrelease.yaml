@@ -30,7 +30,7 @@ spec:
           app:
             image: &image
               repository: ghcr.io/mcxboxbroadcast/standalone
-              tag: latest@sha256:11b74fc32de317f3650e981f42c10e5f06691fc284aaa26b6a32dad4be043d83
+              tag: latest@sha256:a9a032a053481c8a978e2650b9e989d66cc89a70a09b9fe8b0f7ffa710dfbabc
             command: ["/bin/sh", "-c", "java -jar /patched/MCXboxBroadcastStandalone.jar 2>&1 | tee /tmp/app.log"]
             env:
               TZ: ${TIMEZONE}
