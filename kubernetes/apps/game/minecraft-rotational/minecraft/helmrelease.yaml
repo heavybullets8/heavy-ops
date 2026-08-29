@@ -91,7 +91,7 @@ spec:
               CONTENT_LOG_CONSOLE_OUTPUT_ENABLED: "true"
               CONTENT_LOG_LEVEL: info
               # renovate: datasource=custom.bedrock depName=MinecraftBedrockServer versioning=loose
-              VERSION: "1.26.44.3"
+              VERSION: "1.26.45.1"
             probes:
               liveness:
                 enabled: true
