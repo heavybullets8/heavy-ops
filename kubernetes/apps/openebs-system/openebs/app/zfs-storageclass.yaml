@@ -9,6 +9,8 @@ parameters:
   recordsize: "16k"
   compression: lz4
   dedup: off
+  atime: "off"
+  logbias: latency
   thinprovision: "yes"
   shared: "yes"
 reclaimPolicy: Delete
@@ -26,6 +28,8 @@ parameters:
   recordsize: "64k"
   compression: lz4
   dedup: off
+  atime: "off"
+  logbias: latency
   thinprovision: "yes"
   shared: "yes"
 reclaimPolicy: Delete
@@ -43,6 +47,8 @@ parameters:
   recordsize: "128k"
   compression: lz4
   dedup: off
+  atime: "off"
+  logbias: latency
   thinprovision: "yes"
   shared: "yes"
 reclaimPolicy: Delete
@@ -60,6 +66,8 @@ parameters:
   recordsize: "256k"
   compression: lz4
   dedup: off
+  atime: "off"
+  logbias: latency
   thinprovision: "yes"
   shared: "yes"
 reclaimPolicy: Delete
@@ -77,6 +85,8 @@ parameters:
   recordsize: "1m"
   compression: lz4
   dedup: off
+  atime: "off"
+  logbias: latency
   thinprovision: "yes"
   shared: "yes"
 reclaimPolicy: Delete
