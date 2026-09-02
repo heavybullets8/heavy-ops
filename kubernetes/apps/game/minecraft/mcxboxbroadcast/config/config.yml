@@ -67,9 +67,7 @@ slack-webhook:
     %s (%s) has restrictions in place that prevent them from be friend with our account.
 
 # Enable debug logs
-# Required by the liveness probe: RTA websocket events are only logged at debug
-# level, and they are the fastest signal that the Xbox connection is still live.
-debug-log: true
+debug-log: false
 
 # Suppresses "Updated session!" log into debug
 suppress-session-update-info: false
