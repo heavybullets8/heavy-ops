@@ -40,6 +40,9 @@ spec:
           registry: quay.io/
     zfs-localpv:
       enabled: true
+      zfsController:
+        snapshotController:
+          enabled: false
       zfsNode:
         encrKeysDir: /var/openebs/keys
       crds:
