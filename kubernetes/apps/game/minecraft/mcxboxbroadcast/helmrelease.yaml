@@ -28,16 +28,12 @@ spec:
 
         containers:
           app:
-            image: &image
+            image:
               repository: ghcr.io/mcxboxbroadcast/standalone
               tag: latest@sha256:aa6290ec80ee9cb3a63927b2bcb298af63c5447508d5d2328a0eac57ebcc6d0c
             command: ["/bin/sh", "-c", "java -jar /patched/MCXboxBroadcastStandalone.jar 2>&1 | tee /tmp/app.log"]
             env:
               TZ: ${TIMEZONE}
-            # Backstop to the jar patch, for anything it can't reach: a wedged JVM,
-            # or a rebuild that doesn't take. A good join logs a nonce then a
-            # transfer ~6s later, so a nonce with no transfer means it's stuck.
-            # Dumps jstack + sockets to the PVC before restarting.
             probes:
               liveness:
                 enabled: true
@@ -47,40 +43,9 @@ spec:
                     command:
                       - /bin/sh
                       - -c
-                      - |
-                        set -e
-                        find /tmp/app.log -mmin -5 | grep -q .
-                        A=$(grep -ac 'RTA Websocket .* event:' /tmp/app.log || true)
-                        if [ "$A" -gt 0 ]; then
-                          [ "$A" = "$(cat /tmp/hb-rta 2>/dev/null)" ] || echo "$A" > /tmp/hb-rta
-                          find /tmp/hb-rta -mmin -10 | grep -q .
-                        fi
-                        WS='WebSocket session reconnected'
-                        WS="$WS\|NetherNet Broadcaster started on ID"
-                        B=$(grep -ac "$WS" /tmp/app.log || true)
-                        [ "$B" = "$(cat /tmp/hb-ws 2>/dev/null)" ] || echo "$B" > /tmp/hb-ws
-                        find /tmp/hb-ws -mmin -240 | grep -q .
-                        N=$(grep -ac 'Generated nonce for XUID' /tmp/app.log || true)
-                        T=$(grep -ac 'Transferred bedrock client' /tmp/app.log || true)
-                        if [ "$N" -le "$T" ] || [ "$T" != "$(cat /tmp/hb-join 2>/dev/null)" ]; then
-                          echo "$T" > /tmp/hb-join
-                        fi
-                        find /tmp/hb-join -mmin -2 | grep -q . && exit 0
-                        if [ ! -f /tmp/diag-done ]; then
-                          : > /tmp/diag-done
-                          D=/opt/app/config/diag
-                          mkdir -p "$D" || true
-                          S="$D/wedge-$(date +%Y%m%d-%H%M%S)"
-                          PID=$(jps 2>/dev/null | grep -v Jps | head -1 | cut -d' ' -f1) || true
-                          [ -n "$PID" ] && jstack "$PID" > "$S.jstack" 2>&1 || true
-                          awk 'NR>1 && $4=="01" {print $2, $3}' /proc/net/tcp6 > "$S.sockets" 2>&1 || true
-                          grep -a 'Signaling websocket open\|Generated nonce\|Transferred bedrock' \
-                            /tmp/app.log | tail -40 > "$S.tail" 2>&1 || true
-                        fi
-                        exit 1
+                      - find /tmp/app.log -mmin -5 | grep -q .
                   initialDelaySeconds: 300
-                  periodSeconds: 30
-                  timeoutSeconds: 10
+                  periodSeconds: 60
                   failureThreshold: 3
             resources:
               limits:
@@ -98,56 +63,7 @@ spec:
                 exec:
                   command: ["/bin/sh", "-c", "cp /config-template/config.yml /opt/app/config/config.yml"]
 
-        # checkConnection() never looks at the signaling websocket, so it closes and
-        # nothing reconnects it -- the world stays listed but nobody can join. Patch
-        # that one class into a copy of the jar. Keep ./patch in sync with the digest.
-        initContainers:
-          patch:
-            image: *image
-            command:
-              - /bin/sh
-              - -c
-              - |
-                set -u
-                JAR=/opt/app/MCXboxBroadcastStandalone.jar
-                OUT=/patched/MCXboxBroadcastStandalone.jar
-                cp "$JAR" "$OUT"
-                # Fail soft. A Renovate bump can leave the vendored source behind,
-                # and a patch that no longer compiles must fall back to stock
-                # rather than crashloop the server.
-                if javac -nowarn -cp "$JAR" -d /patched/classes /patch-src/*.java \
-                  && (cd /patched/classes && jar uf "$OUT" com); then
-                  echo "patch applied"
-                else
-                  echo "PATCH FAILED - falling back to stock jar"
-                  cp "$JAR" "$OUT"
-                fi
-                rm -rf /patched/classes
-            resources:
-              limits:
-                cpu: 1000m
-                memory: 1Gi
-              requests:
-                cpu: 10m
-                memory: 128Mi
-            securityContext:
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
-              capabilities: { drop: ["ALL"] }
-
     persistence:
-      patched:
-        type: emptyDir
-        globalMounts:
-          - path: /patched
-
-      patch-src:
-        type: configMap
-        name: mcxboxbroadcast-patch
-        globalMounts:
-          - path: /patch-src
-            readOnly: true
-
       config:
         existingClaim: mcxboxbroadcast-config
         globalMounts:

@@ -9,8 +9,5 @@ configMapGenerator:
   - name: mcxboxbroadcast-rotational-configmap
     files:
       - ./config/config.yml
-  - name: mcxboxbroadcast-rotational-patch
-    files:
-      - ./patch/SessionManagerCore.java
 generatorOptions:
   disableNameSuffixHash: true
