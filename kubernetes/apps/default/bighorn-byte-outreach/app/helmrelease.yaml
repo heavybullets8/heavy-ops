@@ -23,6 +23,13 @@ spec:
               repository: ghcr.io/heavybullets8/bighorn-byte-outreach
               tag: sha-add64f6@sha256:dfbfc696b0cee46588fbcba22517ff7b652faacce8510929fe8c154029b7d7e8
               pullPolicy: IfNotPresent
+            args:
+              - run
+              - --cached-only
+              - --frozen
+              - --allow-all
+              - scripts/outreach-worker.ts
+              - jobs
             env: &env
               TZ: ${TIMEZONE}
               PORT: &port 8080
@@ -93,12 +100,7 @@ spec:
               - run
               - --cached-only
               - --frozen
-              - --allow-env
-              - --allow-read
-              - --allow-write=/tmp
-              - --allow-net
-              - --allow-sys
-              - --allow-ffi
+              - --allow-all
               - scripts/outreach-worker.ts
               - scheduler
               - --once
@@ -130,12 +132,7 @@ spec:
               - run
               - --cached-only
               - --frozen
-              - --allow-env
-              - --allow-read
-              - --allow-write=/tmp
-              - --allow-net
-              - --allow-sys
-              - --allow-ffi
+              - --allow-all
               - scripts/outreach-worker.ts
               - mail
               - --once
