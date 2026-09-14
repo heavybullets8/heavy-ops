@@ -85,7 +85,7 @@ spec:
         cronjob:
           schedule: "*/5 * * * *"
           timeZone: ${TIMEZONE}
-          suspend: true
+          suspend: false
           concurrencyPolicy: Forbid
           backoffLimit: 1
           activeDeadlineSeconds: 1200
