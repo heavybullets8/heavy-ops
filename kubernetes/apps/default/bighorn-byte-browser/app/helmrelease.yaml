@@ -1,0 +1,102 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app bighorn-byte-browser
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+
+  values:
+    controllers:
+      bighorn-byte-browser:
+        strategy: Recreate
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/heavybullets8/bighorn-byte-browser
+              tag: sha-add64f6@sha256:8f2fa9088472737e9b39fd3bd4dfbab3561a78d21a775c923a55b57c674b2d47
+              pullPolicy: IfNotPresent
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  exec: &exec
+                    command:
+                      - node
+                      - -e
+                      - "const s=require('node:net').connect(3000,'127.0.0.1',()=>s.destroy());s.setTimeout(1500,()=>process.exit(1));s.on('error',()=>process.exit(1));"
+                  periodSeconds: 30
+                  timeoutSeconds: 3
+                  failureThreshold: 3
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  exec: *exec
+                  periodSeconds: 10
+                  timeoutSeconds: 3
+                  failureThreshold: 3
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  exec: *exec
+                  failureThreshold: 30
+                  periodSeconds: 5
+                  timeoutSeconds: 3
+            resources:
+              requests:
+                cpu: 1
+                memory: 2Gi
+              limits:
+                memory: 4Gi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+              seccompProfile:
+                type: Localhost
+                localhostProfile: profiles/bighorn-browser-containerd-2.2.7.json
+
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      terminationGracePeriodSeconds: 60
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: 3000
+
+    persistence:
+      config:
+        type: secret
+        name: bighorn-byte-browser-secret
+        globalMounts:
+          - path: /config/browser.json
+            subPath: browser.json
+            readOnly: true
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
+      dshm:
+        type: emptyDir
+        medium: Memory
+        sizeLimit: 1Gi
+        globalMounts:
+          - path: /dev/shm
