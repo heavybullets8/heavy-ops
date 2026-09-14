@@ -93,12 +93,7 @@ spec:
               - run
               - --cached-only
               - --frozen
-              - --allow-env
-              - --allow-read
-              - --allow-write=/tmp
-              - --allow-net
-              - --allow-sys
-              - --allow-ffi
+              - --allow-all
               - scripts/outreach-worker.ts
               - scheduler
               - --once
@@ -130,12 +125,7 @@ spec:
               - run
               - --cached-only
               - --frozen
-              - --allow-env
-              - --allow-read
-              - --allow-write=/tmp
-              - --allow-net
-              - --allow-sys
-              - --allow-ffi
+              - --allow-all
               - scripts/outreach-worker.ts
               - mail
               - --once
