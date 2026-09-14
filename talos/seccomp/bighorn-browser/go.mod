@@ -3,7 +3,7 @@ module heavy-ops/bighorn-browser-seccomp
 go 1.25.0
 
 require (
-	github.com/containerd/containerd/v2 v2.2.7
+	github.com/containerd/containerd/v2 v2.2.8
 	github.com/opencontainers/runtime-spec v1.3.0
 )
 
