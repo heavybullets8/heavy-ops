@@ -13,7 +13,7 @@ spec:
   values:
     controllers:
       jobs:
-        replicas: 1
+        replicas: 2
         strategy: Recreate
         annotations:
           reloader.stakater.com/auto: "true"
@@ -21,7 +21,7 @@ spec:
           app:
             image: &image
               repository: ghcr.io/heavybullets8/bighorn-byte-outreach
-              tag: sha-add64f6@sha256:dfbfc696b0cee46588fbcba22517ff7b652faacce8510929fe8c154029b7d7e8
+              tag: sha-942e992@sha256:b8141c861a918965084db28d4e3193ff12704b030e86ad99f637ac2c424bab1d
               pullPolicy: IfNotPresent
             args:
               - run
