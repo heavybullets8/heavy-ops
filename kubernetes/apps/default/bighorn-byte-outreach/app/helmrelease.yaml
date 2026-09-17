@@ -21,7 +21,7 @@ spec:
           app:
             image: &image
               repository: ghcr.io/heavybullets8/bighorn-byte-outreach
-              tag: sha-c4eb075@sha256:bc63c768d895c5951bd3d4b2afa87cc5e029dc4045f9fc5f7dc8cd42921ee2c3
+              tag: sha-da94c75@sha256:58860b10fab97ecb5c908fa68773e23909ccc997b7adcd72741508e69e3b734a
               pullPolicy: IfNotPresent
             args:
               - run
