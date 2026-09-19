@@ -21,7 +21,7 @@ spec:
           app:
             image: &image
               repository: ghcr.io/heavybullets8/bighorn-byte-outreach
-              tag: sha-500e0dab62d081476d993d3354eeea237d72e208@sha256:6df01f195b3ec2711890043407343a933c26cb68d64bdf19030b4c8751815869
+              tag: sha-e225184ad3bef32e16b33fcd1507181b294116b4@sha256:efd362042f884dedef2fc48ea36f801a9ed1ad2b830d3ef9dddc7bb3c3eca700
               pullPolicy: Always
             env: &env
               TZ: ${TIMEZONE}
@@ -34,6 +34,8 @@ spec:
               OUTREACH_BROWSER_URL: "ws://bighorn-byte-browser.business.svc.cluster.local:3000/$(BROWSER_WS_PATH)"
               OUTREACH_BROWSER_INTERNAL_ORIGIN: http://bighorn-byte-web.business.svc.cluster.local:8000
               OUTREACH_PROXY_URL: socks5://qbittorrent-gluetun.media.svc.cluster.local:8388
+              OUTREACH_SOLVER_URL: http://bighorn-byte-solver.business.svc.cluster.local:8191/v1
+              OUTREACH_SOLVER_PROXY_URL: http://bighorn-byte-public-proxy.business.svc.cluster.local:8080
             envFrom: &envFrom
               - secretRef:
                   name: bighorn-byte-outreach-secret
