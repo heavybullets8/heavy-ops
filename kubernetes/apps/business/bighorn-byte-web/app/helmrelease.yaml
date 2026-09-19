@@ -27,6 +27,7 @@ spec:
               TZ: ${TIMEZONE}
               BHB_ENVIRONMENT: production
               BHB_CRON_ENABLED: "0"
+              OUTREACH_DEPLOY_ROLES: ""
               BHB_PUBLIC_ORIGIN: https://bighornbyte.com
               OUTREACH_BROWSER_PROVIDER: playwright
               OUTREACH_BROWSER_URL: "ws://bighorn-byte-browser.business.svc.cluster.local:3000/$(BROWSER_WS_PATH)"
