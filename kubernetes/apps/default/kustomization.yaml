@@ -11,8 +11,6 @@ resources:
   - ./authelia/ks.yaml
   - ./bookstack/ks.yaml
   - ./docmost/ks.yaml
-  - ./docmost-bhb/ks.yaml
-  - ./documenso/ks.yaml
   - ./fcc-spam-reporter/ks.yaml
   - ./filebrowser/ks.yaml
   - ./glauth/ks.yaml
