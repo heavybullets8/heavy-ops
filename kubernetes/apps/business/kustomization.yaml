@@ -6,6 +6,7 @@ namespace: business
 components:
   - ../../components/common
 resources:
+  - ./registry-secret.yaml
   - ./bighorn-byte-web/ks.yaml
   - ./bighorn-byte-outreach/ks.yaml
   - ./bighorn-byte-browser/ks.yaml

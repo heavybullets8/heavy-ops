@@ -169,6 +169,8 @@ spec:
             securityContext: *securityContext
 
     defaultPodOptions:
+      imagePullSecrets:
+        - name: business-ghcr
       automountServiceAccountToken: false
       enableServiceLinks: false
       terminationGracePeriodSeconds: 1200

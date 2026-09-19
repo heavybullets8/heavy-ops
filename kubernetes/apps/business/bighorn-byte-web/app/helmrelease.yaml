@@ -77,6 +77,8 @@ spec:
               capabilities: { drop: ["ALL"] }
 
     defaultPodOptions:
+      imagePullSecrets:
+        - name: business-ghcr
       automountServiceAccountToken: false
       enableServiceLinks: false
       securityContext:

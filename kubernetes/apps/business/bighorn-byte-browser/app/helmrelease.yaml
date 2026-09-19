@@ -70,6 +70,8 @@ spec:
                 localhostProfile: profiles/bighorn-browser-containerd-2.2.7.json
 
     defaultPodOptions:
+      imagePullSecrets:
+        - name: business-ghcr
       automountServiceAccountToken: false
       enableServiceLinks: false
       terminationGracePeriodSeconds: 60
