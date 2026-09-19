@@ -13,6 +13,7 @@ spec:
   values:
     controllers:
       bighorn-byte-browser:
+        replicas: 0
         strategy: Recreate
         annotations:
           reloader.stakater.com/auto: "true"

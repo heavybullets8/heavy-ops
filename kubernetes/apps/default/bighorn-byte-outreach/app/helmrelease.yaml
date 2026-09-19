@@ -13,7 +13,7 @@ spec:
   values:
     controllers:
       jobs:
-        replicas: 2
+        replicas: 0
         strategy: Recreate
         annotations:
           reloader.stakater.com/auto: "true"
@@ -85,7 +85,7 @@ spec:
         cronjob:
           schedule: "*/5 * * * *"
           timeZone: ${TIMEZONE}
-          suspend: false
+          suspend: true
           concurrencyPolicy: Forbid
           backoffLimit: 1
           activeDeadlineSeconds: 1200
@@ -117,7 +117,7 @@ spec:
         cronjob:
           schedule: "* * * * *"
           timeZone: ${TIMEZONE}
-          suspend: false
+          suspend: true
           concurrencyPolicy: Forbid
           backoffLimit: 1
           activeDeadlineSeconds: 1200
