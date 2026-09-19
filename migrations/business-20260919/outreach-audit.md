@@ -88,3 +88,61 @@ Final health checks found both application deployments Ready on the recorded
 revision, no container restarts, HTTP 200 from the public home, admin login and
 readiness endpoint, and no firing warning or critical alerts. The five resumed
 emails remained normally queued, with zero attempts and one active job each.
+
+## Private demo isolation repair
+
+The owner reported the public `/demo` showing a private dealer's branded admin
+preview. An anonymous production HTTP request reproduced the exposure without
+a cookie: the response contained that dealer's presentation and staff-review
+navigation paths. The response was dynamic with `private, no-store`, rather
+than a cached public page. Database-backed web routes were placed in maintenance
+while the fix was prepared; the marketing site and worker remained available.
+
+The actual compiled application reproduced the same problem over a loopback
+HTTP server: private A, private B, then anonymous `/demo` rendered private B.
+The application now opens a neutral demo context at its outermost request
+middleware, before any routing or observation middleware runs. Private routes
+then establish their own authenticated or capability-scoped context normally.
+This correction is application revision
+`85e5f7c62f0fa44bf599234c6a3ae72c2656d93d` and changes only the web image in
+production. No particular Deno vendor defect or version is established as the
+cause; smaller standalone async-context harnesses did not reproduce the leak.
+
+Validation before publication:
+
+- The compiled HTTP regression failed before the fix and passed afterward.
+- Cold staff-review startup, two private recipient links, public chooser and
+  generic storefront, concurrent requests, invalid capabilities, and staff
+  review authentication are covered. CI now builds and runs this formerly
+  optional compiled-route regression in the database lane.
+- Four independent browser contexts passed on the production Deno version,
+  including visiting the public demo in the same browser after a private demo
+  or staff review. Browser runtime errors: zero.
+- Full source checks passed: 1,524 unit tests, formatting, lint, types and Fresh
+  guard. The dedicated compiled database test and cold-start check passed.
+- A read-only maintenance-window worker audit found no failed or paused research
+  work and no affected email-drafting or screenshot jobs. Two normal retries
+  concerned external dealer-site access restrictions, not the maintenance page.
+  No warning or critical alerts were firing.
+
+Release verification:
+
+- Check run `35467554773` passed for the exact fix revision: 1,524 unit tests,
+  795 database tests and build/boot/HTTP smoke checks. Image publication run
+  `35467554713` passed.
+- Web image pinned to
+  `sha256:00655aedc65274e4b4dd0f7464b1cf8df3803e950b664dc3679aef3f1e2f9803`.
+- The new image passed a contained production check before reopening and the
+  live listener passed the same check afterward: 27 requests, 201 assertions,
+  two real existing recipient links, two staff reviews, anonymous chooser,
+  generic storefront, concurrent requests and rejected invalid credentials.
+  Both temporary verification sessions were deleted successfully. Existing
+  revisions, leads and recipient links were not changed.
+- Removing the maintenance entry from Helm values left the imperative emergency
+  setting on the Deployment. Live verification caught the resulting HTTP 503.
+  The desired state now explicitly sets `BHB_MAINTENANCE_MODE=0`, and the live
+  Deployment was reconciled to that value before the successful live checks.
+- An independent public browser request followed `/demo` to `/demo/start` with
+  HTTP 200 and the five generic industry choices. Private navigation links and
+  private presentation payloads were absent; browser runtime errors were zero.
+  The existing production bot-verification gate remains enabled.
