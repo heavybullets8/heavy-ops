@@ -1,0 +1,172 @@
+{
+  "date": "2026-09-19",
+  "status": "production cutover complete",
+  "applications": [
+    "bighornbyte.com",
+    "www.bighornbyte.com",
+    "tv.bighornbyte.com",
+    "notes.bighornbyte.com",
+    "sign.bighornbyte.com"
+  ],
+  "namespace": "business",
+  "sourcePostgres": "17.2",
+  "targetPostgres": "18.6",
+  "finalCopy": {
+    "admin": {
+      "rows": {
+        "match": true,
+        "sourceObjects": 65,
+        "restoredObjects": 65
+      },
+      "constraints": {
+        "match": false,
+        "sourceObjects": 257,
+        "restoredObjects": 257,
+        "changedObjects": [
+          "outreach_scout_settings",
+          "outreach_locations",
+          "outreach_scout_settings",
+          "outreach_locations",
+          "outreach_scout_regions",
+          "outreach_scout_regions"
+        ]
+      },
+      "triggers": {
+        "match": true,
+        "sourceObjects": 15,
+        "restoredObjects": 15
+      },
+      "nullable": {
+        "match": true,
+        "sourceObjects": 692,
+        "restoredObjects": 692
+      }
+    },
+    "demo": {
+      "rows": {
+        "match": true,
+        "sourceObjects": 3,
+        "restoredObjects": 3
+      },
+      "constraints": {
+        "match": true,
+        "sourceObjects": 9,
+        "restoredObjects": 9
+      },
+      "triggers": {
+        "match": true,
+        "sourceObjects": 1,
+        "restoredObjects": 1
+      },
+      "nullable": {
+        "match": true,
+        "sourceObjects": 25,
+        "restoredObjects": 25
+      }
+    },
+    "scale-tv": {
+      "rows": {
+        "match": true,
+        "sourceObjects": 10,
+        "restoredObjects": 10
+      },
+      "constraints": {
+        "match": true,
+        "sourceObjects": 15,
+        "restoredObjects": 15
+      },
+      "triggers": {
+        "match": true,
+        "sourceObjects": 0,
+        "restoredObjects": 0
+      },
+      "nullable": {
+        "match": true,
+        "sourceObjects": 84,
+        "restoredObjects": 84
+      }
+    }
+  },
+  "adminConstraintEquivalence": {
+    "phase": "final",
+    "database": "bighorn_byte_admin",
+    "constraints": 257,
+    "exactTextMatches": 254,
+    "equivalentCheckExpressions": [
+      {
+        "table": "outreach_locations",
+        "constraint": "outreach_location_values",
+        "equivalent": true,
+        "difference": "Associative AND grouping only; identical parsed PostgreSQL expressions after flattening AND groups"
+      },
+      {
+        "table": "outreach_scout_regions",
+        "constraint": "outreach_campaign_settings",
+        "equivalent": true,
+        "difference": "Associative AND grouping only; identical parsed PostgreSQL expressions after flattening AND groups"
+      },
+      {
+        "table": "outreach_scout_settings",
+        "constraint": "outreach_scout_settings_categories",
+        "equivalent": true,
+        "difference": "Associative AND grouping only; identical parsed PostgreSQL expressions after flattening AND groups"
+      }
+    ],
+    "allConstraintsVerified": true
+  },
+  "offsiteRecovery": {
+    "source": "R2 Barman base backup plus archived WAL",
+    "tablesVerifiedByContentDigest": 78,
+    "result": "passed",
+    "temporaryRecoveryClusterRemoved": true
+  },
+  "postCutoverWal": {
+    "archivedWal": "00000001000003C70000000C",
+    "archivedAt": "2026-09-19T18:05:34.958087Z"
+  },
+  "retired": {
+    "denoApps": [
+      "bighorn-byte",
+      "scale-tv",
+      "falcon-construction"
+    ],
+    "solitude": "app already absent; stale DNS removed",
+    "prismaProjects": [
+      "proj_cmt5a4wyy0qq45nc3v525iyhz",
+      "proj_cmrcqnmdb14av1cgjvc3u9nqd"
+    ],
+    "hostedDatabaseWorkflowsRemoved": [
+      "heavybullets8/bighorn-byte",
+      "heavybullets8/scale-tv"
+    ]
+  },
+  "outreach": {
+    "vpnHttp": "passed",
+    "vpnChromium": "passed",
+    "directBrowserInternetBlocked": true,
+    "privateDnsTargetBlocked": true,
+    "internalScreenshotAndCookieIsolation": "passed",
+    "search": "Brave HTML via Gluetun SOCKS",
+    "hostedAi": "DeepSeek",
+    "workerHealthy": true,
+    "mailAndSchedulerNaturalTicks": "completed",
+    "queuedMailAtCutover": 152,
+    "dailyRecipientLimit": 80,
+    "minimumGapSeconds": 90,
+    "jitterSeconds": 30,
+    "earliestExistingSendAfter": "2026-09-22T15:00:23Z"
+  },
+  "documents": {
+    "businessWorkloads": "ready",
+    "cutoverSnapshots": "pinned and retained in both repositories",
+    "oldDefaultPvc": "retained"
+  },
+  "preserved": [
+    "customer Deno apps/databases",
+    "accounting-connections-review",
+    "customer review apps",
+    "Cloudflare mail Workers",
+    "R2 storage and offsite backups"
+  ],
+  "followup": "https://linear.app/bighorn-byte/issue/BIG-141/simplify-bighorn-byte-around-its-self-hosted-runtime"
+}
