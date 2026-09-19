@@ -26,6 +26,7 @@ spec:
             env:
               TZ: ${TIMEZONE}
               BHB_ENVIRONMENT: production
+              BHB_MAINTENANCE_MODE: "0"
               BHB_CRON_ENABLED: "0"
               OUTREACH_DEPLOY_ROLES: ""
               BHB_PUBLIC_ORIGIN: https://bighornbyte.com
