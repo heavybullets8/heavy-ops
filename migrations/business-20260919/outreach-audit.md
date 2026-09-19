@@ -146,3 +146,98 @@ Release verification:
   HTTP 200 and the five generic industry choices. Private navigation links and
   private presentation payloads were absent; browser runtime errors were zero.
   The existing production bot-verification gate remains enabled.
+
+## Default FlareSolverr dealer research
+
+The two reported research failures (99 West Trailers and 4 Corners Trailers)
+reproduced with both the raw VPN reader and the prior Playwright fallback.
+FlareSolverr returned real dealer HTML for both. At the owner's request,
+FlareSolverr is now the normal HTML research reader, using one warm session
+across each dealer's extraction batches and homepage screenshot. PDFs, images,
+search and structured feeds retain their native VPN readers; private demo
+screenshots retain their separate Playwright service.
+
+Application revision `e225184ad3bef32e16b33fcd1507181b294116b4` passed Check run
+`35472144208`: 1,539 unit tests, 798 database tests, formatting, lint, types,
+Fresh guard and build/boot/HTTP smoke checks. The compiled private-demo
+isolation regression remains in that lane. Publish run `35472143374` produced
+the pinned web, outreach and solver images. Native offline Chromium checks also
+passed against the patched solver, together with 13 Python tests.
+
+The dedicated solver and gateway run in `business`. The gateway verifies public
+addresses using VPN DNS and opens SOCKS connections to vetted numeric IPs.
+Chromium retains its TLS connection inside the tunnel. Cilium admits only
+web/outreach to solver, solver to gateway, and gateway to Gluetun (plus DNS).
+The solver image enforces the gateway, validates final document HTTP status,
+keeps cookies inside the browser, bounds sessions, and reaps idle sessions.
+Challenge headers/pages and HTTP 429 are rejected; screenshots share the same
+session and throttling aborts the crawl. All crawl and screenshot receipts
+remain zero cost, with existing AI budgets and daily call limits preserved.
+
+Deployment validation:
+
+- Support infrastructure: `e8bee86d`; compatible Deno exec probe correction:
+  `a00bd635`; application enablement: `0b8260d3`. The gateway process started
+  normally, but its original probe used a flag unsupported by the pinned Deno
+  image. The corrected live probes match Git; Helm upgrade v2 is Ready.
+- Both actual dealer sites returned HTTP 200 and valid screenshots through the
+  dedicated service. First reads took 40.9 and 28.1 seconds; subsequent warm
+  screenshot reads took 4.7 and 4.2 seconds. API cookie arrays were empty, and
+  both sessions were destroyed afterward.
+- Eight actual private-address HTTP/CONNECT probes returned 403. Solver direct
+  Internet, raw Gluetun, and internal web connections were blocked. Gateway
+  direct Internet was blocked. Both pods were Ready with zero restarts.
+- Web Helm v11 and outreach Helm v7 are Ready on the tested images. Public home
+  and readiness returned HTTP 200; anonymous `/demo` redirected to the generic
+  `/demo/start`, without the reported private branding or staff-review links.
+- During initial research the solver used about 576 MiB and the gateway 43 MiB;
+  the host was using about 17% of its memory. The four-session maximum is a
+  safety bound, not a claim of measured four-browser throughput.
+- The two original research jobs were resumed through `controlJob`, preserving
+  checkpoints, spending and caps. No mail schedule or recipient was changed.
+
+The first concurrent production run exposed an undersized shared gateway limit:
+one browser held about 25 tunnels, and the two-browser probe reached 64 TCP
+connections (32 browser connections plus 32 upstream connections) before Chrome
+reported `ERR_CONNECTION_RESET`. Browser creation itself succeeded, and an
+independent offline two-browser navigation passed under the pod's CPU/memory
+limits. The 99 West job continued and succeeded; the affected 4 Corners job was
+returned to the normal serial queue with its spending and checkpoints intact.
+
+Follow-up application revision `771ee73e257dbd2fce41d0bb895f8c818ed8c2a5` makes
+the gateway bootstrap's shared connection ceiling configurable, defaulting to
+128 for the existing four-session bound. The generic helper remains at 32.
+A regression holds 40 real simultaneous tunnels. The solver also treats an
+already-destroyed session as successful cleanup, avoiding the misleading second
+error after a failed request already removed its browser. Local checks passed:
+1,540 unit tests, 8 gateway tests, 14 Python tests and native Chromium smoke.
+
+A separate ASSESS batch encountered HTTP 429 from `www.city-data.com`. This is
+not one of the two reported dealers. The directory-filtering and per-site
+cooldown follow-up is recorded on BIG-141; no site throttling or paid budget was
+bypassed to clear it.
+
+Both original research jobs subsequently completed successfully: 99 West at
+22:32:43 UTC and 4 Corners at 22:39:51 UTC. Their original $2 per-job limits
+remain, `overCap=false`, and all attempt receipts are settled. The 10 and 11
+new crawl/screenshot receipts respectively total zero microdollars. Total saved
+job spending is 60,044 microdollars for 99 West and 76,493 for 4 Corners; the
+latter includes its pre-existing 8,000 microdollars. The successful retries
+therefore added $0.128537 combined, from paid processing rather than crawling.
+
+Capacity-fix release verification:
+
+- Check `35473676159` passed with 1,540 unit tests, 798 database tests and HTTP
+  smoke checks; Publish `35473675743` succeeded for the exact follow-up SHA.
+- Infrastructure `483e55b7` deploys only the gateway and solver corrections.
+  The solver was idle before rollout. Helm v3 is Ready; web/outreach remain on
+  the already-validated `e225184` application images.
+- A final concurrent production canary read and photographed both actual
+  dealers successfully (HTTP 200, real dealer content, valid PNGs, empty API
+  cookie arrays). Repeated session destruction also succeeded. The gateway
+  reported its configured 128-connection limit and handled a peak of 184
+  established TCP connections, exceeding the old saturation point.
+- Public home and readiness returned HTTP 200 after both research jobs finished.
+  Anonymous `/demo` still opened the generic chooser without TNJ, 99 West,
+  4 Corners or staff-review navigation content. No warning or critical alerts
+  were firing.
