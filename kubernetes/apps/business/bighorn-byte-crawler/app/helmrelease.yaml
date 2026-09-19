@@ -40,7 +40,6 @@ spec:
                     command:
                       - deno
                       - eval
-                      - --allow-net=127.0.0.1:8080
                       - 'const connection = await Deno.connect({ hostname: "127.0.0.1", port: 8080 }); connection.close();'
                   periodSeconds: 30
                   timeoutSeconds: 2
