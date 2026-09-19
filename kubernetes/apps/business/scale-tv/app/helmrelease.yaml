@@ -21,7 +21,7 @@ spec:
           app:
             image: &image
               repository: ghcr.io/heavybullets8/scale-tv
-              tag: sha-4a64c74341395ab69b719d8f48976c0ff11b2c5f@sha256:ff0b5258983140155507012d0068d8a7f81ca32e865d933780b2a32a2bab27aa
+              tag: sha-e37e9222d83ed23af9209befe043fe4b0135b304@sha256:0869bbcf29385229967ccffc923a0b88320d7b1a1b006c7dd26242556047de20
               pullPolicy: Always
             env: &env
               TZ: ${TIMEZONE}
@@ -71,13 +71,41 @@ spec:
               readOnlyRootFilesystem: true
               capabilities: { drop: ["ALL"] }
 
+      migrate:
+        type: job
+        annotations:
+          helm.sh/hook: pre-install,pre-upgrade
+          helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+          helm.sh/hook-weight: "-10"
+        job:
+          backoffLimit: 1
+          activeDeadlineSeconds: 600
+        containers:
+          app:
+            image: *image
+            env:
+              DIRECT_URL:
+                valueFrom:
+                  secretKeyRef:
+                    name: scale-tv-secret
+                    key: DIRECT_URL
+            args: ["task", "db:deploy"]
+            resources: &jobResources
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                cpu: 1
+                memory: 1Gi
+            securityContext: *securityContext
+
       hourly-maintenance:
         type: cronjob
         annotations: *reload
         cronjob:
           schedule: "0 * * * *"
           timeZone: Etc/UTC
-          suspend: true
+          suspend: false
           concurrencyPolicy: Forbid
           backoffLimit: 1
           activeDeadlineSeconds: 1200
@@ -89,13 +117,7 @@ spec:
             env: *env
             envFrom: *envFrom
             args: ["run", "--cached-only", "--frozen", "--allow-all", "scripts/maintenance.ts", "hourly"]
-            resources: &jobResources
-              requests:
-                cpu: 100m
-                memory: 256Mi
-              limits:
-                cpu: 1
-                memory: 1Gi
+            resources: *jobResources
             securityContext: *securityContext
 
       nightly-maintenance:
@@ -104,7 +126,7 @@ spec:
         cronjob:
           schedule: "0 9 * * *"
           timeZone: Etc/UTC
-          suspend: true
+          suspend: false
           concurrencyPolicy: Forbid
           backoffLimit: 1
           activeDeadlineSeconds: 1200

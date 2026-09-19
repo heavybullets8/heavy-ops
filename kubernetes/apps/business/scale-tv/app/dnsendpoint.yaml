@@ -1,0 +1,11 @@
+---
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: tv-bighornbyte
+spec:
+  endpoints:
+    - dnsName: tv.bighornbyte.com
+      recordType: CNAME
+      targets:
+        - home.bighornbyte.com
