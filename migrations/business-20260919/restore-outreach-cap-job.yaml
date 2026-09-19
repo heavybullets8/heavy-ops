@@ -1,0 +1,78 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bighorn-byte-restore-cap-20260920
+  namespace: business
+spec:
+  ttlSecondsAfterFinished: 86400
+  activeDeadlineSeconds: 86400
+  backoffLimit: 2
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: bighorn-byte-outreach
+        app.kubernetes.io/instance: bighorn-byte-restore-cap-20260920
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      terminationGracePeriodSeconds: 30
+      imagePullSecrets:
+        - name: business-ghcr
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: restore-cap
+          image: ghcr.io/heavybullets8/bighorn-byte-outreach:sha-e760ba9af391337dfdb9777677be9758c1f974b1@sha256:b8740e7dc253144f083945c429fd1d2191ee7bdfa6f0844777287011c9ef1609
+          imagePullPolicy: IfNotPresent
+          workingDir: /app
+          command: [deno]
+          args:
+            - run
+            - --cached-only
+            - --frozen
+            - --allow-all
+            - --config=/app/deno.json
+            - /restore/restore-outreach-cap.ts
+          env:
+            - name: BHB_ENVIRONMENT
+              value: production
+            - name: BHB_CRON_ENABLED
+              value: "0"
+            - name: OUTREACH_ENVIRONMENT
+              value: production
+          envFrom:
+            - secretRef:
+                name: bighorn-byte-outreach-secret
+          resources:
+            requests:
+              cpu: 25m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: script
+              mountPath: /restore
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: script
+          configMap:
+            name: bighorn-byte-restore-cap-20260920
+            defaultMode: 0444
+        - name: tmp
+          emptyDir:
+            sizeLimit: 32Mi
