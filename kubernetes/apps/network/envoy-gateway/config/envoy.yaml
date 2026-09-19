@@ -88,7 +88,18 @@ spec:
       tls:
         certificateRefs:
           - kind: Secret
-            name: bighornbyte-com-tls
+            name: bighornbyte-origin-tls
+    - name: https-bighornbyte-apex
+      protocol: HTTPS
+      port: 443
+      hostname: bighornbyte.com
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        certificateRefs:
+          - kind: Secret
+            name: bighornbyte-origin-tls
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/gateway.networking.k8s.io/gateway_v1.json
 apiVersion: gateway.networking.k8s.io/v1

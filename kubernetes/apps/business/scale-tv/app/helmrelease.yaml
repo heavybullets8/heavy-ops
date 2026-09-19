@@ -1,0 +1,145 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app scale-tv
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+
+  values:
+    controllers:
+      web:
+        replicas: 0
+        strategy: RollingUpdate
+        annotations: &reload
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image: &image
+              repository: ghcr.io/heavybullets8/scale-tv
+              tag: selfhost-migration-20260919
+              pullPolicy: Always
+            env: &env
+              TZ: ${TIMEZONE}
+              SITE_URL: https://tv.bighornbyte.com
+            envFrom: &envFrom
+              - secretRef:
+                  name: scale-tv-secret
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: &port 8000
+                  periodSeconds: 30
+                  timeoutSeconds: 2
+                  failureThreshold: 3
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /readyz
+                    port: *port
+                  periodSeconds: 10
+                  timeoutSeconds: 2
+                  failureThreshold: 3
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: *port
+                  periodSeconds: 5
+                  failureThreshold: 30
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                cpu: 1
+                memory: 1Gi
+            securityContext: &securityContext
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+
+      hourly-maintenance:
+        type: cronjob
+        annotations: *reload
+        cronjob:
+          schedule: "0 * * * *"
+          timeZone: Etc/UTC
+          suspend: true
+          concurrencyPolicy: Forbid
+          backoffLimit: 1
+          activeDeadlineSeconds: 1200
+          successfulJobsHistory: 1
+          failedJobsHistory: 2
+        containers:
+          app:
+            image: *image
+            env: *env
+            envFrom: *envFrom
+            args: ["run", "--cached-only", "--frozen", "--allow-all", "scripts/maintenance.ts", "hourly"]
+            resources: &jobResources
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                cpu: 1
+                memory: 1Gi
+            securityContext: *securityContext
+
+      nightly-maintenance:
+        type: cronjob
+        annotations: *reload
+        cronjob:
+          schedule: "0 9 * * *"
+          timeZone: Etc/UTC
+          suspend: true
+          concurrencyPolicy: Forbid
+          backoffLimit: 1
+          activeDeadlineSeconds: 1200
+          successfulJobsHistory: 1
+          failedJobsHistory: 2
+        containers:
+          app:
+            image: *image
+            env: *env
+            envFrom: *envFrom
+            args: ["run", "--cached-only", "--frozen", "--allow-all", "scripts/maintenance.ts", "nightly"]
+            resources: *jobResources
+            securityContext: *securityContext
+
+    defaultPodOptions:
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      terminationGracePeriodSeconds: 60
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+
+    service:
+      app:
+        controller: web
+        ports:
+          http:
+            port: *port
+
+    persistence:
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp

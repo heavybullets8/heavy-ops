@@ -1,0 +1,12 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: business
+components:
+  - ../../components/common
+resources:
+  - ./bighorn-byte-web/ks.yaml
+  - ./bighorn-byte-outreach/ks.yaml
+  - ./bighorn-byte-browser/ks.yaml
+  - ./scale-tv/ks.yaml

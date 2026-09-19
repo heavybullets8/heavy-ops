@@ -3,16 +3,16 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: bighornbyte-com
+  name: bighornbyte-origin
 spec:
-  secretName: bighornbyte-com-tls
+  secretName: bighornbyte-origin-tls
   issuerRef:
     group: cert-manager.k8s.cloudflare.com
     kind: ClusterOriginIssuer
     name: cloudflare-origin-ca
-  commonName: "*.bighornbyte.com"
+  commonName: bighornbyte.com
   dnsNames:
+    - bighornbyte.com
     - "*.bighornbyte.com"
-  # Origin CA certs have long validity; renew conservatively.
-  duration: 8760h # 1 year
-  renewBefore: 720h # 30 days
+  duration: 8760h
+  renewBefore: 720h

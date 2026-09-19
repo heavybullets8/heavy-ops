@@ -9,8 +9,6 @@ components:
 resources:
   - ./atuin/ks.yaml
   - ./authelia/ks.yaml
-  - ./bighorn-byte-browser/ks.yaml
-  - ./bighorn-byte-outreach/ks.yaml
   - ./bookstack/ks.yaml
   - ./docmost/ks.yaml
   - ./docmost-bhb/ks.yaml
