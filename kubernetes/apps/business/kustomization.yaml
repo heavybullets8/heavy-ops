@@ -5,9 +5,12 @@ kind: Kustomization
 namespace: business
 components:
   - ../../components/common
+  - ../../components/kopiur/secret
 resources:
   - ./registry-secret.yaml
   - ./bighorn-byte-web/ks.yaml
   - ./bighorn-byte-outreach/ks.yaml
   - ./bighorn-byte-browser/ks.yaml
   - ./scale-tv/ks.yaml
+  - ./docmost-bhb/ks.yaml
+  - ./documenso/ks.yaml
