@@ -241,3 +241,44 @@ Capacity-fix release verification:
   Anonymous `/demo` still opened the generic chooser without TNJ, 99 West,
   4 Corners or staff-review navigation content. No warning or critical alerts
   were firing.
+
+## Browser origins after TLS termination
+
+The operator reported HTTP 403 from the events page's "Mark all read" action.
+A temporary owner session reproduced the actual public HTTPS request without
+changing any notifications (`seenAt=invalid`): authenticated GET returned 200,
+but POST returned 403. The same internal HTTP POST succeeded only when its
+Origin was also HTTP. The application was comparing the browser's HTTPS Origin
+to Deno's internal HTTP request URL. This concerns incoming HTTPS routing, not
+the outbound crawler/VPN proxy. Controlled 403 responses are not emitted by the
+application's server-error logger, so a clean error log did not detect this.
+
+Application correction `b4b924823de85536dc778f44e81425b87bdb16ca`:
+
+- Resolve browser writes against validated `BHB_PUBLIC_ORIGIN`. Missing, null,
+  foreign and internal origins remain forbidden. Forwarded host/proto headers
+  cannot override that trusted origin; invalid configuration fails closed.
+- Apply the shared guard to outreach forms, mail JSON actions, preview contact
+  forms, preview browser events and browser error reporting.
+- Use the public origin for analytics classification, demo navigation/referrers,
+  mail workspace/composer URLs, screenshot requests and captured mail tracking.
+  Entry and preview visit cookies now retain Secure behind TLS termination.
+- Configure the auth package's separate `SITE_URL` and `DENO_ENV` inputs in the
+  web deployment. A harmless missing-fields login probe confirmed the old
+  configuration rejected even the legitimate HTTPS origin before credentials
+  were checked. The existing www redirect already canonicalizes to the apex.
+
+Local verification passed: 1,547 unit tests and 59 affected database tests.
+The compiled app regression drives the real HTTP boundary with an owner session,
+marks only notifications visible at the page's saved cutoff, leaves newer
+notifications unread and rejects foreign/missing/null/internal origins. It also
+checks the sign-in origin gate without credentials or external bot verification.
+Existing private-preview isolation checks still pass. Production canaries use
+short-lived sessions held only inside the web pod and delete them afterward.
+
+Release gate: Check `35475428862` passed for that exact application revision,
+including source/unit checks, compiled-page smoke and the full database lane.
+Publish `35475428027` succeeded. The prepared web image is pinned to digest
+`sha256:53cd6c66ed40c0e97b6f41333398e4f0e43274f54aafc512b8260d091894f4ef`.
+The HelmRelease passed a server dry-run before reconciliation. The separate
+outreach worker and crawler deployments retain their already-verified images.

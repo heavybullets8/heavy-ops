@@ -21,11 +21,13 @@ spec:
           app:
             image: &image
               repository: ghcr.io/heavybullets8/bighorn-byte-web
-              tag: sha-e225184ad3bef32e16b33fcd1507181b294116b4@sha256:96e01e520f745b4b2b0d8ed1dbd5c60ae86009adc204da89157e7afb72c633c8
+              tag: sha-b4b924823de85536dc778f44e81425b87bdb16ca@sha256:53cd6c66ed40c0e97b6f41333398e4f0e43274f54aafc512b8260d091894f4ef
               pullPolicy: Always
             env:
               TZ: ${TIMEZONE}
               BHB_ENVIRONMENT: production
+              DENO_ENV: production
+              SITE_URL: https://bighornbyte.com
               BHB_MAINTENANCE_MODE: "0"
               BHB_CRON_ENABLED: "0"
               OUTREACH_DEPLOY_ROLES: ""
