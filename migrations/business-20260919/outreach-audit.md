@@ -62,8 +62,29 @@ was requested.
 The six pre-cutover research retries reuse their saved checkpoints and normal
 budgets. Completed provider work and historical charges are retained.
 
+At 20:00 UTC, all six were verified `SUCCEEDED`: Southwest, Imperial, Zona,
+Patriot, Happy and West River. This includes successful production application
+of the imports that previously failed on duplicate contact methods or transaction
+timeouts. No research job received an over-cap override.
+
 For the owner's requested immediate discovery run, a dated one-off Job restores
 the temporary 1,000-cent daily cap to 500 cents at September 20 00:00 UTC
 (September 19, 6 p.m. Denver). It passed its live startup validation before any
 temporary cap increase. See `restore-outreach-cap.md` for its version checks,
 expiry and the different-cap safeguard. The spending ledger is not reset.
+
+The temporary cap was applied at 19:56:59 UTC. All 23 jobs waiting on the daily
+monetary cap were released immediately. Existing recorded spending was
+4,992,640 microdollars and was preserved.
+
+Two operator-started Alaska discovery batches completed normally. Completed
+queries increased from 341 to 343 and found candidates from 70 to 73. Ten new
+VPN extraction receipts and two local search receipts all settled at zero cost.
+Five DeepSeek receipts settled at a combined 9,751 microdollars ($0.009751),
+exactly matching the discovery job's incremental spending; no receipts remained
+open for those batches. Automatic work continues under normal shared caps.
+
+Final health checks found both application deployments Ready on the recorded
+revision, no container restarts, HTTP 200 from the public home, admin login and
+readiness endpoint, and no firing warning or critical alerts. The five resumed
+emails remained normally queued, with zero attempts and one active job each.
