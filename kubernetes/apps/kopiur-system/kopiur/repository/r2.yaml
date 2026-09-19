@@ -8,7 +8,7 @@ metadata:
     kustomize.toolkit.fluxcd.io/prune: disabled
 spec:
   allowedNamespaces:
-    list: [database, default, game, media, kopiur-system]
+    list: [business, database, default, game, media, kopiur-system]
   backend:
     s3:
       auth:
