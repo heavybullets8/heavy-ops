@@ -21,7 +21,7 @@ spec:
           app:
             image: &image
               repository: ghcr.io/heavybullets8/bighorn-byte-outreach
-              tag: selfhost-migration-20260919
+              tag: sha-e00dd27d063ce1992f63aed7363f43e62b35c99e@sha256:54a21105d8b496020e99666bf05c06b065456848580002a2082116deae0619fd
               pullPolicy: Always
             env: &env
               TZ: ${TIMEZONE}

@@ -13,7 +13,7 @@ spec:
   values:
     controllers:
       browser:
-        replicas: 0
+        replicas: 1
         strategy: Recreate
         annotations:
           reloader.stakater.com/auto: "true"
@@ -21,7 +21,7 @@ spec:
           app:
             image:
               repository: ghcr.io/heavybullets8/bighorn-byte-browser
-              tag: selfhost-migration-20260919
+              tag: sha-e00dd27d063ce1992f63aed7363f43e62b35c99e@sha256:eee54f4c0206c5086bd8a67d5d98eb76ee8e1ed4a4671641dfd0795b13c4188c
               pullPolicy: Always
             env:
               OUTREACH_PROXY_URL: socks5://qbittorrent-gluetun.media.svc.cluster.local:8388
