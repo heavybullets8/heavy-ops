@@ -282,3 +282,24 @@ Publish `35475428027` succeeded. The prepared web image is pinned to digest
 `sha256:53cd6c66ed40c0e97b6f41333398e4f0e43274f54aafc512b8260d091894f4ef`.
 The HelmRelease passed a server dry-run before reconciliation. The separate
 outreach worker and crawler deployments retain their already-verified images.
+
+Production verification after infrastructure `21f2ca5a`:
+
+- CI's complete database lane passed 799 tests (20 steps), with zero failures.
+- Web Helm release v12 is Ready on the exact digest above. The new pod is
+  available; application maintenance remains explicitly disabled.
+- Authenticated public events GET returned 200. The no-op `read_all` POST now
+  returns 303 for the legitimate HTTPS origin, while foreign, missing, null and
+  internal HTTP origins each return 403. No real notifications were marked.
+- The real mail workspace API returned 200 and HTTPS public context. A sign-in
+  form with empty credentials reached required-field validation for the proper
+  origin, while the foreign origin still hit the security-policy rejection.
+- The temporary probe session was deleted. The new web pod logged no errors,
+  and Prometheus reported no firing warning or critical alerts.
+- Public home/readiness returned 200. Anonymous `/demo` still opened the
+  generic chooser without any of the tested private dealer brands.
+
+Documentation-only app commit `265eeda` removes the development template's
+explicitly blank public origin and documents matching auth/app configuration.
+It changes no runtime code; the deployed application remains the verified
+`b4b9248` image. Its local required checks also passed all 1,547 unit tests.
