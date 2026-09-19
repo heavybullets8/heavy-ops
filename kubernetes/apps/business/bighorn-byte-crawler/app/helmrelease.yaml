@@ -19,7 +19,7 @@ spec:
           app:
             image:
               repository: ghcr.io/heavybullets8/bighorn-byte-outreach
-              tag: sha-e225184ad3bef32e16b33fcd1507181b294116b4@sha256:efd362042f884dedef2fc48ea36f801a9ed1ad2b830d3ef9dddc7bb3c3eca700
+              tag: sha-771ee73e257dbd2fce41d0bb895f8c818ed8c2a5@sha256:531519334b281e284e6a0fac5135d0851cc3c34c00a54f62cca7f5b7c546b454
               pullPolicy: Always
             args:
               - run
@@ -30,6 +30,7 @@ spec:
               - scripts/outreach-proxy.ts
             env:
               OUTREACH_PUBLIC_PROXY_PORT: &proxyPort 8080
+              OUTREACH_PROXY_MAX_CONNECTIONS: 128
               OUTREACH_PROXY_URL: socks5://qbittorrent-gluetun.media.svc.cluster.local:8388
             probes:
               liveness:
@@ -79,7 +80,7 @@ spec:
           app:
             image:
               repository: ghcr.io/heavybullets8/bighorn-byte-solver
-              tag: sha-e225184ad3bef32e16b33fcd1507181b294116b4@sha256:900267fdeebcc8556df9419047764adacb12db8d18a83d4b4a510c339d6133e2
+              tag: sha-771ee73e257dbd2fce41d0bb895f8c818ed8c2a5@sha256:6ded327b8e7f4cc4d7779b69cefe7314d7fc51f82fad5e8d6ed4643dcee44bb9
               pullPolicy: Always
             env:
               CAPTCHA_SOLVER: "none"
