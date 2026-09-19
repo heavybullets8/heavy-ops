@@ -13,15 +13,15 @@ spec:
   values:
     controllers:
       web:
-        replicas: 0
+        replicas: 1
         strategy: RollingUpdate
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
           app:
-            image:
+            image: &image
               repository: ghcr.io/heavybullets8/bighorn-byte-web
-              tag: selfhost-migration-20260919
+              tag: sha-e00dd27d063ce1992f63aed7363f43e62b35c99e@sha256:04800e04ab9ca8bb8e312b2c0ad8f7cac7f26d686088ee370399c0a2dd99083f
               pullPolicy: Always
             env:
               TZ: ${TIMEZONE}
@@ -71,10 +71,58 @@ spec:
               limits:
                 cpu: 1
                 memory: 1Gi
-            securityContext:
+            securityContext: &securityContext
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
               capabilities: { drop: ["ALL"] }
+
+      migrate-demo:
+        type: job
+        annotations:
+          helm.sh/hook: pre-install,pre-upgrade
+          helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+          helm.sh/hook-weight: "-20"
+        job: &migrationJob
+          backoffLimit: 1
+          activeDeadlineSeconds: 600
+        containers:
+          app:
+            image: *image
+            env:
+              DIRECT_URL:
+                valueFrom:
+                  secretKeyRef:
+                    name: bighorn-byte-web-secret
+                    key: DIRECT_URL
+            args: ["task", "db:deploy"]
+            resources: &migrationResources
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                cpu: 1
+                memory: 1Gi
+            securityContext: *securityContext
+
+      migrate-admin:
+        type: job
+        annotations:
+          helm.sh/hook: pre-install,pre-upgrade
+          helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+          helm.sh/hook-weight: "-10"
+        job: *migrationJob
+        containers:
+          app:
+            image: *image
+            env:
+              ADMIN_DIRECT_URL:
+                valueFrom:
+                  secretKeyRef:
+                    name: bighorn-byte-web-secret
+                    key: ADMIN_DIRECT_URL
+            args: ["task", "db:admin:deploy"]
+            resources: *migrationResources
+            securityContext: *securityContext
 
     defaultPodOptions:
       imagePullSecrets:
