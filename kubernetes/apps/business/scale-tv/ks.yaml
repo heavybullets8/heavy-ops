@@ -10,6 +10,8 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+  components:
+    - ../../../../components/gatus/external
   dependsOn:
     - name: onepassword
       namespace: external-secrets
@@ -23,3 +25,9 @@ spec:
   wait: false
   interval: 30m
   timeout: 15m
+  postBuild:
+    substitute:
+      APP: *app
+      GATUS_SUBDOMAIN: tv
+      GATUS_DOMAIN: bighornbyte.com
+      GATUS_PATH: /readyz
