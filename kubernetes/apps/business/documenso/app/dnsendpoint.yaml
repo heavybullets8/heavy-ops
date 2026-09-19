@@ -1,0 +1,11 @@
+---
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: sign-bighornbyte
+spec:
+  endpoints:
+    - dnsName: sign.bighornbyte.com
+      recordType: CNAME
+      targets:
+        - home.bighornbyte.com

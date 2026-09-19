@@ -13,7 +13,7 @@ spec:
   values:
     controllers:
       web:
-        replicas: 0
+        replicas: 1
         strategy: RollingUpdate
         annotations: &reload
           reloader.stakater.com/auto: "true"
@@ -21,7 +21,7 @@ spec:
           app:
             image: &image
               repository: ghcr.io/heavybullets8/scale-tv
-              tag: selfhost-migration-20260919
+              tag: sha-4a64c74341395ab69b719d8f48976c0ff11b2c5f@sha256:ff0b5258983140155507012d0068d8a7f81ca32e865d933780b2a32a2bab27aa
               pullPolicy: Always
             env: &env
               TZ: ${TIMEZONE}

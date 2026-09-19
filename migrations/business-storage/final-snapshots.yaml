@@ -1,0 +1,64 @@
+---
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: Snapshot
+metadata:
+  name: docmost-bhb-business-cutover-truenas
+  namespace: default
+spec:
+  deletionPolicy: Retain
+  pin: true
+  description: Final paused Docmost snapshot for the business namespace migration
+  policyRef:
+    name: docmost-bhb
+    namespace: default
+  repository:
+    kind: ClusterRepository
+    name: truenas
+---
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: Snapshot
+metadata:
+  name: docmost-bhb-business-cutover-r2
+  namespace: default
+spec:
+  deletionPolicy: Retain
+  pin: true
+  description: Off-site final paused Docmost snapshot for the business namespace migration
+  policyRef:
+    name: docmost-bhb
+    namespace: default
+  repository:
+    kind: ClusterRepository
+    name: r2
+---
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: Snapshot
+metadata:
+  name: documenso-business-cutover-truenas
+  namespace: default
+spec:
+  deletionPolicy: Retain
+  pin: true
+  description: Final paused Documenso snapshot for the business namespace migration
+  policyRef:
+    name: documenso
+    namespace: default
+  repository:
+    kind: ClusterRepository
+    name: truenas
+---
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: Snapshot
+metadata:
+  name: documenso-business-cutover-r2
+  namespace: default
+spec:
+  deletionPolicy: Retain
+  pin: true
+  description: Off-site final paused Documenso snapshot for the business namespace migration
+  policyRef:
+    name: documenso
+    namespace: default
+  repository:
+    kind: ClusterRepository
+    name: r2

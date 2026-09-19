@@ -5,3 +5,4 @@ kind: Kustomization
 resources:
   - ./cluster.yaml
   - ./networkpolicy.yaml
+  - ./networkpolicy-business.yaml

@@ -1,0 +1,89 @@
+---
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: SnapshotPolicy
+metadata:
+  name: docmost-bhb
+spec:
+  compression:
+    compressor: zstd
+  copyMethod: Clone
+  mover:
+    cache:
+      capacity: 8Gi
+      mode: Persistent
+      storageClassName: openebs-zfs-1m
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+    podSecurityContext:
+      fsGroup: 1000
+      fsGroupChangePolicy: OnRootMismatch
+      supplementalGroups: [568]
+  repositories:
+    - kind: ClusterRepository
+      name: truenas
+    - kind: ClusterRepository
+      name: r2
+  retention:
+    keepHourly: 24
+    keepDaily: 14
+  sources:
+    - pvc:
+        name: docmost-bhb
+      readOnly: false
+  volumeSnapshotClassName: openebs-zfs
+---
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: SnapshotSchedule
+metadata:
+  name: docmost-bhb
+spec:
+  policyRef:
+    name: docmost-bhb
+  schedule:
+    cron: "0 9 * * *"
+    timezone: Etc/UTC
+    runOnCreate: false
+---
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: Restore
+metadata:
+  name: docmost-bhb
+spec:
+  mover:
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+    podSecurityContext:
+      fsGroup: 1000
+      fsGroupChangePolicy: OnRootMismatch
+      supplementalGroups: [568]
+  policy:
+    onMissingSnapshot: Fail
+  repository:
+    kind: ClusterRepository
+    name: truenas
+  source:
+    snapshotRef:
+      name: docmost-bhb-business-cutover-truenas
+      namespace: default
+  target:
+    populator: {}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: docmost-bhb
+  annotations:
+    kustomize.toolkit.fluxcd.io/ssa: IfNotPresent
+    kustomize.toolkit.fluxcd.io/prune: disabled
+spec:
+  accessModes: [ReadWriteOnce]
+  dataSourceRef:
+    apiGroup: kopiur.home-operations.com
+    kind: Restore
+    name: docmost-bhb
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: openebs-zfs-1m
