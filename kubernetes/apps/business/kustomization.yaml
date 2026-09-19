@@ -11,6 +11,7 @@ resources:
   - ./bighorn-byte-web/ks.yaml
   - ./bighorn-byte-outreach/ks.yaml
   - ./bighorn-byte-browser/ks.yaml
+  - ./bighorn-byte-crawler/ks.yaml
   - ./scale-tv/ks.yaml
   - ./docmost-bhb/ks.yaml
   - ./documenso/ks.yaml

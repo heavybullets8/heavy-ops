@@ -1,0 +1,92 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: bighorn-byte-public-proxy
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: bighorn-byte-crawler
+      app.kubernetes.io/controller: public-proxy
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: business
+            app.kubernetes.io/name: bighorn-byte-crawler
+            app.kubernetes.io/controller: solver
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+  ingressDeny:
+    - fromEntities: [host, remote-node, kube-apiserver]
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: media
+            app.kubernetes.io/name: qbittorrent
+            app.kubernetes.io/controller: qbittorrent
+      toPorts:
+        - ports:
+            - port: "8388"
+              protocol: TCP
+  egressDeny:
+    - toEntities: [host, remote-node, kube-apiserver, world]
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: bighorn-byte-solver
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: bighorn-byte-crawler
+      app.kubernetes.io/controller: solver
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: business
+            app.kubernetes.io/name: bighorn-byte-outreach
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: business
+            app.kubernetes.io/name: bighorn-byte-web
+      toPorts:
+        - ports:
+            - port: "8191"
+              protocol: TCP
+  ingressDeny:
+    - fromEntities: [host, remote-node, kube-apiserver]
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: business
+            app.kubernetes.io/name: bighorn-byte-crawler
+            app.kubernetes.io/controller: public-proxy
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+  egressDeny:
+    - toEntities: [host, remote-node, kube-apiserver, world]
