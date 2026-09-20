@@ -342,3 +342,19 @@ Release gate: Check `35477055724` passed for exact application revision
 `76021d3e20b7fdc545e44b92e2eee90d3042a132`, including compiled-page smoke and
 the full database lane. Web and outreach use the corresponding immutable
 digests recorded in their HelmRelease manifests.
+
+Production verification after infrastructure `67d43bf7`:
+
+- Exact-commit CI passed all 803 database tests (20 steps), with zero failures.
+- Web Helm release v13 and outreach v8 are Ready on the pinned application
+  revision. Both Deployment rollouts completed successfully.
+- An authenticated public request to cancel the already-cancelled DR copy
+  returned 200 and “Sent copy task stopped.” The ephemeral owner session was
+  deleted in the probe's finally block.
+- Original delivery state, September 15 timestamp, single send attempt and
+  unknown copy journal were unchanged. Business DNC remained present, with
+  zero active mail tasks and zero queued/sending messages for DR.
+- Mail run `bighorn-byte-outreach-mail-29831042-29xxk` succeeded using the new
+  worker digest; a subsequent database check confirmed the task stayed cancelled.
+- New web, worker and mail-run logs contained no error/warning entries.
+  Prometheus reported no firing warning or critical alerts.
