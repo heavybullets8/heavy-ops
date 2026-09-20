@@ -303,3 +303,42 @@ Documentation-only app commit `265eeda` removes the development template's
 explicitly blank public origin and documents matching auth/app configuration.
 It changes no runtime code; the deployed application remains the verified
 `b4b9248` image. Its local required checks also passed all 1,547 unit tests.
+
+
+## DR Trailer Sales: stop an endless Sent-folder reconciliation
+
+The dealer's September 17 business suppression, “Asked not to be contacted,”
+was present and its opportunity closed. Three unsent messages were stopped.
+The waiting ARCHIVE_EMAIL task concerned one message accepted on September 15,
+before that suppression; it was not another delivery attempt. The copy result
+was unknown and its worker kept polling every 15 minutes without a deadline.
+The operations list's cancel button also went through the generic job handler,
+which intentionally refuses mail jobs.
+
+Cancelled only that exact stale copy job, preserving the original sent timestamp,
+single delivery attempt, uncertain copy journal and business suppression. After
+cancellation there were zero active mail jobs or queued/sending messages for DR.
+No message was sent or copied as part of this repair.
+
+The permanent change gives Sent-copy tasks a dedicated cancellation operation,
+uses a lease/state fence before recording late worker results, and stops unknown
+copy reconciliation after 24 hours. An unknown copy is never appended again.
+Delivery jobs retain their existing separate controls. The operations detail
+exposes cancellation and describes unresolved copies as “Sent copy unconfirmed.”
+
+Local regression coverage passes all 49 affected mail and action database tests,
+including bounded reconciliation, DNC/delivery preservation, idempotent
+cancellation, a late result after cancellation, and rejection of generic mail
+send cancellation.
+
+The required repository check passed 1,548 unit tests with no failures, plus
+formatting, lint, types and Fresh guard. Application commit: `76021d3`.
+All four image builds in Publish `35477063860` succeeded. The web and outreach
+image updates passed a server dry-run in the existing business namespace.
+Production's other 100 Sent-copy jobs were all successful; this was its only
+unresolved copy task. Warning/critical firing alerts were empty before rollout.
+
+Release gate: Check `35477055724` passed for exact application revision
+`76021d3e20b7fdc545e44b92e2eee90d3042a132`, including compiled-page smoke and
+the full database lane. Web and outreach use the corresponding immutable
+digests recorded in their HelmRelease manifests.
