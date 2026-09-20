@@ -42,6 +42,24 @@ Image publication `35480453068` succeeded. The web image is pinned to
 The HelmRelease passed a server dry-run. Warning/critical firing alerts were
 empty before rollout.
 
+Production verification after infrastructure `ad8cb783`:
+
+- Check completed with 803 database tests (20 steps) passing and zero failures.
+- Web Helm release v14 is Ready and the Deployment rollout completed on the
+  pinned image. The outreach worker was not restarted.
+- The live public trailer entry returned 200 on Inventory with the generic
+  Bighorn Basin branding, the visible guide, and no automatically opened dialog.
+- Live mobile guide opening and its price-editor link worked. Browser page
+  errors and horizontal overflow were absent in those checks.
+- Local desktop/mobile browser checks exercised actual saves and public results;
+  production checks were read-only.
+- New web logs contained no error or warning entries. Prometheus reported zero
+  firing warning or critical alerts after rollout.
+
+Live screenshots are available in the task workspace at
+`/tmp/bhb-demo-live-desktop.png`, `/tmp/bhb-demo-live-mobile.png`, and
+`/tmp/bhb-demo-live-mobile-open.png`.
+
 This release changes the web application. It requires no schema migration or
 outreach worker restart. Scale TV, customer applications, and the unrelated local
 accounting changes are outside this release.
