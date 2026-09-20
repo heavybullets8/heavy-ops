@@ -21,7 +21,7 @@ spec:
           app:
             image: &image
               repository: ghcr.io/heavybullets8/bighorn-byte-web
-              tag: sha-76021d3e20b7fdc545e44b92e2eee90d3042a132@sha256:2cd75fdb41e5296804f9c0af90bb8cd3b69f86d32f628aad9e2f7d788fb3b172
+              tag: sha-090d19471f247ebffb8a950f529f456dd8da3d49@sha256:0bd38841b19e53feda2185538debc83e0811545fc47ebc669e515212043177dc
               pullPolicy: Always
             env:
               TZ: ${TIMEZONE}
