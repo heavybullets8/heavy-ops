@@ -46,6 +46,23 @@ The HelmRelease passed a server dry-run. Prometheus reported zero firing warning
 or critical alerts before rollout.
 
 Exact-revision CI `35491310315` passed, including the production page smoke checks
-and full database suite. Rollout verification is recorded below after completion.
+and all 803 database tests (20 steps), with zero failures.
 This release changes only the web image; no schema change or outreach worker
 restart is required.
+
+Production verification after infrastructure `108fb080`:
+
+- Web Helm release v15 is Ready; generation 15 is observed. The Deployment has
+  one updated, ready replica on the pinned image with no restarts.
+- Live desktop and mobile Inventory returned 200 with the complete guide menu.
+- Preview website and Open inventory completed their round trip on both sizes.
+- Mobile starts collapsed and uses the new entrance animation when opened.
+- No horizontal overflow or browser page errors occurred during these checks.
+- The new web logs contained no warning/error entries. Prometheus reported zero
+  firing warning or critical alerts after rollout.
+- Production verification was read-only; save and photo mutations were tested
+  in the isolated local demo databases.
+
+Live screenshots: `/tmp/bhb-guide-live-desktop.png`,
+`/tmp/bhb-guide-live-mobile-closed.png`, and
+`/tmp/bhb-guide-live-mobile-open.png`.
