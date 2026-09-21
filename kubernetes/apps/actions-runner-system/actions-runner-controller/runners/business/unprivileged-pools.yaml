@@ -466,13 +466,25 @@ items:
                     command: [pg_isready, -h, "127.0.0.1", -p, "5435", -U, dev, -d, scaletv]
                   periodSeconds: 2
                   failureThreshold: 30
-              - *buildkitSidecar
+              - <<: *buildkitSidecar
+                resources:
+                  requests:
+                    cpu: 500m
+                    memory: 1Gi
+                    ephemeral-storage: 512Mi
+                  limits:
+                    cpu: 4
+                    memory: 30Gi
+                    ephemeral-storage: 2Gi
             volumes:
               - *workVolume
               - *postgresData
               - *postgresShm
               - *buildkitSocket
-              - *buildkitState
+              - <<: *buildkitState
+                emptyDir:
+                  medium: Memory
+                  sizeLimit: 24Gi
   - <<: *ciPool
     metadata:
       name: bighorn-byte-ci
