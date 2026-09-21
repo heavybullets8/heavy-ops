@@ -206,14 +206,18 @@ The final RAM-backed Bighorn
 also built all four images successfully, and FCC's successful attempt ran after
 the RAM-backed pool update. The first RAM-backed Scale build reached the
 application build and then exhausted the 12 GiB state volume. Its isolated fix
-raises only Scale's state volume to 24 GiB and builder memory limit to 30 GiB;
-that change and its repeated build remain pending. The earlier disk-backed
-Scale build remains the successful proof in the meantime.
+raises only Scale's state volume to 24 GiB and builder memory limit to 30 GiB,
+through [PR #3172](https://github.com/Heavybullets8/heavy-ops/pull/3172).
+Flux reported the Scale release Ready at generation 3, and the actual job pod
+confirmed both limits. The complete repeated
+[build 35558049785](https://github.com/Heavybullets8/scale-tv/actions/runs/35558049785)
+passed. All three final RAM-backed configurations now have successful real
+image-build proof; registry publication remains a separate pending check.
 
-Automatic approval review rejected application-image publication and also
-rejected merging a workflow PR whose default-branch run would publish images.
-It requires explicit user approval because those operations write external
-artifacts and can trigger deployment reconciliation. Therefore the three
+Automatic approval review rejected application-image publication because it
+writes private application builds to external registry storage. Merging these
+workflow PRs would trigger that publication, so those merges are also paused
+until explicit user approval arrives. Therefore the three
 workflow PRs remain open, and `bighorn-byte-runner`, `scale-tv-runner`, and
 `fcc-spam-reporter-runner` remain the active compatibility pools.
 
