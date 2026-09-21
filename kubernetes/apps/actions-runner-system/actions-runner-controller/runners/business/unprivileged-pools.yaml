@@ -117,3 +117,234 @@ items:
         githubConfigUrl: https://github.com/Heavybullets8/b7-leather
         runnerScaleSetName: b7-leather-ci
         maxRunners: 1
+  - <<: *ciPool
+    metadata:
+      name: anytimesteel-ci
+    spec:
+      <<: *ciPoolSpec
+      values:
+        <<: *ciPoolValues
+        githubConfigUrl: https://github.com/Heavybullets8/anytimesteel
+        runnerScaleSetName: anytimesteel-ci
+        maxRunners: 1
+        template:
+          spec: &databasePod
+            <<: *ciPod
+            initContainers:
+              - &postgresSidecar
+                name: postgres
+                image: postgres:17-alpine@sha256:f02121de6f74d30d8a94cd1d9584125e2178d7e6c377d8130112d4e52d867995
+                restartPolicy: Always
+                securityContext:
+                  <<: *ciSecurity
+                  runAsUser: 70
+                  runAsGroup: 70
+                resources:
+                  requests:
+                    cpu: 100m
+                    memory: 256Mi
+                  limits:
+                    cpu: 2
+                    memory: 3Gi
+                volumeMounts:
+                  - name: postgres-data
+                    mountPath: /var/lib/postgresql/data
+                  - name: postgres-shm
+                    mountPath: /dev/shm
+                args: ["-p", "5433", "-c", "listen_addresses=127.0.0.1"]
+                env:
+                  - name: POSTGRES_USER
+                    value: anytimesteel
+                  - name: POSTGRES_PASSWORD
+                    value: devpassword
+                  - name: POSTGRES_DB
+                    value: anytimesteel
+                  - name: PGDATA
+                    value: /var/lib/postgresql/data/pgdata
+                startupProbe:
+                  exec:
+                    command: [pg_isready, -h, "127.0.0.1", -p, "5433", -U, anytimesteel, -d, anytimesteel]
+                  periodSeconds: 2
+                  failureThreshold: 30
+            containers:
+              - &databaseRunner
+                <<: *ciRunner
+                image: ghcr.io/heavybullets8/business-runner:2.337.0@sha256:099bcb3a8228d3636feea706f36347b1244cc4368878de40ee3ecb06f9f17a98
+            volumes:
+              - *workVolume
+              - &postgresData
+                name: postgres-data
+                emptyDir:
+                  medium: Memory
+                  sizeLimit: 2Gi
+              - &postgresShm
+                name: postgres-shm
+                emptyDir:
+                  medium: Memory
+                  sizeLimit: 256Mi
+  - <<: *ciPool
+    metadata:
+      name: cloudpeakinsulation-ci
+    spec:
+      <<: *ciPoolSpec
+      values:
+        <<: *ciPoolValues
+        githubConfigUrl: https://github.com/Heavybullets8/cloudpeakinsulation
+        runnerScaleSetName: cloudpeakinsulation-ci
+        maxRunners: 1
+        template:
+          spec:
+            <<: *databasePod
+            initContainers:
+              - <<: *postgresSidecar
+                args: ["-p", "5434", "-c", "listen_addresses=127.0.0.1"]
+                env:
+                  - name: POSTGRES_USER
+                    value: cloudpeak
+                  - name: POSTGRES_PASSWORD
+                    value: devpassword
+                  - name: POSTGRES_DB
+                    value: cloudpeak
+                  - name: PGDATA
+                    value: /var/lib/postgresql/data/pgdata
+                startupProbe:
+                  exec:
+                    command: [pg_isready, -h, "127.0.0.1", -p, "5434", -U, cloudpeak, -d, cloudpeak]
+                  periodSeconds: 2
+                  failureThreshold: 30
+  - <<: *ciPool
+    metadata:
+      name: connelybrothers-ci
+    spec:
+      <<: *ciPoolSpec
+      values:
+        <<: *ciPoolValues
+        githubConfigUrl: https://github.com/Heavybullets8/connelybrothers
+        runnerScaleSetName: connelybrothers-ci
+        maxRunners: 1
+        template:
+          spec:
+            <<: *databasePod
+            initContainers:
+              - <<: *postgresSidecar
+                args: ["-p", "5436", "-c", "listen_addresses=127.0.0.1"]
+                env:
+                  - name: POSTGRES_USER
+                    value: connelybros
+                  - name: POSTGRES_PASSWORD
+                    value: devpassword
+                  - name: POSTGRES_DB
+                    value: connelybros
+                  - name: PGDATA
+                    value: /var/lib/postgresql/data/pgdata
+                startupProbe:
+                  exec:
+                    command: [pg_isready, -h, "127.0.0.1", -p, "5436", -U, connelybros, -d, connelybros]
+                  periodSeconds: 2
+                  failureThreshold: 30
+  - <<: *ciPool
+    metadata:
+      name: connelyslandscaping-ci
+    spec:
+      <<: *ciPoolSpec
+      values:
+        <<: *ciPoolValues
+        githubConfigUrl: https://github.com/Heavybullets8/connelyslandscaping
+        runnerScaleSetName: connelyslandscaping-ci
+        maxRunners: 1
+        template:
+          spec:
+            <<: *databasePod
+            initContainers:
+              - <<: *postgresSidecar
+                args: ["-p", "5437", "-c", "listen_addresses=127.0.0.1"]
+                env:
+                  - name: POSTGRES_USER
+                    value: dev
+                  - name: POSTGRES_PASSWORD
+                    value: devpassword
+                  - name: POSTGRES_DB
+                    value: connelyslandscaping_dev
+                  - name: PGDATA
+                    value: /var/lib/postgresql/data/pgdata
+                startupProbe:
+                  exec:
+                    command: [pg_isready, -h, "127.0.0.1", -p, "5437", -U, dev, -d, connelyslandscaping_dev]
+                  periodSeconds: 2
+                  failureThreshold: 30
+  - <<: *ciPool
+    metadata:
+      name: mk-rentals-ci
+    spec:
+      <<: *ciPoolSpec
+      values:
+        <<: *ciPoolValues
+        githubConfigUrl: https://github.com/Heavybullets8/mk_rentals
+        runnerScaleSetName: mk-rentals-ci
+        maxRunners: 1
+        template:
+          spec:
+            <<: *databasePod
+            initContainers:
+              - <<: *postgresSidecar
+                args: ["-p", "5438", "-c", "listen_addresses=127.0.0.1"]
+                env:
+                  - name: POSTGRES_USER
+                    value: dev
+                  - name: POSTGRES_PASSWORD
+                    value: devpassword
+                  - name: POSTGRES_DB
+                    value: mk_rentals_dev
+                  - name: PGDATA
+                    value: /var/lib/postgresql/data/pgdata
+                startupProbe:
+                  exec:
+                    command: [pg_isready, -h, "127.0.0.1", -p, "5438", -U, dev, -d, mk_rentals_dev]
+                  periodSeconds: 2
+                  failureThreshold: 30
+  - <<: *ciPool
+    metadata:
+      name: mk-jm-ci
+    spec:
+      <<: *ciPoolSpec
+      values:
+        <<: *ciPoolValues
+        githubConfigUrl: https://github.com/Heavybullets8/mk-jm
+        runnerScaleSetName: mk-jm-ci
+        maxRunners: 3
+        template:
+          spec:
+            <<: *databasePod
+            initContainers:
+              - <<: *postgresSidecar
+                args: ["-p", "5432", "-c", "listen_addresses=127.0.0.1"]
+                env:
+                  - name: POSTGRES_USER
+                    value: dev
+                  - name: POSTGRES_PASSWORD
+                    value: devpassword
+                  - name: POSTGRES_DB
+                    value: mk_sales_dev
+                  - name: PGDATA
+                    value: /var/lib/postgresql/data/pgdata
+                startupProbe:
+                  exec:
+                    command: [pg_isready, -h, "127.0.0.1", -p, "5432", -U, dev, -d, mk_sales_dev]
+                  periodSeconds: 2
+                  failureThreshold: 30
+  - <<: *ciPool
+    metadata:
+      name: nix-config-ci
+    spec:
+      <<: *ciPoolSpec
+      values:
+        <<: *ciPoolValues
+        githubConfigUrl: https://github.com/Heavybullets8/nix-config
+        runnerScaleSetName: nix-config-ci
+        maxRunners: 1
+        template:
+          spec:
+            <<: *ciPod
+            containers:
+              - <<: *ciRunner
+                image: ghcr.io/heavybullets8/business-nix-runner:2.337.0@sha256:03fcb7ce24edf6496e7493222cea81c719eb2bb72328635bf179240133a65327
