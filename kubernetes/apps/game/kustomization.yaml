@@ -11,4 +11,5 @@ resources:
   - ./minecraft-rotational/ks.yaml
   - ./valheim/ks.yaml
   - ./palworld/ks.yaml
+  - ./dragonwilds/ks.yaml
   - ./addon-filebrowser/ks.yaml

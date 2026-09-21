@@ -101,3 +101,8 @@ spec:
           - path: /games/palworld
             readOnly: false
 
+      dragonwilds:
+        existingClaim: dragonwilds
+        globalMounts:
+          - path: /games/dragonwilds
+            readOnly: false
