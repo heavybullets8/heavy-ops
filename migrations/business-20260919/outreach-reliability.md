@@ -1,6 +1,6 @@
 # Outreach search recovery and state progress
 
-Application revision: `845a67ccf58607ad3ab4db26061113d823714185`.
+Application revision: `e26dfc9a2c5c5e76d82d794926d14a01113e1c6c`.
 
 ## Evidence
 
@@ -73,3 +73,31 @@ Immutable image digests for revision `845a67c`:
 
 - Web: `sha256:cbfda0df79d2656955a966c0ff30c573f38db637b2bd134273a437973ad3ca51`
 - Outreach: `sha256:35408446e5ef721ed3a85264cdfeeb95aec87c1c8427b05261db9caf941d536a`
+
+
+## Classification follow-up
+
+Revision `e26dfc9` passed Check `35545497968` and Publish images
+`35546054134`, and deployed through heavy-ops `bb4e45cc`. Both web and worker
+became ready. The final local check was 1,571 passed, zero failed, two ignored.
+
+The exact DeepSeek content refusal now retains that business for manual review
+instead of stopping classification for the whole state. A production retry of
+the audited California job confirmed the same HTTP 400 refusal, preserved the
+business as unresolved, and continued to the next search. Found businesses
+increased from 31 to 32, unresolved from 11 to 12, and pending candidates fell
+from one to zero. Classification spend stayed at 7.4176 cents. The search engine
+still requested a wait; California was returned to `awaiting_scout_turn` so
+Alaska remains the only active automatic campaign. No failed jobs remain.
+
+Final immutable image digests:
+
+- Web: `sha256:ab5f35cb3d9b54133e53c464ca15f583717ee45899c04ad8017c0e260c274feb`
+- Outreach: `sha256:ab88d2e30c65ef0ea8ef1b74ee428edc1f67f75b0ddcdf9578438651a13d358c`
+
+
+A subsequent scheduler tick automatically created and completed the website
+assessment for the recovered candidate. Final verification confirmed zero
+failed jobs, zero pending assessments, no remaining legacy search/claim failures,
+and one automatic active campaign. The web health endpoint remained healthy;
+worker logs showed completed assessments and scheduled search deferrals.
