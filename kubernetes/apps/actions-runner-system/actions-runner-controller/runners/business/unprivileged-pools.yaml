@@ -1,0 +1,119 @@
+apiVersion: v1
+kind: List
+items:
+  - &ciPool
+    apiVersion: helm.toolkit.fluxcd.io/v2
+    kind: HelmRelease
+    metadata:
+      name: deno-kit-ci
+    spec: &ciPoolSpec
+      suspend: false
+      driftDetection:
+        mode: enabled
+      interval: 30m
+      chartRef:
+        kind: OCIRepository
+        name: gha-runner-scale-set
+      dependsOn:
+        - name: actions-runner-controller
+          namespace: actions-runner-system
+      valuesFrom:
+        - targetPath: githubConfigSecret.github_app_id
+          kind: Secret
+          name: actions-runner-controller-secret
+          valuesKey: ACTION_RUNNER_CONTROLLER_GITHUB_APP_ID
+        - targetPath: githubConfigSecret.github_app_installation_id
+          kind: Secret
+          name: actions-runner-controller-secret
+          valuesKey: ACTION_RUNNER_CONTROLLER_GITHUB_INSTALLATION_ID
+        - targetPath: githubConfigSecret.github_app_private_key
+          kind: Secret
+          name: actions-runner-controller-secret
+          valuesKey: ACTION_RUNNER_CONTROLLER_GITHUB_PRIVATE_KEY
+      values: &ciPoolValues
+        githubConfigUrl: https://github.com/Heavybullets8/deno-kit
+        runnerScaleSetName: deno-kit-ci
+        minRunners: 0
+        maxRunners: 3
+        controllerServiceAccount:
+          name: actions-runner-controller
+          namespace: actions-runner-system
+        template:
+          spec: &ciPod
+            hostUsers: false
+            automountServiceAccountToken: false
+            securityContext:
+              fsGroup: 1001
+              seccompProfile:
+                type: RuntimeDefault
+            containers:
+              - &ciRunner
+                name: runner
+                image: ghcr.io/home-operations/actions-runner:2.337.0@sha256:8b8e8326b5a08e658a0a41cfd2867afab69ca4194a152f986aa6fcd5430d09e7
+                command: ["/home/runner/run.sh"]
+                securityContext: &ciSecurity
+                  privileged: false
+                  runAsNonRoot: true
+                  runAsUser: 1001
+                  runAsGroup: 1001
+                  allowPrivilegeEscalation: false
+                  capabilities:
+                    drop: [ALL]
+                resources:
+                  requests:
+                    cpu: 500m
+                    memory: 1Gi
+                    ephemeral-storage: 2Gi
+                  limits:
+                    cpu: 4
+                    memory: 4Gi
+                    ephemeral-storage: 10Gi
+                volumeMounts:
+                  - &workMount
+                    name: work
+                    mountPath: /home/runner/_work
+            volumes:
+              - &workVolume
+                name: work
+                emptyDir:
+                  sizeLimit: 20Gi
+  - <<: *ciPool
+    metadata:
+      name: site-fallback-worker-ci
+    spec:
+      <<: *ciPoolSpec
+      values:
+        <<: *ciPoolValues
+        githubConfigUrl: https://github.com/Heavybullets8/site-fallback-worker
+        runnerScaleSetName: site-fallback-worker-ci
+        maxRunners: 1
+  - <<: *ciPool
+    metadata:
+      name: email-guard-worker-ci
+    spec:
+      <<: *ciPoolSpec
+      values:
+        <<: *ciPoolValues
+        githubConfigUrl: https://github.com/Heavybullets8/email-guard-worker
+        runnerScaleSetName: email-guard-worker-ci
+        maxRunners: 1
+  - <<: *ciPool
+    metadata:
+      name: image-resize-worker-ci
+    spec:
+      <<: *ciPoolSpec
+      values:
+        <<: *ciPoolValues
+        githubConfigUrl: https://github.com/Heavybullets8/image-resize-worker
+        runnerScaleSetName: image-resize-worker-ci
+        maxRunners: 1
+  - <<: *ciPool
+    metadata:
+      name: b7-leather-ci
+    spec:
+      <<: *ciPoolSpec
+      values:
+        <<: *ciPoolValues
+        githubConfigUrl: https://github.com/Heavybullets8/b7-leather
+        runnerScaleSetName: b7-leather-ci
+        maxRunners: 1
