@@ -58,7 +58,7 @@ items:
                     mountPath: /home/runner/tmpDir
               - &runnerDind
                 name: dind
-                image: docker:28-dind@sha256:9a06753d2401cd049b34cd27dbbc3e0db717d4c1db7bc7f2efad1c187e00bf5a
+                image: docker:29-dind@sha256:754ce04dd9dee9ef015680b8529fc49608efb75f30322a54780e7aab32698a47
                 args:
                   - dockerd
                   - --host=unix:///var/run/docker.sock
