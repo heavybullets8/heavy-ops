@@ -1,11 +1,11 @@
 # GitHub Actions runner hardening addendum
 
 This addendum records the security profiles introduced after the original
-self-hosted runner rollout. Twelve private repositories now run on isolated
-`*-ci` ARC scale sets, and their superseded privileged scale sets have been
-removed. Three parallel rootless BuildKit pools are installed and Ready for the
-image-building repositories. Their workflow PRs remain open, and the original
-Docker in Docker pools remain in service pending publication approval.
+self-hosted runner rollout. All fifteen business repositories use their isolated
+`*-ci` ARC scale sets. Twelve use strict nonroot runners without Docker, and
+three use a fresh rootless BuildKit daemon per image-building job. The obsolete
+privileged Docker-in-Docker business pools are removed. The separate
+administrative `heavy-ops-runner` is unchanged.
 
 ## Security model
 
@@ -138,7 +138,7 @@ final readback was 143 nonterminal cluster pods and 21 pods in
 `actions-runner-system`; all 17 remaining runner-system HelmReleases were
 Ready.
 
-## Installed builder pools pending workflow cutover
+## Rootless image-builder pools
 
 The installed labels are `bighorn-byte-ci`, `scale-tv-ci`, and
 `fcc-spam-reporter-ci`. FCC scales from zero to one runner, Scale TV from zero
@@ -156,8 +156,14 @@ Image building uses one stock upstream RootlessKit/BuildKit daemon per job:
 - `allowPrivilegeEscalation: true` and `Unconfined` seccomp only on the builder
 - 0.5 CPU, 1 GiB memory, and 512 MiB ephemeral-storage requests; 4 CPU and
   2 GiB ephemeral-storage limits
-- an 18 GiB memory limit with a fresh 12 GiB memory-backed state `emptyDir` for
-  FCC and Bighorn; a private Unix socket `emptyDir` for every builder
+- Bighorn: an 18 GiB memory limit and a fresh 12 GiB memory-backed state volume
+- Scale and FCC: a 30 GiB memory limit and fresh 24 GiB memory-backed state volume
+- a private Unix socket `emptyDir` for every builder
+
+The five maximum simultaneous builders have 114 GiB of combined memory limits.
+These are ceilings, not preallocated memory. BuildKit state is temporary build
+storage, including filesystem snapshots and cached layers; the native
+snapshotter can duplicate large filesystem trees. Workspaces remain on disk.
 
 These three pods explicitly use `hostUsers: true`: RootlessKit creates the
 builder user namespace itself because nesting its stock mapping helpers inside
@@ -190,8 +196,8 @@ HelmReleases: the controller, administrative pool, 15 target pools, and the 3
 compatibility pools. The node remained Ready with pod capacity and allocatable
 capacity of 200/200.
 
-The open workflow PRs exercised the new labels without making them the default
-branch configuration:
+Before merging, the workflow PRs exercised the new labels without changing the
+default-branch configuration:
 
 | Repository | Workflow PR | Validation |
 | --- | --- | --- |
@@ -214,13 +220,49 @@ confirmed both limits. The complete repeated
 passed. All three final RAM-backed configurations now have successful real
 image-build proof; registry publication remains a separate pending check.
 
-Automatic approval review rejected application-image publication because it
-writes private application builds to external registry storage. Merging these
-workflow PRs would trigger that publication, so those merges are also paused
-until explicit user approval arrives. Therefore the three
-workflow PRs remain open, and `bighorn-byte-runner`, `scale-tv-runner`, and
-`fcc-spam-reporter-runner` remain the active compatibility pools.
+The user explicitly approved workflow merges, existing GHCR publication and
+retirement of the final three old pools after the nonpublishing checks passed.
+Bighorn PR #72 merged as `06f16bae1f030cbf81787fcec47448e61b6a3de9`, Scale PR
+#53 as `cb18c904ef9971ff89c8e9abfe60246b0978749a`, and FCC PR #49 as
+`c7fcef77ce914993b0bd741a8db739e7b4de4c10`.
 
-Before closing this section, record the successful final RAM-backed builds,
-explicit publication approval, published image results, exact merged
-default-branch labels, and removal of the three compatibility pools.
+FCC's first default-branch publication exposed an additional native-snapshot
+copy that exceeded its former 12 GiB cap. The cached pull-request build had not
+exercised this path. [PR #3174](https://github.com/Heavybullets8/heavy-ops/pull/3174)
+raised only FCC to 24 GiB state / 30 GiB builder memory; Bighorn retained 12/18.
+
+## Final publication and retirement
+
+All post-merge checks and real image publications passed on the new pools:
+
+| Repository | Check | Publication |
+| --- | --- | --- |
+| Bighorn Byte | [35561012700](https://github.com/Heavybullets8/bighorn-byte/actions/runs/35561012700) | [35561269420](https://github.com/Heavybullets8/bighorn-byte/actions/runs/35561269420), all four images and cache exports |
+| Scale TV | [35561104832](https://github.com/Heavybullets8/scale-tv/actions/runs/35561104832) | [35561104325](https://github.com/Heavybullets8/scale-tv/actions/runs/35561104325), image and cache export |
+| FCC spam reporter | Image workflow owns validation | [35561053378 attempt 2](https://github.com/Heavybullets8/fcc-spam-reporter/actions/runs/35561053378/attempts/2), image and cache export |
+
+Published manifest digests:
+
+| Image | Tag | SHA-256 digest |
+| --- | --- | --- |
+| `bighorn-byte-web` | `sha-06f16bae1f030cbf81787fcec47448e61b6a3de9` | `329d39367e1cb29f3c039e59f45ac3f6a0204ee3ebad7031dcae2aec54660320` |
+| `bighorn-byte-outreach` | same Bighorn tag | `e31fa0b562f6f0625db0187444f26ed4eb327a99789f37632895626de1fe0745` |
+| `bighorn-byte-browser` | same Bighorn tag | `57a3a663967fa8de2ec749274b13ed2297d260957b80821c854a6ca9161407ea` |
+| `bighorn-byte-solver` | same Bighorn tag | `9c42290b71fe3618d2c5dccbe08be1f775fbeca45bc0da76de28186c323e1948` |
+| `scale-tv` | `sha-cb18c904ef9971ff89c8e9abfe60246b0978749a`, `latest` | `4b329a9ae45cbf37a1cf4392349bd32bba2621012c2c6d04af60f5f3a4f2b88d` |
+| `fcc-spam-reporter` | `sha-c7fcef7`, `master`, `latest` | `19264a70e51a65e676aa710f572cb9b0c6e6e7d8babbf3e3e9ee91c6a9eb4142` |
+
+A fresh GitHub default-branch audit found all fifteen repositories using their
+new `*-ci` labels and zero old `*-runner` references, including reusable
+workflow inputs. Before removal, the two old Bighorn warm runners were idle
+(`busy=false`) with no ARC job assignment; the old Scale and FCC pools had no
+runners. No job was queued for an old label. The final cleanup removes only
+`bighorn-byte-runner`, `scale-tv-runner`, and `fcc-spam-reporter-runner` and
+preserves the administrative `heavy-ops-runner`.
+
+Independent registry verification pulled all six exact published digests through
+the existing business image-pull credential, without reading its value. A bounded
+nonroot pod ran only `exit 0` in each image, with no application credentials or
+API token. All six pulls matched their expected digest and all containers exited
+zero. The verification pod was removed afterward. This verifies publication and
+image execution; application behavior is covered by the separate CI checks.
