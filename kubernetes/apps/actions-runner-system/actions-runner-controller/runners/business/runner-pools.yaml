@@ -158,7 +158,7 @@ items:
       <<: *runnerPoolSpec
       values:
         <<: *runnerPoolValues
-        maxRunners: 1
+        maxRunners: 3
         githubConfigUrl: https://github.com/Heavybullets8/mk-jm
         runnerScaleSetName: mk-jm-runner
   - <<: *runnerPool
