@@ -42,7 +42,7 @@ progress, running/waiting status and retry time. State coverage uses a wider
 dialog on desktop and stacked rows on mobile. Automatically waiting scouts
 appear under Waiting rather than Needs you.
 
-## Pre-release verification
+## Verification
 
 - Required repository check: 1,570 passed, zero failed, two ignored.
 - Integrated affected database suites: 61 tests passed, including six steps.
@@ -52,6 +52,24 @@ appear under Waiting rather than Needs you.
   stack without horizontal overflow. Retry times include the time of day.
 - The separate local demo-guide changes and accounting work were excluded.
 
-The database repair was previewed read-only: 48 search campaigns and three
-assessment jobs match the audited failures. Completed tasks, spend receipts,
-existing budgets and attempt history will be retained during recovery.
+Deployed through heavy-ops `79eb1489` after GitHub Check `35544458513`
+and Publish images `35545137757` succeeded. Both deployments became ready,
+and the public `/healthz` endpoint returned `{"ok":true}`.
+
+Production recovery completed on September 20, 2026:
+
+- 48 exact legacy search failures moved into the automatic recovery queue;
+  37 old notifications were acknowledged without deleting history.
+- All three exact legacy assessment claim failures resumed and succeeded.
+- No legacy failures or pending assessments remain.
+- Alaska is the only queued/running automatic campaign; the other 47 recovered
+  states wait their turn. Its next search was blocked by the external engine,
+  so the worker scheduled a retry without increasing its existing failure count.
+- Nationwide coverage reports Alabama complete at 664/664 real searches.
+- Tasks, costs, budgets and attempts were preserved. Other failures were not
+  silently cleared; California's separate content-refusal fix is being released.
+
+Immutable image digests for revision `845a67c`:
+
+- Web: `sha256:cbfda0df79d2656955a966c0ff30c573f38db637b2bd134273a437973ad3ca51`
+- Outreach: `sha256:35408446e5ef721ed3a85264cdfeeb95aec87c1c8427b05261db9caf941d536a`
