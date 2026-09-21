@@ -5,7 +5,7 @@ items:
     apiVersion: helm.toolkit.fluxcd.io/v2
     kind: HelmRelease
     metadata:
-      name: bighorn-byte-runner
+      name: deno-kit-runner
     spec: &runnerPoolSpec
       suspend: false
       driftDetection:
@@ -31,18 +31,19 @@ items:
           name: actions-runner-controller-secret
           valuesKey: ACTION_RUNNER_CONTROLLER_GITHUB_PRIVATE_KEY
       values: &runnerPoolValues
-        githubConfigUrl: https://github.com/Heavybullets8/bighorn-byte
-        runnerScaleSetName: bighorn-byte-runner
+        githubConfigUrl: https://github.com/Heavybullets8/deno-kit
+        runnerScaleSetName: deno-kit-runner
         minRunners: 0
         maxRunners: 3
         controllerServiceAccount:
           name: actions-runner-controller
           namespace: actions-runner-system
         template:
-          spec:
+          spec: &runnerPodSpec
             automountServiceAccountToken: false
             initContainers:
-              - name: init-dind-externals
+              - &runnerExternals
+                name: init-dind-externals
                 image: ghcr.io/home-operations/actions-runner:2.337.0@sha256:8b8e8326b5a08e658a0a41cfd2867afab69ca4194a152f986aa6fcd5430d09e7
                 command: ["cp", "-r", "/home/runner/externals/.", "/home/runner/tmpDir/"]
                 resources:
@@ -55,7 +56,8 @@ items:
                 volumeMounts:
                   - name: dind-externals
                     mountPath: /home/runner/tmpDir
-              - name: dind
+              - &runnerDind
+                name: dind
                 image: docker:28-dind@sha256:9a06753d2401cd049b34cd27dbbc3e0db717d4c1db7bc7f2efad1c187e00bf5a
                 args:
                   - dockerd
@@ -89,7 +91,8 @@ items:
                   - name: dind-externals
                     mountPath: /home/runner/externals
             containers:
-              - name: runner
+              - &runnerContainer
+                name: runner
                 image: ghcr.io/home-operations/actions-runner:2.337.0@sha256:8b8e8326b5a08e658a0a41cfd2867afab69ca4194a152f986aa6fcd5430d09e7
                 command: ["/home/runner/run.sh"]
                 env:
@@ -213,13 +216,23 @@ items:
         runnerScaleSetName: anytimesteel-runner
   - <<: *runnerPool
     metadata:
-      name: deno-kit-runner
+      name: bighorn-byte-runner
     spec:
       <<: *runnerPoolSpec
       values:
         <<: *runnerPoolValues
-        githubConfigUrl: https://github.com/Heavybullets8/deno-kit
-        runnerScaleSetName: deno-kit-runner
+        githubConfigUrl: https://github.com/Heavybullets8/bighorn-byte
+        runnerScaleSetName: bighorn-byte-runner
+        template:
+          spec:
+            <<: *runnerPodSpec
+            initContainers:
+              - <<: *runnerExternals
+                image: ghcr.io/heavybullets8/business-runner:2.337.0@sha256:393d1e7981b421f40dd976e5f150ebf8438d513191ba8e998d8a637bf6670387
+              - *runnerDind
+            containers:
+              - <<: *runnerContainer
+                image: ghcr.io/heavybullets8/business-runner:2.337.0@sha256:393d1e7981b421f40dd976e5f150ebf8438d513191ba8e998d8a637bf6670387
   - <<: *runnerPool
     metadata:
       name: site-fallback-worker-runner
