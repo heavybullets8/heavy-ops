@@ -15,7 +15,7 @@ machine:
     extraArgs:
       feature-gates: "ImageVolume=true"
     extraConfig:
-      maxPods: 150
+      maxPods: 200
       serializeImagePulls: false
       imageGCHighThresholdPercent: 70
       imageGCLowThresholdPercent: 65
