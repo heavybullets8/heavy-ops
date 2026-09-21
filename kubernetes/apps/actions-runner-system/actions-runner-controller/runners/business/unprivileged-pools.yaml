@@ -411,7 +411,7 @@ items:
                     ephemeral-storage: 512Mi
                   limits:
                     cpu: 4
-                    memory: 18Gi
+                    memory: 30Gi
                     ephemeral-storage: 2Gi
                 volumeMounts:
                   - &buildkitSocketMount
@@ -434,7 +434,7 @@ items:
                 name: buildkit-state
                 emptyDir:
                   medium: Memory
-                  sizeLimit: 12Gi
+                  sizeLimit: 24Gi
   - <<: *ciPool
     metadata:
       name: scale-tv-ci
@@ -516,10 +516,22 @@ items:
                     command: [pg_isready, -h, "127.0.0.1", -p, "5440", -U, dev, -d, bighorn_byte_dev]
                   periodSeconds: 2
                   failureThreshold: 30
-              - *buildkitSidecar
+              - <<: *buildkitSidecar
+                resources:
+                  requests:
+                    cpu: 500m
+                    memory: 1Gi
+                    ephemeral-storage: 512Mi
+                  limits:
+                    cpu: 4
+                    memory: 18Gi
+                    ephemeral-storage: 2Gi
             volumes:
               - *workVolume
               - *postgresData
               - *postgresShm
               - *buildkitSocket
-              - *buildkitState
+              - <<: *buildkitState
+                emptyDir:
+                  medium: Memory
+                  sizeLimit: 12Gi
