@@ -30,8 +30,9 @@ Archived repositories, forks, and repositories with no workflows were excluded.
 
 ## Runtime
 
-All business pools scale to zero when idle. Bighorn Byte, deno-kit and MK/JM
-allow three concurrent runners each; the other pools allow one each. MK/JM has
+Bighorn Byte keeps two runners ready when idle and allows three concurrent
+runners. The other business pools scale to zero; deno-kit and MK/JM allow three
+concurrent runners each, and the remaining pools allow one each. MK/JM has
 two application check/smoke lanes, so its pool was expanded after the first run
 showed them waiting serially despite ample server capacity. Each job gets a
 fresh runner and Docker daemon. No Talos secrets, cluster-admin service account,
@@ -143,3 +144,77 @@ controlled benchmark; startup, caches and network conditions can affect timings.
 These jobs used about 29–38% less elapsed time on the server. Image builds had
 large cache differences and are not used to claim a hardware speedup. Server
 power consumption attributable to CI was not measured.
+
+
+## Bighorn CI performance tuning
+
+The Bighorn pool uses the public `ghcr.io/heavybullets8/business-runner` image,
+built by [containers PR #183](https://github.com/heavybullets8/containers/pull/183).
+It extends the same pinned home-operations runner and preinstalls `poppler-utils`.
+The amd64 image contract verifies the runner UID/GID, Docker group, runner script,
+externals directory, sudo and `pdftotext`; its release also verifies provenance.
+Both Bighorn's runner and externals-init images are pinned to the same digest.
+Other runner pools and all per-container resource limits retain their previous
+configuration. Bighorn keeps two idle runners ready within its existing maximum
+of three, reducing the measured 12–18-second cold startup without increasing
+peak runner capacity. Commit `e2866784` enables that warm pool; it uses the same Flux webhook.
+No registry credential is needed: the published image was checked anonymously.
+
+Infrastructure commit `42837848` was applied by the normal Flux webhook. The
+Bighorn HelmRelease reported generation 2, observed generation 2 and Ready=True,
+and its AutoscalingRunnerSet selected the new digest before testing the workflow.
+
+[Bighorn PR #71](https://github.com/heavybullets8/bighorn-byte/pull/71) removes the
+local database job's dependency on the entire reusable check/smoke call. Each
+job has its own runner and Postgres service, so their database names and ports
+remain isolated. All jobs still contribute to the Check result that gates image
+publication. Smoke still exercises live dev-SSR HTTP routes; the local DB job
+owns the single application build and compiled-route assertions.
+
+The disposable Postgres 17 data directory uses a 2 GiB tmpfs and 256 MiB shared
+memory. The data mount used 158 MiB during the trial. Those are caps, not upfront
+reservations; tmpfs usage counts toward the DinD container's existing 6 GiB limit.
+PostgreSQL durability settings are unchanged. Persistent application databases
+are outside this workflow.
+
+The disk control confirmed that the runner uses the 960 GB Intel Optane system
+drive through Talos's 100 GiB EPHEMERAL partition. Optane was already fast: one
+controlled pair measured the DB test command at 167.45 seconds with tmpfs and
+174.31 seconds on disk (both 813 tests and 20 steps passed). This modest 3.9%
+difference is an observation from one pair, not a general hardware speed claim.
+
+| Configuration | Run | Full workflow | DB test command |
+| --- | --- | --- | --- |
+| Initial self-hosted, serial job graph | `35546153217` | 8m45s | ~182.7s |
+| Concurrent jobs, RAM database, original PDF install/builds | `35548686839` | 4m23s | 167.45s |
+| Concurrent jobs, disk control, original PDF install/builds | `35548988744` | 4m25s | 174.31s |
+| Final PR: prebuilt tools, one build, deterministic fixtures | `35550161669` | 4m10s | ~167s |
+| Merged main with warm runners | `35550427574` | 4m00s | ~167s |
+
+Package installation varied from 71 seconds initially to 8–10 seconds in the
+trials. Preinstalling Poppler removes that variable network operation. Omitting
+the duplicate smoke build saves about 40 seconds of runner work while retaining
+its compiled coverage in the DB job. The main elapsed-time gain is overlapping
+independent jobs, not additional CPU or a large RAM cache. Observed runner use
+was about two CPU cores and 2.8 GiB, below its unchanged four-core/4 GiB limits.
+
+The first custom-image trial passed unit and smoke checks but exposed existing
+nondeterministic DB assertions: pricing expectations depended on the real UTC
+clock crossing a DeepSeek rate window, and a credential assertion split a
+base64url secret on every underscore. The final workflow PR also makes those
+fixtures deterministic. It pins test clocks consistently through enqueue,
+claim and model calls, verifies explicit peak/off-peak charges, and checks the
+full parsed credential against its stored hash and plaintext-absence assertion.
+These are test changes only; production billing/authentication logic is unchanged.
+
+
+Final verification on merge commit `5decf7784df1208a0806b4e917030032e44f61ca`:
+[main Check run 35550427574](https://github.com/heavybullets8/bighorn-byte/actions/runs/35550427574)
+passed in exactly four minutes, about 54% less elapsed time than the initial
+8m45s self-hosted run. The database job started three seconds after workflow
+creation. All 813 database tests and 1,571 unit tests passed (two existing unit
+tests remain ignored). All seven HTTP smoke paths returned 200; smoke took
+41 seconds versus the original 85 seconds. No tests were removed, and the
+compiled-route build remains covered. The retained RAM database again completed
+its test step in about 167 seconds. These are observed runs, not guaranteed
+future durations; package/network effects contributed to the original baseline.
