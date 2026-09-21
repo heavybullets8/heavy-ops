@@ -348,3 +348,165 @@ items:
             containers:
               - <<: *ciRunner
                 image: ghcr.io/heavybullets8/business-nix-runner:2.337.0@sha256:03fcb7ce24edf6496e7493222cea81c719eb2bb72328635bf179240133a65327
+  - <<: *ciPool
+    metadata:
+      name: fcc-spam-reporter-ci
+    spec:
+      <<: *ciPoolSpec
+      values:
+        <<: *ciPoolValues
+        githubConfigUrl: https://github.com/Heavybullets8/fcc-spam-reporter
+        runnerScaleSetName: fcc-spam-reporter-ci
+        maxRunners: 1
+        template:
+          spec: &buildPod
+            <<: *ciPod
+            # NOTE: RootlessKit owns the user namespace for image-building jobs.
+            hostUsers: true
+            initContainers:
+              - &buildkitSidecar
+                name: buildkitd
+                image: moby/buildkit:v0.33.0-rootless@sha256:80b15f0735e87bab7bf59ec4d695dfb4a7cfb25521cf56dc75d6f256285b63ef
+                restartPolicy: Always
+                command: [sh, -c]
+                args:
+                  - |
+                    set -eu
+                    mkdir -p /run/buildkit/worker /state/worker
+                    chmod 0755 /run/buildkit/worker
+                    socket=/run/buildkit/worker/buildkitd.sock
+                    rootlesskit buildkitd \
+                      --root=/state/worker \
+                      --addr="unix://${socket}" \
+                      --oci-worker-snapshotter=native \
+                      --oci-worker-no-process-sandbox &
+                    child=$!
+                    trap 'kill "$child" 2>/dev/null || true' TERM INT EXIT
+                    until [ -S "$socket" ]; do
+                      kill -0 "$child" 2>/dev/null || { wait "$child"; exit 1; }
+                      sleep 0.1
+                    done
+                    chmod 0666 "$socket"
+                    wait "$child"
+                securityContext:
+                  privileged: false
+                  runAsNonRoot: true
+                  runAsUser: 1000
+                  runAsGroup: 1000
+                  allowPrivilegeEscalation: true
+                  seccompProfile:
+                    type: Unconfined
+                  capabilities:
+                    drop: [ALL]
+                    add: [SETUID, SETGID]
+                startupProbe:
+                  exec:
+                    command: [buildctl, "--addr=unix:///run/buildkit/worker/buildkitd.sock", debug, workers]
+                  periodSeconds: 2
+                  failureThreshold: 60
+                resources:
+                  requests:
+                    cpu: 500m
+                    memory: 512Mi
+                    ephemeral-storage: 2Gi
+                  limits:
+                    cpu: 4
+                    memory: 6Gi
+                    ephemeral-storage: 20Gi
+                volumeMounts:
+                  - &buildkitSocketMount
+                    name: buildkit-socket
+                    mountPath: /run/buildkit
+                  - name: buildkit-state
+                    mountPath: /state
+            containers:
+              - &buildRunner
+                <<: *databaseRunner
+                volumeMounts:
+                  - *workMount
+                  - *buildkitSocketMount
+            volumes:
+              - *workVolume
+              - &buildkitSocket
+                name: buildkit-socket
+                emptyDir: {}
+              - &buildkitState
+                name: buildkit-state
+                emptyDir:
+                  sizeLimit: 18Gi
+  - <<: *ciPool
+    metadata:
+      name: scale-tv-ci
+    spec:
+      <<: *ciPoolSpec
+      values:
+        <<: *ciPoolValues
+        githubConfigUrl: https://github.com/Heavybullets8/scale-tv
+        runnerScaleSetName: scale-tv-ci
+        minRunners: 0
+        maxRunners: 1
+        template:
+          spec:
+            <<: *buildPod
+            initContainers:
+              - <<: *postgresSidecar
+                args: ["-p", "5435", "-c", "listen_addresses=127.0.0.1"]
+                env:
+                  - name: POSTGRES_USER
+                    value: dev
+                  - name: POSTGRES_PASSWORD
+                    value: devpassword
+                  - name: POSTGRES_DB
+                    value: scaletv
+                  - name: PGDATA
+                    value: /var/lib/postgresql/data/pgdata
+                startupProbe:
+                  exec:
+                    command: [pg_isready, -h, "127.0.0.1", -p, "5435", -U, dev, -d, scaletv]
+                  periodSeconds: 2
+                  failureThreshold: 30
+              - *buildkitSidecar
+            volumes:
+              - *workVolume
+              - *postgresData
+              - *postgresShm
+              - *buildkitSocket
+              - *buildkitState
+  - <<: *ciPool
+    metadata:
+      name: bighorn-byte-ci
+    spec:
+      <<: *ciPoolSpec
+      values:
+        <<: *ciPoolValues
+        githubConfigUrl: https://github.com/Heavybullets8/bighorn-byte
+        runnerScaleSetName: bighorn-byte-ci
+        minRunners: 2
+        maxRunners: 3
+        template:
+          spec:
+            <<: *buildPod
+            initContainers:
+              - <<: *postgresSidecar
+                args: ["-p", "5440", "-c", "listen_addresses=127.0.0.1"]
+                env:
+                  - name: POSTGRES_USER
+                    value: dev
+                  - name: POSTGRES_PASSWORD
+                    value: devpassword
+                  - name: POSTGRES_DB
+                    value: bighorn_byte_dev
+                  - name: PGDATA
+                    value: /var/lib/postgresql/data/pgdata
+                startupProbe:
+                  exec:
+                    command: [pg_isready, -h, "127.0.0.1", -p, "5440", -U, dev, -d, bighorn_byte_dev]
+                  periodSeconds: 2
+                  failureThreshold: 30
+              - *buildkitSidecar
+            volumes:
+              - *workVolume
+              - *postgresData
+              - *postgresShm
+              - *buildkitSocket
+              - *buildkitState
