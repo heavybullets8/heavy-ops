@@ -6,6 +6,10 @@ They share the existing ARC controller and GitHub App registration, while each
 pool is bound to a single repository. The administrative `heavy-ops-runner` pool
 is unchanged.
 
+This document records the initial self-hosted rollout. The current security
+profiles, unprivileged cutovers, image contracts, and remaining builder work are
+recorded in [GitHub Actions runner hardening](github-actions-runner-hardening.md).
+
 ## Scope
 
 The account audit found 50 repositories: 36 active owned repositories, 20 with
