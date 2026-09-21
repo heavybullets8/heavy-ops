@@ -377,7 +377,7 @@ items:
                     socket=/run/buildkit/worker/buildkitd.sock
                     rootlesskit buildkitd \
                       --root=/state/worker \
-                      --addr="unix://${socket}" \
+                      --addr=unix:///run/buildkit/worker/buildkitd.sock \
                       --oci-worker-snapshotter=native \
                       --oci-worker-no-process-sandbox &
                     child=$!
