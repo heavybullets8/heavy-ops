@@ -407,12 +407,12 @@ items:
                 resources:
                   requests:
                     cpu: 500m
-                    memory: 512Mi
-                    ephemeral-storage: 2Gi
+                    memory: 1Gi
+                    ephemeral-storage: 512Mi
                   limits:
                     cpu: 4
-                    memory: 6Gi
-                    ephemeral-storage: 20Gi
+                    memory: 18Gi
+                    ephemeral-storage: 2Gi
                 volumeMounts:
                   - &buildkitSocketMount
                     name: buildkit-socket
@@ -433,7 +433,8 @@ items:
               - &buildkitState
                 name: buildkit-state
                 emptyDir:
-                  sizeLimit: 18Gi
+                  medium: Memory
+                  sizeLimit: 12Gi
   - <<: *ciPool
     metadata:
       name: scale-tv-ci
