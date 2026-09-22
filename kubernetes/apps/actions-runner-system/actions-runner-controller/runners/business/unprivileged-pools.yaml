@@ -169,7 +169,7 @@ items:
             containers:
               - &databaseRunner
                 <<: *ciRunner
-                image: ghcr.io/heavybullets8/business-runner:2.337.0@sha256:099bcb3a8228d3636feea706f36347b1244cc4368878de40ee3ecb06f9f17a98
+                image: ghcr.io/heavybullets8/business-runner:2.337.0@sha256:f44660ead3a1c59a14b67badf53d426d484d50bb2a61819efd61a5794e90f0f6
             volumes:
               - *workVolume
               - &postgresData
