@@ -21,7 +21,7 @@ spec:
           app:
             image: &image
               repository: ghcr.io/heavybullets8/scale-tv
-              tag: sha-6940e27833714620ea50953a2ec620275566b53c@sha256:c94c574d322eafd4373dd4412ad6ffaa49379cedfbc5aee0b8c3c65b9c38bc01
+              tag: sha-b576f49fb29f72ce8a3141f89e8b6a84f156f465@sha256:08bf78c35a1fd0596ac3de94e2458db0c507673b632d283f1927038c307e913c
               pullPolicy: Always
             env: &env
               TZ: ${TIMEZONE}
