@@ -19,7 +19,7 @@ spec:
           app:
             image:
               repository: ghcr.io/heavybullets8/bighorn-byte-outreach
-              tag: sha-771ee73e257dbd2fce41d0bb895f8c818ed8c2a5@sha256:ef3a77fa965d92f264147173dd22b2e642ad7f9bde81253578f7cac3d57a8141
+              tag: sha-bd0bb8c4db2bf147b27dfccba9bfc65d5ee9a2ed@sha256:18a5833bdc90074e2bf945a1ab8320b56d35626381b8e46b7e8182f069884c78
               pullPolicy: Always
             args:
               - run
@@ -80,7 +80,7 @@ spec:
           app:
             image:
               repository: ghcr.io/heavybullets8/bighorn-byte-solver
-              tag: sha-771ee73e257dbd2fce41d0bb895f8c818ed8c2a5@sha256:8a2febba5b6d6b87d9499bb792297b7ab4590aa6a4ec982431c1dd32d3b9457e
+              tag: sha-bd0bb8c4db2bf147b27dfccba9bfc65d5ee9a2ed@sha256:06accf8e606080aa60aa095c073ff63f2d28ad2b00ac407b3c1e28677e2dd67a
               pullPolicy: Always
             env:
               CAPTCHA_SOLVER: "none"
