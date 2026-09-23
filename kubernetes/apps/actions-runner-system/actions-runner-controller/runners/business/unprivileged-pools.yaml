@@ -133,12 +133,22 @@ items:
             initContainers:
               - &postgresSidecar
                 name: postgres
-                image: postgres:17-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
+                # NOTE: the exact image of database/cloudnative-pg's cluster, so Renovate moves CI and
+                # production in one PR. It has no docker-entrypoint; the command does its init.
+                image: ghcr.io/cloudnative-pg/postgresql:18.6-standard-trixie@sha256:f0b080688ea0435ea81f9e8b547cfffe4b177865c4e4f4501cef7ba3780ced0b
+                command:
+                  - bash
+                  - -ec
+                  - |
+                    initdb -D "$PGDATA" -U "$POSTGRES_USER" -E UTF8 --locale=C --auth-local=trust --auth-host=scram-sha-256 --pwfile=<(printf '%s\n' "$POSTGRES_PASSWORD") >/dev/null
+                    printf 'CREATE DATABASE "%s" OWNER "%s";\n' "$POSTGRES_DB" "$POSTGRES_USER" | postgres --single -D "$PGDATA" postgres >/dev/null
+                    exec postgres -D "$PGDATA" -c unix_socket_directories= "$@"
+                  - postgres-sidecar
                 restartPolicy: Always
                 securityContext:
                   <<: *ciSecurity
-                  runAsUser: 70
-                  runAsGroup: 70
+                  runAsUser: 26
+                  runAsGroup: 26
                 resources:
                   requests:
                     cpu: 100m
