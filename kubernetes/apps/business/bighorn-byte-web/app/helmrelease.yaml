@@ -21,7 +21,7 @@ spec:
           app:
             image: &image
               repository: ghcr.io/heavybullets8/bighorn-byte-web
-              tag: sha-ed1c5ffee7f9a38409033bb2684aa713c7bfe406@sha256:e5c355f827600d865f01bec2b0f30ca03dc4bf7a1b12d3c70693d6d3378b7fc3
+              tag: sha-2fa513b4546e1726d0f1dc67de71ff01d86ee560@sha256:7d20e60e4755e3f61d38ac50415a8194f5bb23065145a0d3c4c43fbd93fe1f6d
               pullPolicy: Always
             env:
               TZ: ${TIMEZONE}
@@ -29,10 +29,7 @@ spec:
               DENO_ENV: production
               SITE_URL: https://bighornbyte.com
               BHB_MAINTENANCE_MODE: "0"
-              BHB_CRON_ENABLED: "0"
-              OUTREACH_DEPLOY_ROLES: ""
               BHB_PUBLIC_ORIGIN: https://bighornbyte.com
-              OUTREACH_BROWSER_PROVIDER: playwright
               OUTREACH_BROWSER_URL: "ws://bighorn-byte-browser.business.svc.cluster.local:3000/$(BROWSER_WS_PATH)"
               OUTREACH_PROXY_URL: socks5://qbittorrent-gluetun.media.svc.cluster.local:8388
               OUTREACH_SOLVER_URL: http://bighorn-byte-solver.business.svc.cluster.local:8191/v1
