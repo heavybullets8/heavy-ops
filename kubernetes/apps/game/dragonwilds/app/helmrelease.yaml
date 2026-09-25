@@ -27,7 +27,7 @@ spec:
               RSDW_PORT: &port "7777"
               RSDW_SERVER_NAME: "FrenZone"
               RSDW_WORLD_NAME: "FrenZone"
-              # SteamCMD updates on every boot. Opt out of mid-session restarts.
+              # Renovate game-build PRs trigger rollouts; SteamCMD updates on boot.
               RSDW_AUTO_STOP_ON_UPDATE: "false"
             envFrom:
               - secretRef:
@@ -85,6 +85,10 @@ spec:
                 memory: 16Gi
 
     defaultPodOptions:
+      annotations:
+        # A reviewed update trigger, not a pin: SteamCMD installs latest on startup.
+        # renovate: datasource=custom.dragonwilds depName=DragonwildsDedicatedServer versioning=regex:^(?<patch>\d+)$
+        steam-public-build-id: "25465077"
       terminationGracePeriodSeconds: 120
       nodeSelector:
         kubernetes.io/arch: amd64

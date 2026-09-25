@@ -1,0 +1,38 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "customDatasources": {
+    "dragonwilds": {
+      "defaultRegistryUrlTemplate": "https://api.steamcmd.net/v1/info/4019830",
+      "format": "json",
+      "transformTemplates": [
+        "{ \"releases\": [ { \"version\": $lookup($.data, \"4019830\").depots.branches.public.buildid } ] }"
+      ]
+    }
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": ["Track Dragonwilds public Steam builds for Deployment rollouts"],
+      // Steam build IDs jump by thousands; treat them as patch counters, not majors.
+      "managerFilePatterns": ["/^kubernetes/apps/game/dragonwilds/app/helmrelease\\.yaml$/"],
+      "matchStrings": [
+        "# renovate: datasource=custom\\.dragonwilds depName=(?<depName>[^\\s]+) versioning=(?<versioning>[^\\s]+)\\s*\\n[^\\n]*steam-public-build-id:\\s*[\"']?(?<currentValue>\\d+)"
+      ],
+      "datasourceTemplate": "custom.dragonwilds"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": ["Review game updates independently from the container image"],
+      "matchDatasources": ["custom.dragonwilds"],
+      "automerge": false,
+      "commitMessageExtra": "({{currentVersion}} → {{newVersion}})",
+      "commitMessageTopic": "Dragonwilds Steam build",
+      "semanticCommitScope": "dragonwilds",
+      "semanticCommitType": "chore",
+      "prBodyNotes": [
+        "Merging this PR changes the pod template and restarts Dragonwilds. SteamCMD installs the latest public game build on startup; this annotation is an update trigger, not a version pin. Merge when a server restart is acceptable."
+      ]
+    }
+  ]
+}
