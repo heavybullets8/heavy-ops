@@ -88,7 +88,7 @@ spec:
       annotations:
         # A reviewed update trigger, not a pin: SteamCMD installs latest on startup.
         # renovate: datasource=custom.dragonwilds depName=DragonwildsDedicatedServer versioning=regex:^(?<patch>\d+)$
-        steam-public-build-id: "25465077"
+        steam-public-build-id: "25501739"
       terminationGracePeriodSeconds: 120
       nodeSelector:
         kubernetes.io/arch: amd64
