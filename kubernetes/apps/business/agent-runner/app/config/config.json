@@ -12,8 +12,8 @@
     "codex": "ghcr.io/heavybullets8/heavy-ops-agent-runner-worker@sha256:f2722efd1df6e860ad4b604811e3b3f9a7063955042e46a2b409421e76a7d9ba"
   },
   "providers": {
-    "claude": false,
-    "codex": false
+    "claude": true,
+    "codex": true
   },
   "repositories": {
     "runner": {
