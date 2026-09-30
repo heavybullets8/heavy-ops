@@ -13,8 +13,8 @@ spec:
   values:
     controllers:
       agent-runner:
-        # Start only after the owner completes docs/setup.md.
-        replicas: 0
+        # Controller starts before provider jobs are enabled.
+        replicas: 1
         strategy: Recreate
         annotations:
           reloader.stakater.com/auto: "true"

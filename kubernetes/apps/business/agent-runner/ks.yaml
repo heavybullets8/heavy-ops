@@ -6,8 +6,8 @@ metadata:
   name: &app agent-runner
   namespace: &namespace business
 spec:
-  # Owner enables after subscription login, OAuth registration, and runtime probes.
-  suspend: true
+  # Provider jobs remain disabled until the live runtime probes pass.
+  suspend: false
   targetNamespace: *namespace
   commonMetadata:
     labels:

@@ -5,7 +5,7 @@
   "namespace": "business",
   "package_scope": "@heavybullets8",
   "owners": [
-    "OWNER_SUBJECT_NOT_CONFIGURED"
+    "463c69e1-db21-4eb3-8b29-bf87dbced4df"
   ],
   "images": {
     "claude": "ghcr.io/heavybullets8/heavy-ops-agent-runner-worker@sha256:f2722efd1df6e860ad4b604811e3b3f9a7063955042e46a2b409421e76a7d9ba",
@@ -19,7 +19,7 @@
     "runner": {
       "github": "heavybullets8/heavy-ops-agent-runner",
       "allowed_refs": [
-        "feat/agent-runner"
+        "main"
       ],
       "trusted_private": true,
       "allow_edit": false,
