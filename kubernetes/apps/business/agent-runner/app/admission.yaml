@@ -25,7 +25,8 @@ spec:
     - name: cs
       expression: variables.p.containers + variables.p.initContainers
   validations:
-    - expression: object.metadata.name.startsWith('agent-') && object.spec.backoffLimit == 0 && object.spec.activeDeadlineSeconds <= 3780
+    # 28800s execution + 300s startup + 300s preservation; checked against runtime_limits.ts.
+    - expression: object.metadata.name.startsWith('agent-') && object.spec.backoffLimit == 0 && object.spec.activeDeadlineSeconds > 0 && object.spec.activeDeadlineSeconds <= 29400
       message: Runner jobs must be bounded and must not retry.
     - expression: variables.p.serviceAccountName == 'agent-worker' && variables.p.automountServiceAccountToken == false && variables.p.hostUsers == false && variables.p.restartPolicy == 'Never'
       message: Runner jobs must use the tokenless worker account and a user namespace.
@@ -37,7 +38,7 @@ spec:
       message: Only the reviewed worker and checkout containers are permitted.
     - expression: variables.p.containers[0].name == 'worker' && variables.p.containers[0].command == ['/opt/runner/bin/worker'] && variables.p.initContainers[0].name == 'checkout' && variables.p.initContainers[0].command == ['/opt/runner/bin/checkout']
       message: Entrypoints are fixed.
-    - expression: variables.cs.all(c, c.image in ["ghcr.io/heavybullets8/heavy-ops-agent-runner-worker@sha256:9350c420cd452e7eb023c0655ac8bed89d4e9533331f6c8d78209c72cf923797"] && (!has(c.args) || c.args.size() == 0))
+    - expression: variables.cs.all(c, c.image in ["ghcr.io/heavybullets8/heavy-ops-agent-runner-worker@sha256:3555f493869f1f2f436a25f038592a394541897a7100d3e670d239156c8cbf38"] && (!has(c.args) || c.args.size() == 0))
       message: Only reviewed immutable worker images are permitted.
     - expression: variables.cs.all(c, c.securityContext.runAsNonRoot && c.securityContext.runAsUser == 1001 && c.securityContext.runAsGroup == 1001 && c.securityContext.allowPrivilegeEscalation == false && c.securityContext.privileged == false && c.securityContext.readOnlyRootFilesystem && c.securityContext.capabilities.drop == ['ALL'] && (!has(c.securityContext.capabilities.add) || c.securityContext.capabilities.add.size() == 0) && c.securityContext.procMount == 'Unmasked' && !has(c.securityContext.seccompProfile))
       message: Nonroot, no escalation, the reviewed seccomp profile, and dropped capabilities are required.
