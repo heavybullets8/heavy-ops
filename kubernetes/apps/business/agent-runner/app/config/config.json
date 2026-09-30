@@ -8,8 +8,8 @@
     "463c69e1-db21-4eb3-8b29-bf87dbced4df"
   ],
   "images": {
-    "claude": "ghcr.io/heavybullets8/heavy-ops-agent-runner-worker@sha256:0a1d406fab598cb12a41a76c257b8a431c4caaf2ae7cb26cbcfd5afd3b5bd709",
-    "codex": "ghcr.io/heavybullets8/heavy-ops-agent-runner-worker@sha256:0a1d406fab598cb12a41a76c257b8a431c4caaf2ae7cb26cbcfd5afd3b5bd709"
+    "claude": "ghcr.io/heavybullets8/heavy-ops-agent-runner-worker@sha256:9350c420cd452e7eb023c0655ac8bed89d4e9533331f6c8d78209c72cf923797",
+    "codex": "ghcr.io/heavybullets8/heavy-ops-agent-runner-worker@sha256:9350c420cd452e7eb023c0655ac8bed89d4e9533331f6c8d78209c72cf923797"
   },
   "providers": {
     "claude": true,
