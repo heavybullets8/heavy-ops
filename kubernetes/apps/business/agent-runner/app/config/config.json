@@ -22,7 +22,7 @@
         "main"
       ],
       "trusted_private": true,
-      "allow_edit": false,
+      "allow_edit": true,
       "checks": {
         "format": [
           "deno",
