@@ -1,0 +1,17 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./admission.yaml
+  - ./externalsecret.yaml
+  - ./helmrelease.yaml
+  - ./networkpolicy.yaml
+  - ./pvc.yaml
+  - ./rbac.yaml
+configMapGenerator:
+  - name: agent-runner-configmap
+    files:
+      - config.json=./config/config.json
+generatorOptions:
+  disableNameSuffixHash: true

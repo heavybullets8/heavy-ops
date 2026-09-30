@@ -2,6 +2,15 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "packageRules": [
     {
+      "description": ["Promote tested agent runner image pairs and admission pins together"],
+      "matchDatasources": ["docker"],
+      "matchPackageNames": [
+        "ghcr.io/heavybullets8/heavy-ops-agent-runner-controller",
+        "ghcr.io/heavybullets8/heavy-ops-agent-runner-worker"
+      ],
+      "enabled": false
+    },
+    {
       "description": ["Custom schedule for frequently updated container digests"],
       "matchDatasources": ["docker"],
       "matchPackageNames": ["/postgresql/", "/tensorchord/"],

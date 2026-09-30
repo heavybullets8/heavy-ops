@@ -15,3 +15,4 @@ resources:
   - ./scale-tv/ks.yaml
   - ./docmost-bhb/ks.yaml
   - ./documenso/ks.yaml
+  - ./agent-runner/ks.yaml

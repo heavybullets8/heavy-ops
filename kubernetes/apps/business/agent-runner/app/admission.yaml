@@ -1,0 +1,68 @@
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: business-agent-runner-jobs
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - batch
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - jobs
+  matchConditions:
+    - name: runner-controller-only
+      expression: request.userInfo.username == 'system:serviceaccount:business:agent-runner'
+  variables:
+    - name: p
+      expression: object.spec.template.spec
+    - name: cs
+      expression: variables.p.containers + variables.p.initContainers
+  validations:
+    - expression: object.metadata.name.startsWith('agent-') && object.spec.backoffLimit == 0 && object.spec.activeDeadlineSeconds <= 3780
+      message: Runner jobs must be bounded and must not retry.
+    - expression: variables.p.serviceAccountName == 'agent-worker' && variables.p.automountServiceAccountToken == false && variables.p.hostUsers == false && variables.p.restartPolicy == 'Never'
+      message: Runner jobs must use the tokenless worker account and a user namespace.
+    - expression: (!has(variables.p.hostNetwork) || !variables.p.hostNetwork) && (!has(variables.p.hostPID) || !variables.p.hostPID) && (!has(variables.p.hostIPC) || !variables.p.hostIPC) && (!has(variables.p.shareProcessNamespace) || !variables.p.shareProcessNamespace)
+      message: Host and shared process namespaces are forbidden.
+    - expression: variables.p.securityContext.runAsNonRoot && variables.p.securityContext.runAsUser == 1001 && variables.p.securityContext.runAsGroup == 1001 && variables.p.securityContext.fsGroup == 1001 && variables.p.securityContext.seccompProfile.type == 'Localhost' && variables.p.securityContext.seccompProfile.localhostProfile == 'profiles/agent-runner-containerd-2.2.7.json' && !has(variables.p.securityContext.sysctls)
+      message: Worker identity and seccomp profile are fixed.
+    - expression: variables.p.containers.size() == 1 && variables.p.initContainers.size() == 1 && (!has(variables.p.ephemeralContainers) || variables.p.ephemeralContainers.size() == 0)
+      message: Only the reviewed worker and checkout containers are permitted.
+    - expression: variables.p.containers[0].name == 'worker' && variables.p.containers[0].command == ['/opt/runner/bin/worker'] && variables.p.initContainers[0].name == 'checkout' && variables.p.initContainers[0].command == ['/opt/runner/bin/checkout']
+      message: Entrypoints are fixed.
+    - expression: variables.cs.all(c, c.image in ["ghcr.io/heavybullets8/heavy-ops-agent-runner-worker@sha256:0000000000000000000000000000000000000000000000000000000000000000"] && (!has(c.args) || c.args.size() == 0))
+      message: Only reviewed immutable worker images are permitted.
+    - expression: variables.cs.all(c, c.securityContext.runAsNonRoot && c.securityContext.runAsUser == 1001 && c.securityContext.runAsGroup == 1001 && c.securityContext.allowPrivilegeEscalation == false && c.securityContext.privileged == false && c.securityContext.readOnlyRootFilesystem && c.securityContext.capabilities.drop == ['ALL'] && (!has(c.securityContext.capabilities.add) || c.securityContext.capabilities.add.size() == 0) && c.securityContext.procMount == 'Unmasked' && !has(c.securityContext.seccompProfile))
+      message: Nonroot, no escalation, the reviewed seccomp profile, and dropped capabilities are required.
+    - expression: variables.p.volumes.size() == 4 && variables.p.volumes.all(v, has(v.emptyDir) && v.name in ['workspace','runtime','tmp','shm'])
+      message: Workers may mount only disposable job storage; secrets, PVCs, and host mounts are forbidden.
+    - expression: variables.cs.all(c, c.volumeMounts.size() == 4 && c.volumeMounts.all(m, (m.name == 'workspace' && m.mountPath == '/workspace' || m.name == 'runtime' && m.mountPath == '/runtime' || m.name == 'tmp' && m.mountPath == '/tmp' || m.name == 'shm' && m.mountPath == '/dev/shm') && !has(m.subPath) && !has(m.subPathExpr) && !has(m.mountPropagation)) && !has(c.volumeDevices))
+      message: Mount paths are fixed.
+    - expression: variables.cs.all(c, !has(c.envFrom) && c.env.size() == 3 && c.env.all(e, e.name in ['RUNNER_JOB_ID','RUNNER_JOB_TOKEN','RUNNER_CONTROLLER'] && has(e.value) && !has(e.valueFrom)))
+      message: No arbitrary environment or secret references are permitted.
+    - expression: variables.cs.all(c, c.env.exists(e,e.name == 'RUNNER_CONTROLLER' && e.value == 'http://agent-runner.business.svc.cluster.local:8081'))
+      message: Worker callbacks must use the runner controller.
+    - expression: variables.cs.all(c, !has(c.ports) && !has(c.lifecycle) && quantity(c.resources.limits['cpu']) == quantity('4') && quantity(c.resources.limits['memory']) == quantity('8Gi') && quantity(c.resources.limits['ephemeral-storage']) == quantity('12Gi'))
+      message: Worker resource limits and exposed interfaces are fixed.
+    - expression: object.spec.template.metadata.labels['app.kubernetes.io/name'] == 'agent-worker'
+      message: The worker network-policy label is mandatory.
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: business-agent-runner-jobs
+spec:
+  policyName: business-agent-runner-jobs
+  validationActions:
+    - Deny
+  matchResources:
+    namespaceSelector:
+      matchLabels:
+        kubernetes.io/metadata.name: business

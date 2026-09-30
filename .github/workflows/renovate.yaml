@@ -51,6 +51,10 @@ jobs:
         with:
           client-id: ${{ secrets.BOT_APP_CLIENT_ID }}
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: |
+            heavy-ops
+            heavy-ops-agent-runner
           permission-checks: write
           permission-contents: write
           permission-issues: write
@@ -70,7 +74,7 @@ jobs:
         env:
           LOG_LEVEL: ${{ inputs.logLevel || 'debug' }}
           RENOVATE_AUTODISCOVER: true
-          RENOVATE_AUTODISCOVER_FILTER: ${{ github.repository }}
+          RENOVATE_AUTODISCOVER_FILTER: heavybullets8/heavy-ops,heavybullets8/heavy-ops-agent-runner
           RENOVATE_DRY_RUN: ${{ inputs.dryRun }}
           RENOVATE_INTERNAL_CHECKS_FILTER: strict
           RENOVATE_PLATFORM: github

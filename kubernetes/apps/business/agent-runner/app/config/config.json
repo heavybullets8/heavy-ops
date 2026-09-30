@@ -1,0 +1,54 @@
+{
+  "public_url": "https://agent-runner.${SECRET_DOMAIN}",
+  "issuer": "https://auth.${SECRET_DOMAIN}",
+  "jwks_url": "https://auth.${SECRET_DOMAIN}/jwks.json",
+  "namespace": "business",
+  "package_scope": "@heavybullets8",
+  "owners": [
+    "OWNER_SUBJECT_NOT_CONFIGURED"
+  ],
+  "images": {
+    "claude": "ghcr.io/heavybullets8/heavy-ops-agent-runner-worker@sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "codex": "ghcr.io/heavybullets8/heavy-ops-agent-runner-worker@sha256:0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "providers": {
+    "claude": false,
+    "codex": false
+  },
+  "repositories": {
+    "runner": {
+      "github": "heavybullets8/heavy-ops-agent-runner",
+      "allowed_refs": [
+        "feat/agent-runner"
+      ],
+      "trusted_private": true,
+      "allow_edit": false,
+      "checks": {
+        "format": [
+          "deno",
+          "fmt",
+          "--check"
+        ],
+        "lint": [
+          "deno",
+          "lint"
+        ],
+        "check": [
+          "deno",
+          "check",
+          "src/main.ts",
+          "src/worker.ts",
+          "src/checkout.ts"
+        ],
+        "test": [
+          "deno",
+          "task",
+          "test"
+        ]
+      }
+    }
+  },
+  "queue_limit": 8,
+  "retention_days": 7,
+  "max_source_bytes": 67108864
+}

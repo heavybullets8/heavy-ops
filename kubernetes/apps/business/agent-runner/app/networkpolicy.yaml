@@ -1,0 +1,109 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/cilium.io/ciliumnetworkpolicy_v2.json
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: agent-worker
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: agent-worker
+  ingress: []
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+    - toEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+            - port: "80"
+              protocol: TCP
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: business
+            app.kubernetes.io/name: agent-runner
+      toPorts:
+        - ports:
+            - port: "8081"
+              protocol: TCP
+  egressDeny:
+    - toEntities:
+        - host
+        - remote-node
+        - kube-apiserver
+    - toCIDRSet:
+        - cidr: 10.0.0.0/8
+          except:
+            - 10.69.0.0/16
+        - cidr: 172.16.0.0/12
+        - cidr: 192.168.0.0/16
+        - cidr: 169.254.0.0/16
+        - cidr: 100.64.0.0/10
+        - cidr: fc00::/7
+        - cidr: fe80::/10
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: agent-runner
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: agent-runner
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: business
+            app.kubernetes.io/name: agent-worker
+      toPorts:
+        - ports:
+            - port: "8081"
+              protocol: TCP
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: network
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: UDP
+            - port: "53"
+              protocol: TCP
+    - toEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+            - port: "80"
+              protocol: TCP
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+            - port: "6443"
+              protocol: TCP
+  egressDeny:
+    - toCIDRSet:
+        - cidr: 169.254.0.0/16
+        - cidr: 100.64.0.0/10
