@@ -8,8 +8,8 @@
     "OWNER_SUBJECT_NOT_CONFIGURED"
   ],
   "images": {
-    "claude": "ghcr.io/heavybullets8/heavy-ops-agent-runner-worker@sha256:0000000000000000000000000000000000000000000000000000000000000000",
-    "codex": "ghcr.io/heavybullets8/heavy-ops-agent-runner-worker@sha256:0000000000000000000000000000000000000000000000000000000000000000"
+    "claude": "ghcr.io/heavybullets8/heavy-ops-agent-runner-worker@sha256:f2722efd1df6e860ad4b604811e3b3f9a7063955042e46a2b409421e76a7d9ba",
+    "codex": "ghcr.io/heavybullets8/heavy-ops-agent-runner-worker@sha256:f2722efd1df6e860ad4b604811e3b3f9a7063955042e46a2b409421e76a7d9ba"
   },
   "providers": {
     "claude": false,
