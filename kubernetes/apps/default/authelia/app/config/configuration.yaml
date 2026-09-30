@@ -100,6 +100,8 @@ identity_providers:
       custom:
         agent-runner-personal:
           refresh_token: 30d
+        kubernetes-mcp:
+          refresh_token: 30d
     cors:
       endpoints: ["authorization", "token", "revocation", "introspection"]
       allowed_origins_from_client_redirect_uris: true
@@ -113,11 +115,17 @@ identity_providers:
         rules:
           - policy: two_factor
             subject: 'user:kyler'
+      kubernetes-mcp-owner:
+        default_policy: deny
+        rules:
+          - policy: two_factor
+            subject: 'user:kyler'
     scopes:
       "jobs:launch": { claims: [] }
       "jobs:read": { claims: [] }
       "jobs:cancel": { claims: [] }
       "jobs:edit": { claims: [] }
+      "kubernetes:operate": { claims: [] }
     claims_policies:
       grafana:
         id_token: ['email', 'name', 'groups', 'preferred_username']
@@ -193,6 +201,21 @@ identity_providers:
         requested_audience_mode: implicit
         audience: ["https://agent-runner.${SECRET_DOMAIN}"]
         scopes: [openid, offline_access, email, "jobs:launch", "jobs:read", "jobs:cancel", "jobs:edit"]
+        response_types: [code]
+        grant_types: [authorization_code, refresh_token]
+        redirect_uris: ["https://chatgpt.com/connector_platform_oauth_redirect"]
+      - client_id: kubernetes-mcp
+        client_name: Heavy Ops Kubernetes MCP
+        public: true
+        authorization_policy: kubernetes-mcp-owner
+        lifespan: kubernetes-mcp
+        require_pkce: true
+        pkce_challenge_method: S256
+        token_endpoint_auth_method: none
+        access_token_signed_response_alg: RS256
+        requested_audience_mode: implicit
+        audience: ["https://kubernetes-mcp.${SECRET_DOMAIN}"]
+        scopes: [openid, offline_access, email, profile, "kubernetes:operate"]
         response_types: [code]
         grant_types: [authorization_code, refresh_token]
         redirect_uris: ["https://chatgpt.com/connector_platform_oauth_redirect"]

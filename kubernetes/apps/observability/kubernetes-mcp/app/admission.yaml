@@ -1,0 +1,92 @@
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: kubernetes-mcp-workload-restart
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["apps"]
+        apiVersions: ["*"]
+        operations: ["*"]
+        resources: ["daemonsets", "deployments", "statefulsets"]
+  matchConditions:
+    - name: kubernetes-mcp-only
+      expression: request.userInfo.username == 'system:serviceaccount:observability:kubernetes-mcp'
+  variables:
+    - name: volatile
+      expression: "['annotations', 'generation', 'managedFields', 'resourceVersion']"
+    - name: serverAnnotations
+      expression: "['deprecated.daemonset.template.generation']"
+    - name: metaAnn
+      expression: "has(object.metadata.annotations) ? object.metadata.annotations : {}"
+    - name: oldMetaAnn
+      expression: "has(oldObject.metadata.annotations) ? oldObject.metadata.annotations : {}"
+    - name: restartKey
+      expression: "'kubectl.kubernetes.io/restartedAt'"
+    - name: tmpl
+      expression: object.spec.template.metadata
+    - name: oldTmpl
+      expression: oldObject.spec.template.metadata
+    - name: ann
+      expression: "has(object.spec.template.metadata.annotations) ? object.spec.template.metadata.annotations : {}"
+    - name: oldAnn
+      expression: "has(oldObject.spec.template.metadata.annotations) ? oldObject.spec.template.metadata.annotations : {}"
+  validations:
+    - expression: request.operation == 'UPDATE'
+      message: kubernetes-mcp may only update existing workloads.
+    - expression: >-
+        object.metadata.all(k, k in variables.volatile || (k in oldObject.metadata && object.metadata[k] == oldObject.metadata[k])) &&
+        oldObject.metadata.all(k, k in variables.volatile || k in object.metadata) &&
+        variables.metaAnn.all(k, k in variables.serverAnnotations || (k in variables.oldMetaAnn && variables.metaAnn[k] == variables.oldMetaAnn[k])) &&
+        variables.oldMetaAnn.all(k, k in variables.serverAnnotations || k in variables.metaAnn)
+      message: kubernetes-mcp may not change workload metadata.
+    - expression: >-
+        object.spec.all(k, k == 'template' || (k in oldObject.spec && object.spec[k] == oldObject.spec[k])) &&
+        oldObject.spec.all(k, k in object.spec) &&
+        object.spec.template.spec == oldObject.spec.template.spec &&
+        variables.tmpl.all(k, k == 'annotations' || (k in variables.oldTmpl && variables.tmpl[k] == variables.oldTmpl[k])) &&
+        variables.oldTmpl.all(k, k == 'annotations' || k in variables.tmpl) &&
+        variables.ann.all(k, k == variables.restartKey || (k in variables.oldAnn && variables.ann[k] == variables.oldAnn[k])) &&
+        variables.oldAnn.all(k, k == variables.restartKey || k in variables.ann)
+      message: kubernetes-mcp may only change the kubectl.kubernetes.io/restartedAt pod template annotation.
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: kubernetes-mcp-workload-restart
+spec:
+  policyName: kubernetes-mcp-workload-restart
+  validationActions: ["Deny"]
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: kubernetes-mcp-pod-delete
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["*"]
+        operations: ["*"]
+        resources: ["pods"]
+  matchConditions:
+    - name: kubernetes-mcp-only
+      expression: request.userInfo.username == 'system:serviceaccount:observability:kubernetes-mcp'
+  validations:
+    - expression: request.operation == 'DELETE'
+      message: kubernetes-mcp may only delete pods.
+    - expression: >-
+        has(oldObject.metadata.ownerReferences) &&
+        oldObject.metadata.ownerReferences.exists(r, has(r.controller) && r.controller && r.apiVersion == 'apps/v1' && r.kind in ['ReplicaSet', 'StatefulSet', 'DaemonSet'])
+      message: kubernetes-mcp may only delete pods owned by a ReplicaSet, StatefulSet or DaemonSet.
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: kubernetes-mcp-pod-delete
+spec:
+  policyName: kubernetes-mcp-pod-delete
+  validationActions: ["Deny"]

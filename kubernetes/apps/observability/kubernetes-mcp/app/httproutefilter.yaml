@@ -1,0 +1,13 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/gateway.envoyproxy.io/httproutefilter_v1alpha1.json
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: HTTPRouteFilter
+metadata:
+  name: kubernetes-mcp-resource-metadata
+spec:
+  directResponse:
+    statusCode: 200
+    contentType: application/json
+    body:
+      type: Inline
+      inline: '{"resource":"https://kubernetes-mcp.${SECRET_DOMAIN}","authorization_servers":["https://auth.${SECRET_DOMAIN}"],"scopes_supported":["kubernetes:operate"],"bearer_methods_supported":["header"]}'

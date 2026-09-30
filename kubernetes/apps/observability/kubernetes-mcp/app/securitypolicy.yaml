@@ -1,0 +1,32 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/gateway.envoyproxy.io/securitypolicy_v1alpha1.json
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: kubernetes-mcp
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: kubernetes-mcp
+      sectionName: mcp
+  jwt:
+    providers:
+      - name: authelia
+        issuer: "https://auth.${SECRET_DOMAIN}"
+        audiences:
+          - "https://kubernetes-mcp.${SECRET_DOMAIN}"
+        remoteJWKS:
+          uri: "https://auth.${SECRET_DOMAIN}/jwks.json"
+  authorization:
+    defaultAction: Deny
+    rules:
+      - name: owner
+        action: Allow
+        principal:
+          jwt:
+            provider: authelia
+            claims:
+              - name: sub
+                values: ["463c69e1-db21-4eb3-8b29-bf87dbced4df"]
+            scopes: ["kubernetes:operate"]
