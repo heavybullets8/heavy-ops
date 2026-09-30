@@ -1,0 +1,145 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kubernetes-mcp
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kubernetes-mcp-read
+rules:
+  - apiGroups: [""]
+    resources:
+      - configmaps
+      - endpoints
+      - events
+      - limitranges
+      - namespaces
+      - nodes
+      - persistentvolumeclaims
+      - persistentvolumes
+      - pods
+      - pods/log
+      - replicationcontrollers
+      - resourcequotas
+      - serviceaccounts
+      - services
+    verbs: ["get", "list"]
+  - apiGroups: ["apps"]
+    resources: ["controllerrevisions", "daemonsets", "deployments", "replicasets", "statefulsets"]
+    verbs: ["get", "list"]
+  - apiGroups: ["batch"]
+    resources: ["cronjobs", "jobs"]
+    verbs: ["get", "list"]
+  - apiGroups: ["autoscaling"]
+    resources: ["horizontalpodautoscalers"]
+    verbs: ["get", "list"]
+  - apiGroups: ["policy"]
+    resources: ["poddisruptionbudgets"]
+    verbs: ["get", "list"]
+  - apiGroups: ["discovery.k8s.io"]
+    resources: ["endpointslices"]
+    verbs: ["get", "list"]
+  - apiGroups: ["events.k8s.io"]
+    resources: ["events"]
+    verbs: ["get", "list"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["ingressclasses", "ingresses", "networkpolicies"]
+    verbs: ["get", "list"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["csidrivers", "csinodes", "storageclasses", "volumeattachments"]
+    verbs: ["get", "list"]
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshotclasses", "volumesnapshotcontents", "volumesnapshots"]
+    verbs: ["get", "list"]
+  - apiGroups: ["metrics.k8s.io"]
+    resources: ["nodes", "pods"]
+    verbs: ["get", "list"]
+  - apiGroups: ["kustomize.toolkit.fluxcd.io"]
+    resources: ["kustomizations"]
+    verbs: ["get", "list"]
+  - apiGroups: ["helm.toolkit.fluxcd.io"]
+    resources: ["helmreleases"]
+    verbs: ["get", "list"]
+  - apiGroups: ["source.toolkit.fluxcd.io"]
+    resources: ["gitrepositories", "helmcharts", "helmrepositories", "ocirepositories"]
+    verbs: ["get", "list"]
+  - apiGroups: ["fluxcd.controlplane.io"]
+    resources: ["fluxinstances", "fluxreports", "resourcesets"]
+    verbs: ["get", "list"]
+  - apiGroups: ["cert-manager.io"]
+    resources: ["certificaterequests", "certificates", "clusterissuers", "issuers"]
+    verbs: ["get", "list"]
+  - apiGroups: ["acme.cert-manager.io"]
+    resources: ["challenges", "orders"]
+    verbs: ["get", "list"]
+  - apiGroups: ["external-secrets.io"]
+    resources: ["clusterexternalsecrets", "clustersecretstores", "externalsecrets", "secretstores"]
+    verbs: ["get", "list"]
+  - apiGroups: ["gateway.networking.k8s.io"]
+    resources: ["gatewayclasses", "gateways", "httproutes", "referencegrants"]
+    verbs: ["get", "list"]
+  - apiGroups: ["gateway.envoyproxy.io"]
+    resources: ["backendtrafficpolicies", "clienttrafficpolicies", "envoyproxies", "httproutefilters", "securitypolicies"]
+    verbs: ["get", "list"]
+  - apiGroups: ["cilium.io"]
+    resources: ["ciliumclusterwidenetworkpolicies", "ciliumendpoints", "ciliumnetworkpolicies", "ciliumnodes"]
+    verbs: ["get", "list"]
+  - apiGroups: ["postgresql.cnpg.io"]
+    resources: ["backups", "clusters", "poolers", "scheduledbackups"]
+    verbs: ["get", "list"]
+  - apiGroups: ["dragonflydb.io"]
+    resources: ["dragonflies"]
+    verbs: ["get", "list"]
+  - apiGroups: ["monitoring.coreos.com"]
+    resources: ["podmonitors", "prometheusrules", "servicemonitors"]
+    verbs: ["get", "list"]
+  - apiGroups: ["kopiur.home-operations.com"]
+    resources: ["clusterrepositories", "maintenances", "repositories", "restores", "snapshotpolicies", "snapshots", "snapshotschedules"]
+    verbs: ["get", "list"]
+  - apiGroups: ["zfs.openebs.io"]
+    resources: ["zfsnodes", "zfssnapshots", "zfsvolumes"]
+    verbs: ["get", "list"]
+  - apiGroups: ["tuppr.home-operations.com"]
+    resources: ["kubernetesupgrades", "talosupgrades"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kubernetes-mcp-restart
+rules:
+  - apiGroups: ["apps"]
+    resources: ["daemonsets", "deployments", "statefulsets"]
+    verbs: ["get", "patch"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kubernetes-mcp-read
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kubernetes-mcp-read
+subjects:
+  - kind: ServiceAccount
+    name: kubernetes-mcp
+    namespace: observability
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kubernetes-mcp-restart
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kubernetes-mcp-restart
+subjects:
+  - kind: ServiceAccount
+    name: kubernetes-mcp
+    namespace: observability

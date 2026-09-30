@@ -1,0 +1,42 @@
+port = "8080"
+log_level = 5
+stateless = true
+list_output = "table"
+
+cluster_provider_strategy = "in-cluster"
+cluster_auth_mode = "kubeconfig"
+
+toolsets = ["core"]
+enabled_tools = [
+  "events_list",
+  "namespaces_list",
+  "nodes_top",
+  "pods_top",
+  "pods_list",
+  "pods_list_in_namespace",
+  "pods_get",
+  "pods_log",
+  "resources_list",
+  "resources_get",
+  "resources_create_or_update",
+  "pods_delete",
+]
+
+server_instructions = """
+Heavy Ops Kubernetes cluster (single node). Use for diagnostics: pods, logs, events, resource usage,
+workloads, Flux, certificates, gateways, storage and backups. Secrets are never readable.
+The only writes are rollout restarts of Deployments, StatefulSets and DaemonSets, and deleting
+controller-owned pods so they are recreated. Everything else is rejected by the cluster.
+Desired state lives in Git and is reconciled by Flux; do not treat a restart as a configuration change.
+"""
+
+[[denied_resources]]
+group = ""
+version = "v1"
+kind = "Secret"
+
+[tool_overrides.resources_create_or_update]
+description = "Rollout-restart a Deployment, StatefulSet or DaemonSet (the equivalent of kubectl rollout restart). Apply a manifest containing only apiVersion, kind, metadata.name, metadata.namespace and spec.template.metadata.annotations with the single key kubectl.kubernetes.io/restartedAt set to the current RFC 3339 time. The cluster rejects any other kind or field change."
+
+[tool_overrides.pods_delete]
+description = "Restart one pod by deleting it so its ReplicaSet, StatefulSet or DaemonSet recreates it. The cluster rejects deleting pods without such a controller, including database (CloudNativePG) and Job pods."

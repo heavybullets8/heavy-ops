@@ -1,0 +1,28 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/gateway.envoyproxy.io/backendtrafficpolicy_v1alpha1.json
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: kubernetes-mcp
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: kubernetes-mcp
+  mergeType: StrategicMerge
+  responseOverride:
+    - match:
+        statusCodes:
+          - type: Value
+            value: 401
+      source: Local
+      response:
+        statusCode: 401
+        contentType: application/json
+        body:
+          type: Inline
+          inline: '{"error":"invalid_token"}'
+        header:
+          set:
+            - name: WWW-Authenticate
+              value: 'Bearer resource_metadata="https://kubernetes-mcp.${SECRET_DOMAIN}/.well-known/oauth-protected-resource", scope="kubernetes:operate"'
