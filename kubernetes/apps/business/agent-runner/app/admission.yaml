@@ -37,7 +37,7 @@ spec:
       message: Only the reviewed worker and checkout containers are permitted.
     - expression: variables.p.containers[0].name == 'worker' && variables.p.containers[0].command == ['/opt/runner/bin/worker'] && variables.p.initContainers[0].name == 'checkout' && variables.p.initContainers[0].command == ['/opt/runner/bin/checkout']
       message: Entrypoints are fixed.
-    - expression: variables.cs.all(c, c.image in ["ghcr.io/heavybullets8/heavy-ops-agent-runner-worker@sha256:0faa356056674ed6789a07901f2cd13a9dfa453008b5ac296ba0c9b1407d00f5"] && (!has(c.args) || c.args.size() == 0))
+    - expression: variables.cs.all(c, c.image in ["ghcr.io/heavybullets8/heavy-ops-agent-runner-worker@sha256:ab51bc3a325fb3a6a4249667979fdd95f19eddee8d355cd2d6c07773c8560efd"] && (!has(c.args) || c.args.size() == 0))
       message: Only reviewed immutable worker images are permitted.
     - expression: variables.cs.all(c, c.securityContext.runAsNonRoot && c.securityContext.runAsUser == 1001 && c.securityContext.runAsGroup == 1001 && c.securityContext.allowPrivilegeEscalation == false && c.securityContext.privileged == false && c.securityContext.readOnlyRootFilesystem && c.securityContext.capabilities.drop == ['ALL'] && (!has(c.securityContext.capabilities.add) || c.securityContext.capabilities.add.size() == 0) && c.securityContext.procMount == 'Unmasked' && !has(c.securityContext.seccompProfile))
       message: Nonroot, no escalation, the reviewed seccomp profile, and dropped capabilities are required.
