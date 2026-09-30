@@ -96,6 +96,10 @@ identity_validation:
 identity_providers:
   oidc:
     hmac_secret: "{{ .AUTHELIA_HMAC_SECRET }}"
+    lifespans:
+      custom:
+        agent-runner-personal:
+          refresh_token: 30d
     cors:
       endpoints: ["authorization", "token", "revocation", "introspection"]
       allowed_origins_from_client_redirect_uris: true
@@ -181,13 +185,14 @@ identity_providers:
         client_name: Heavy Ops Agent Runner
         public: true
         authorization_policy: agent-runner-owner
+        lifespan: agent-runner-personal
         require_pkce: true
         pkce_challenge_method: S256
         token_endpoint_auth_method: none
         access_token_signed_response_alg: RS256
         requested_audience_mode: implicit
         audience: ["https://agent-runner.${SECRET_DOMAIN}"]
-        scopes: [openid, offline_access, "jobs:launch", "jobs:read", "jobs:cancel", "jobs:edit"]
+        scopes: [openid, offline_access, email, "jobs:launch", "jobs:read", "jobs:cancel", "jobs:edit"]
         response_types: [code]
         grant_types: [authorization_code, refresh_token]
         redirect_uris: ["https://chatgpt.com/connector_platform_oauth_redirect"]
