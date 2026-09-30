@@ -8,8 +8,8 @@
     "463c69e1-db21-4eb3-8b29-bf87dbced4df"
   ],
   "images": {
-    "claude": "ghcr.io/heavybullets8/heavy-ops-agent-runner-worker@sha256:2e480f3912ad801ebd691c76032e9c830d0db69512a7cd86b9212636665e0346",
-    "codex": "ghcr.io/heavybullets8/heavy-ops-agent-runner-worker@sha256:2e480f3912ad801ebd691c76032e9c830d0db69512a7cd86b9212636665e0346"
+    "claude": "ghcr.io/heavybullets8/heavy-ops-agent-runner-worker@sha256:3555f493869f1f2f436a25f038592a394541897a7100d3e670d239156c8cbf38",
+    "codex": "ghcr.io/heavybullets8/heavy-ops-agent-runner-worker@sha256:3555f493869f1f2f436a25f038592a394541897a7100d3e670d239156c8cbf38"
   },
   "providers": {
     "claude": true,
@@ -47,5 +47,27 @@
   },
   "queue_limit": 8,
   "retention_days": 7,
-  "max_source_bytes": 67108864
+  "max_source_bytes": 67108864,
+  "provider_policies": {
+    "claude": {
+      "default_model": "claude-opus-5-5",
+      "allowed_models": [
+        "claude-opus-5-5"
+      ],
+      "child_model": "inherit",
+      "max_parallel_jobs": 2,
+      "max_concurrent_children": 2,
+      "child_max_turns": 12
+    },
+    "codex": {
+      "default_model": "gpt-6.1-sol",
+      "allowed_models": [
+        "gpt-6.1-sol"
+      ],
+      "child_model": "inherit",
+      "max_parallel_jobs": 1,
+      "max_concurrent_children": 2,
+      "child_max_turns": 12
+    }
+  }
 }
