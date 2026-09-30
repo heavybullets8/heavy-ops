@@ -6,6 +6,8 @@ Implementation and owner instructions: [heavy-ops-agent-runner PR 1](https://git
 
 The Flux Kustomization is suspended, the controller has zero replicas and both providers are disabled. Merging this staged configuration does not start the application. Owner review and setup are required before enabling it.
 
+The Image Pull workflow skips its administrative Talos runner while a PR is a draft. Marking a PR ready for review triggers the usual image-pull workflow. Keep this PR in draft until that infrastructure operation is approved; all agent-runner tests use ordinary disposable containers instead.
+
 ## Enable after owner setup
 
 1. Apply the additive `agent-runner-containerd-2.2.7.json` Talos seccomp profile through the normal reviewed Talos workflow. This keeps the existing browser profile unchanged and adds only `mount`, `umount2` and `pivot_root` for nested CLI sandboxes. Worker pods use nonroot user namespaces and container-local `procMount: Unmasked`; no capabilities or privileged mode are added. Verify this on the actual runtime before launch.
