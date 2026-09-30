@@ -24,7 +24,7 @@ spec:
           app:
             image:
               repository: ghcr.io/heavybullets8/heavy-ops-agent-runner-controller
-              tag: candidate@sha256:16a178a226c9e0eb8b1f273e3393b67608dfc64e75472f98c830d7b6f4d1a98a
+              tag: candidate@sha256:af941eeffebc2e849c377317d96449c9d6c0203570f11e3bfe6cd3cd13a49b91
             probes:
               liveness: &probes
                 enabled: true
