@@ -13,6 +13,7 @@ function show_help() {
     echo "  shutdown     Shutdown the Talos node"
     echo "  reset        Reset Talos on the node"
     echo "  kubeconfig   Generate the kubeconfig for the Talos node"
+    echo "  rotate-certs Renew the local Talos client certificate for one year"
     echo "Options:"
     echo "  -h, --help, help    Display this help message"
     exit 0
@@ -143,38 +144,34 @@ function main() {
 
     "Rotate Client Certs" | "rotate-certs")
         check_env NODE_IP CONFIG_FILE
-        check_cli op yq talosctl base64 gum
+        check_cli op yq talosctl base64 gum envsubst
 
         gum log --structured --level info "Rotating client cert"
         op_signin
+        (
+            set -euo pipefail
+            umask 077
+            tmp=$(mktemp -d)
+            trap 'rm -rf "${tmp}"' EXIT
+            op inject -i "${CONFIG_FILE}" | envsubst >"${tmp}/injected.yaml"
+            yq -er '.machine.ca.crt' "${tmp}/injected.yaml" | base64 -d >"${tmp}/ca.crt"
+            yq -er '.machine.ca.key' "${tmp}/injected.yaml" | base64 -d >"${tmp}/ca.key"
 
-        local injected
-        injected=$(mktemp)
-        op inject -i "${CONFIG_FILE}" | envsubst >"${injected}"
+            cd "${tmp}"
+            talosctl gen key --name admin
+            talosctl gen csr --key admin.key --ip 127.0.0.1
+            # talosctl defaults to 24 hours unless the lifetime is explicit.
+            talosctl gen crt --ca ca --csr admin.csr --name admin --hours 8760
 
-        local ca_crt_b64
-        local ca_key_b64
-        ca_crt_b64=$(yq -r '.machine.ca.crt' "${injected}" | tr -d '\n')
-        ca_key_b64=$(yq -r '.machine.ca.key' "${injected}" | tr -d '\n')
-
-        local tmp
-        tmp=$(mktemp -d)
-        trap 'rm -rf "${tmp}"' EXIT
-        echo "${ca_crt_b64}" | base64 -d >"${tmp}/ca.crt"
-        echo "${ca_key_b64}" | base64 -d >"${tmp}/ca.key"
-
-        pushd "${tmp}" >/dev/null || return 1
-        talosctl gen key --name admin                         # admin.key
-        talosctl gen csr --key admin.key --ip 127.0.0.1       # admin.csr
-        talosctl gen crt --ca ca --csr admin.csr --name admin # admin.crt
-        popd >/dev/null || return 1
-
-        yq -i '
-          .contexts.main.crt = "'"$(base64 -w0 "${tmp}/admin.crt")"'" |
-          .contexts.main.key = "'"$(base64 -w0 "${tmp}/admin.key")"'"
-        ' talosconfig
-
-        gum log --structured --level info "Rotation complete – talosconfig updated"
+            export TALOS_CLIENT_CRT TALOS_CLIENT_KEY
+            TALOS_CLIENT_CRT=$(base64 -w0 admin.crt)
+            TALOS_CLIENT_KEY=$(base64 -w0 admin.key)
+            client_config="${TALOSCONFIG:-${ROOT_DIR}/talosconfig}"
+            chmod 600 "${client_config}"
+            yq -i '.contexts.main.crt = strenv(TALOS_CLIENT_CRT) |
+                   .contexts.main.key = strenv(TALOS_CLIENT_KEY)' "${client_config}"
+            gum log --structured --level info "Rotation complete – Talos client certificate valid for one year"
+        )
         ;;
 
     "-h" | "--help" | "Help")

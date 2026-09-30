@@ -103,6 +103,17 @@ identity_providers:
       - key: |-
           {{- .AUTHELIA_JWKS_PRIV_KEY | nindent 10 }}
         algorithm: "RS256"
+    authorization_policies:
+      agent-runner-owner:
+        default_policy: deny
+        rules:
+          - policy: two_factor
+            subject: 'user:kyler'
+    scopes:
+      "jobs:launch": { claims: [] }
+      "jobs:read": { claims: [] }
+      "jobs:cancel": { claims: [] }
+      "jobs:edit": { claims: [] }
     claims_policies:
       grafana:
         id_token: ['email', 'name', 'groups', 'preferred_username']
@@ -166,3 +177,17 @@ identity_providers:
           - "email"
           - "groups"
         userinfo_signed_response_alg: "none"
+      - client_id: agent-runner-personal
+        client_name: Heavy Ops Agent Runner
+        public: true
+        authorization_policy: agent-runner-owner
+        require_pkce: true
+        pkce_challenge_method: S256
+        token_endpoint_auth_method: none
+        access_token_signed_response_alg: RS256
+        requested_audience_mode: implicit
+        audience: ["https://agent-runner.${SECRET_DOMAIN}"]
+        scopes: [openid, offline_access, "jobs:launch", "jobs:read", "jobs:cancel", "jobs:edit"]
+        response_types: [code]
+        grant_types: [authorization_code, refresh_token]
+        redirect_uris: ["https://chatgpt.com/connector_platform_oauth_redirect"]
