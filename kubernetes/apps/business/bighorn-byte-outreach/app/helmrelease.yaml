@@ -21,7 +21,7 @@ spec:
           app:
             image: &image
               repository: ghcr.io/heavybullets8/bighorn-byte-outreach
-              tag: sha-8242d04a78de7372666e5ea906242ad9d9d90313@sha256:4699325059d0feb9325e0f844e3283eb7f665024eb410cf5d4e12409b9e22a70
+              tag: sha-53b9650ea7888d894648b228f79028f0c8345995@sha256:3bb74f519bb250af1d10e057870a920cea7ef003d9bdfe47feeebee2dbb03a7a
               pullPolicy: Always
             env: &env
               TZ: ${TIMEZONE}
@@ -78,6 +78,64 @@ spec:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
               capabilities: { drop: ["ALL"] }
+
+      mcp:
+        replicas: 1
+        strategy: RollingUpdate
+        annotations: *reload
+        pod:
+          terminationGracePeriodSeconds: 30
+        containers:
+          app:
+            image: *image
+            env:
+              TZ: ${TIMEZONE}
+              BHB_ENVIRONMENT: production
+              BHB_PUBLIC_ORIGIN: https://bighornbyte.com
+              OUTREACH_ENVIRONMENT: production
+              OUTREACH_MCP_PUBLIC_URL: https://outreach-mcp.${SECRET_DOMAIN}
+              OUTREACH_MCP_ISSUER: https://auth.${SECRET_DOMAIN}
+              OUTREACH_MCP_OWNER_SUBJECTS: 463c69e1-db21-4eb3-8b29-bf87dbced4df
+            envFrom: *envFrom
+            args: ["run", "--cached-only", "--frozen", "--allow-env", "--allow-net", "--allow-read", "--allow-sys", "--allow-ffi", "scripts/outreach-mcp.ts"]
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: *port
+                  periodSeconds: 30
+                  timeoutSeconds: 2
+                  failureThreshold: 3
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /readyz
+                    port: *port
+                  periodSeconds: 10
+                  timeoutSeconds: 2
+                  failureThreshold: 3
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: *port
+                  periodSeconds: 5
+                  failureThreshold: 30
+            resources:
+              requests:
+                cpu: 50m
+                memory: 128Mi
+              limits:
+                cpu: 1
+                memory: 512Mi
+            securityContext: *securityContext
 
       scheduler:
         type: cronjob
@@ -188,6 +246,23 @@ spec:
         ports:
           http:
             port: *port
+      mcp:
+        controller: mcp
+        ports:
+          http:
+            port: *port
+
+    route:
+      mcp:
+        hostnames:
+          - "outreach-mcp.${SECRET_DOMAIN}"
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: mcp
+                port: *port
 
     persistence:
       tmp:
