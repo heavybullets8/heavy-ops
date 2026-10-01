@@ -79,6 +79,64 @@ spec:
               readOnlyRootFilesystem: true
               capabilities: { drop: ["ALL"] }
 
+      mcp:
+        replicas: 1
+        strategy: RollingUpdate
+        annotations: *reload
+        pod:
+          terminationGracePeriodSeconds: 30
+        containers:
+          app:
+            image: *image
+            env:
+              TZ: ${TIMEZONE}
+              BHB_ENVIRONMENT: production
+              BHB_PUBLIC_ORIGIN: https://bighornbyte.com
+              OUTREACH_ENVIRONMENT: production
+              OUTREACH_MCP_PUBLIC_URL: https://outreach-mcp.${SECRET_DOMAIN}
+              OUTREACH_MCP_ISSUER: https://auth.${SECRET_DOMAIN}
+              OUTREACH_MCP_OWNER_SUBJECTS: 463c69e1-db21-4eb3-8b29-bf87dbced4df
+            envFrom: *envFrom
+            args: ["run", "--cached-only", "--frozen", "--allow-env", "--allow-net", "--allow-read", "--allow-sys", "--allow-ffi", "scripts/outreach-mcp.ts"]
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: *port
+                  periodSeconds: 30
+                  timeoutSeconds: 2
+                  failureThreshold: 3
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /readyz
+                    port: *port
+                  periodSeconds: 10
+                  timeoutSeconds: 2
+                  failureThreshold: 3
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: *port
+                  periodSeconds: 5
+                  failureThreshold: 30
+            resources:
+              requests:
+                cpu: 50m
+                memory: 128Mi
+              limits:
+                cpu: 1
+                memory: 512Mi
+            securityContext: *securityContext
+
       scheduler:
         type: cronjob
         annotations: *reload
@@ -188,6 +246,23 @@ spec:
         ports:
           http:
             port: *port
+      mcp:
+        controller: mcp
+        ports:
+          http:
+            port: *port
+
+    route:
+      mcp:
+        hostnames:
+          - "outreach-mcp.${SECRET_DOMAIN}"
+        parentRefs:
+          - name: envoy-external
+            namespace: network
+        rules:
+          - backendRefs:
+              - identifier: mcp
+                port: *port
 
     persistence:
       tmp:
