@@ -102,6 +102,8 @@ identity_providers:
           refresh_token: 30d
         kubernetes-mcp:
           refresh_token: 30d
+        bighorn-byte-outreach-mcp:
+          refresh_token: 30d
     cors:
       endpoints: ["authorization", "token", "revocation", "introspection"]
       allowed_origins_from_client_redirect_uris: true
@@ -120,12 +122,19 @@ identity_providers:
         rules:
           - policy: two_factor
             subject: 'user:kyler'
+      bighorn-byte-outreach-mcp-owner:
+        default_policy: deny
+        rules:
+          - policy: two_factor
+            subject: 'user:kyler'
     scopes:
       "jobs:launch": { claims: [] }
       "jobs:read": { claims: [] }
       "jobs:cancel": { claims: [] }
       "jobs:edit": { claims: [] }
       "kubernetes:operate": { claims: [] }
+      "outreach:read": { claims: [] }
+      "outreach:write": { claims: [] }
     claims_policies:
       grafana:
         id_token: ['email', 'name', 'groups', 'preferred_username']
@@ -216,6 +225,21 @@ identity_providers:
         requested_audience_mode: implicit
         audience: ["https://kubernetes-mcp.${SECRET_DOMAIN}"]
         scopes: [openid, offline_access, email, profile, "kubernetes:operate"]
+        response_types: [code]
+        grant_types: [authorization_code, refresh_token]
+        redirect_uris: ["https://chatgpt.com/connector_platform_oauth_redirect"]
+      - client_id: bighorn-byte-outreach-mcp
+        client_name: Bighorn Byte Outreach
+        public: true
+        authorization_policy: bighorn-byte-outreach-mcp-owner
+        lifespan: bighorn-byte-outreach-mcp
+        require_pkce: true
+        pkce_challenge_method: S256
+        token_endpoint_auth_method: none
+        access_token_signed_response_alg: RS256
+        requested_audience_mode: implicit
+        audience: ["https://outreach-mcp.${SECRET_DOMAIN}"]
+        scopes: [openid, offline_access, email, profile, "outreach:read", "outreach:write"]
         response_types: [code]
         grant_types: [authorization_code, refresh_token]
         redirect_uris: ["https://chatgpt.com/connector_platform_oauth_redirect"]
