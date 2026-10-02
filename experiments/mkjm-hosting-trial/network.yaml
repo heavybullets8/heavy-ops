@@ -1,0 +1,70 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: deny-all
+  namespace: mkjm-hosting-trial
+spec:
+  podSelector: {}
+  policyTypes: [Ingress, Egress]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: apps-to-trial-postgres
+  namespace: mkjm-hosting-trial
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: mkjm-trial-app
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: mkjm-trial-postgres
+      ports:
+        - protocol: TCP
+          port: 5432
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: apps-to-cluster-dns
+  namespace: mkjm-hosting-trial
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: mkjm-trial-app
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: trial-apps-to-postgres
+  namespace: mkjm-hosting-trial
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: mkjm-trial-postgres
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: mkjm-trial-app
+      ports:
+        - protocol: TCP
+          port: 5432

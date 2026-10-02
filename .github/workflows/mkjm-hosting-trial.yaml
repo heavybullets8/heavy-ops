@@ -1,0 +1,126 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+name: M&K / J&M Hosting Trial Image
+
+# workflow_dispatch cannot start a workflow that is absent from the default
+# branch. The one-file push trigger keeps this trial on its isolated branch.
+on:
+  push:
+    branches:
+      - trial/mkjm-home-20261002
+    paths:
+      - experiments/mkjm-hosting-trial/build-request.json
+
+concurrency:
+  group: mkjm-hosting-trial-image
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    if: ${{ github.repository == 'heavybullets8/heavy-ops' && github.ref == 'refs/heads/trial/mkjm-home-20261002' }}
+    runs-on: heavy-ops-runner
+    timeout-minutes: 90
+    steps:
+      - name: Checkout the request
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install matching kubectl
+        uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
+        with:
+          cache: false
+          tool_versions: |
+            kubectl 1.36.4
+
+      - name: Verify request and staged source
+        id: request
+        shell: bash
+        run: |
+          set -euo pipefail
+          request=experiments/mkjm-hosting-trial/build-request.json
+          jq -e '
+            (keys | sort) == (["imageTag", "platform", "schemaVersion", "sourceBaseCommit", "sourceTreeSha256"] | sort) and
+            .schemaVersion == 1 and
+            .sourceBaseCommit == "b5337989ca4615ad57f14471435b9bd44af0102d" and
+            (.sourceTreeSha256 | type == "string" and test("^[0-9a-f]{64}$")) and
+            .platform == "linux/amd64" and
+            .imageTag == ("ghcr.io/heavybullets8/mkjm-hosting-trial:trial-" + .sourceBaseCommit[0:12] + "-" + .sourceTreeSha256[0:12])
+          ' "$request" >/dev/null
+          kubectl -n mkjm-hosting-build get namespace mkjm-hosting-build -o json |
+            jq -e '.metadata.labels["app.kubernetes.io/part-of"] == "mkjm-hosting-trial"' >/dev/null
+          kubectl -n mkjm-hosting-build get pod builder -o json |
+            jq -e '.metadata.labels["app.kubernetes.io/part-of"] == "mkjm-hosting-trial" and .status.phase == "Running"' >/dev/null
+          kubectl -n mkjm-hosting-build exec builder -c buildkit -- cat /work/build-request.json > "$RUNNER_TEMP/staged-build-request.json"
+          cmp -s "$request" "$RUNNER_TEMP/staged-build-request.json"
+          echo "base=$(jq -r .sourceBaseCommit "$request")" >> "$GITHUB_OUTPUT"
+          echo "source=$(jq -r .sourceTreeSha256 "$request")" >> "$GITHUB_OUTPUT"
+          echo "tag=$(jq -r .imageTag "$request")" >> "$GITHUB_OUTPUT"
+
+      - name: Build and publish from the home builder
+        id: build
+        shell: bash
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IMAGE_TAG: ${{ steps.request.outputs.tag }}
+          SOURCE_BASE: ${{ steps.request.outputs.base }}
+          SOURCE_SHA256: ${{ steps.request.outputs.source }}
+        run: |
+          set -euo pipefail
+          # The token exists only in this job step and a temporary file inside
+          # the disposable builder pod. It is never a Kubernetes Secret or log.
+          printf '{"auths":{"ghcr.io":{"username":"%s","password":"%s"}}}' "$GITHUB_ACTOR" "$GHCR_TOKEN" |
+            kubectl -n mkjm-hosting-build exec -i builder -c buildkit -- sh -ec 'umask 077; mkdir -p /work/registry; cat > /work/registry/config.json'
+          kubectl -n mkjm-hosting-build exec builder -c buildkit -- \
+            env DOCKER_CONFIG=/work/registry \
+            buildctl --addr=unix:///run/buildkit/worker/buildkitd.sock build \
+              --frontend=dockerfile.v0 \
+              --local context=/work/source \
+              --local dockerfile=/work/source/deploy/hosting-trial \
+              --opt filename=Dockerfile \
+              --opt platform=linux/amd64 \
+              --opt "build-arg:GITHUB_SHA=$SOURCE_BASE" \
+              --opt "build-arg:TRIAL_SOURCE_SHA256=$SOURCE_SHA256" \
+              --secret id=npmrc,src=/credentials/npmrc \
+              --output "type=image,name=$IMAGE_TAG,push=true" \
+              --metadata-file /work/build-result.json \
+              --progress plain
+
+      - name: Record immutable result
+        if: ${{ success() }}
+        shell: bash
+        env:
+          IMAGE_TAG: ${{ steps.request.outputs.tag }}
+          SOURCE_BASE: ${{ steps.request.outputs.base }}
+          SOURCE_SHA256: ${{ steps.request.outputs.source }}
+        run: |
+          set -euo pipefail
+          kubectl -n mkjm-hosting-build exec builder -c buildkit -- cat /work/build-result.json > "$RUNNER_TEMP/build-result.json"
+          digest=$(jq -r '."containerimage.digest" // empty' "$RUNNER_TEMP/build-result.json")
+          [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]
+          jq -n \
+            --arg base "$SOURCE_BASE" --arg source "$SOURCE_SHA256" \
+            --arg tag "$IMAGE_TAG" --arg digest "$digest" \
+            --arg commit "$GITHUB_SHA" --arg run "$GITHUB_RUN_ID" \
+            '{schemaVersion: 1, sourceBaseCommit: $base, sourceTreeSha256: $source,
+              imageTag: $tag, image: ("ghcr.io/heavybullets8/mkjm-hosting-trial@" + $digest),
+              platform: "linux/amd64", components: ["mk", "jm"],
+              environment: "isolated-hosting-trial", workflowCommit: $commit, workflowRunId: $run}' \
+            > "$RUNNER_TEMP/trial-manifest.json"
+          kubectl -n mkjm-hosting-build exec -i builder -c buildkit -- sh -ec 'umask 077; cat > /work/trial-manifest.json' \
+            < "$RUNNER_TEMP/trial-manifest.json"
+          cat "$RUNNER_TEMP/trial-manifest.json"
+          printf 'Image: `%s@%s`\nSource: `%s` at `%s`\n' \
+            'ghcr.io/heavybullets8/mkjm-hosting-trial' "$digest" "$SOURCE_SHA256" "$SOURCE_BASE" \
+            >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Remove registry credentials from builder
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          kubectl -n mkjm-hosting-build exec builder -c buildkit -- \
+            sh -c 'rm -f /work/registry/config.json' || true

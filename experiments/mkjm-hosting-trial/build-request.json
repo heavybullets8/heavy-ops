@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "sourceBaseCommit": "b5337989ca4615ad57f14471435b9bd44af0102d",
+  "sourceTreeSha256": "515c7650f06b33240c8dc6dd8f813ed253b3ca603ca1020c92e8b73379f1ee8a",
+  "imageTag": "ghcr.io/heavybullets8/mkjm-hosting-trial:trial-b5337989ca46-515c7650f06b",
+  "platform": "linux/amd64"
+}

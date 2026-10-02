@@ -1,0 +1,191 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mk
+  namespace: mkjm-hosting-trial
+  labels:
+    app.kubernetes.io/part-of: mkjm-hosting-trial
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mkjm-trial-app
+      app.kubernetes.io/instance: mk
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mkjm-trial-app
+        app.kubernetes.io/instance: mk
+        app.kubernetes.io/part-of: mkjm-hosting-trial
+    spec:
+      automountServiceAccountToken: false
+      imagePullSecrets: __TRIAL_PULL_SECRET__
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: app
+          image: __TRIAL_IMAGE__
+          imagePullPolicy: IfNotPresent
+          args: [mk]
+          env:
+            - name: HOSTING_TRIAL
+              value: "1"
+            - name: SITE_SCOPE
+              value: mk
+            - name: PORT
+              value: "8000"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: trial-db
+                  key: DATABASE_URL
+          ports:
+            - name: http
+              containerPort: 8000
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          startupProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 3
+            failureThreshold: 40
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir:
+            sizeLimit: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mk
+  namespace: mkjm-hosting-trial
+  labels:
+    app.kubernetes.io/part-of: mkjm-hosting-trial
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: mkjm-trial-app
+    app.kubernetes.io/instance: mk
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jm
+  namespace: mkjm-hosting-trial
+  labels:
+    app.kubernetes.io/part-of: mkjm-hosting-trial
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mkjm-trial-app
+      app.kubernetes.io/instance: jm
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mkjm-trial-app
+        app.kubernetes.io/instance: jm
+        app.kubernetes.io/part-of: mkjm-hosting-trial
+    spec:
+      automountServiceAccountToken: false
+      imagePullSecrets: __TRIAL_PULL_SECRET__
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: app
+          image: __TRIAL_IMAGE__
+          imagePullPolicy: IfNotPresent
+          args: [jm]
+          env:
+            - name: HOSTING_TRIAL
+              value: "1"
+            - name: SITE_SCOPE
+              value: jm
+            - name: PORT
+              value: "8000"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: trial-db
+                  key: DATABASE_URL
+          ports:
+            - name: http
+              containerPort: 8000
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          startupProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 3
+            failureThreshold: 40
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir:
+            sizeLimit: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jm
+  namespace: mkjm-hosting-trial
+  labels:
+    app.kubernetes.io/part-of: mkjm-hosting-trial
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: mkjm-trial-app
+    app.kubernetes.io/instance: jm
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http
