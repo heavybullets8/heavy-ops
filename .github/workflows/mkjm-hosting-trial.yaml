@@ -42,6 +42,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          unset KUBECONFIG
           request=experiments/mkjm-hosting-trial/build-request.json
           jq -e '
             (keys | sort) == (["imageTag", "platform", "schemaVersion", "sourceBaseCommit", "sourceTreeSha256"] | sort) and
@@ -71,6 +72,7 @@ jobs:
           SOURCE_SHA256: ${{ steps.request.outputs.source }}
         run: |
           set -euo pipefail
+          unset KUBECONFIG
           # The token exists only in this job step and a temporary file inside
           # the disposable builder pod. It is never a Kubernetes Secret or log.
           printf '{"auths":{"ghcr.io":{"username":"%s","password":"%s"}}}' "$GITHUB_ACTOR" "$GHCR_TOKEN" |
@@ -99,6 +101,7 @@ jobs:
           SOURCE_SHA256: ${{ steps.request.outputs.source }}
         run: |
           set -euo pipefail
+          unset KUBECONFIG
           kubectl -n mkjm-hosting-build exec builder -c buildkit -- cat /work/build-result.json > "$RUNNER_TEMP/build-result.json"
           digest=$(jq -r '."containerimage.digest" // empty' "$RUNNER_TEMP/build-result.json")
           [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]]
@@ -122,5 +125,6 @@ jobs:
         if: ${{ always() }}
         shell: bash
         run: |
+          unset KUBECONFIG
           kubectl -n mkjm-hosting-build exec builder -c buildkit -- \
             sh -c 'rm -f /work/registry/config.json' || true
