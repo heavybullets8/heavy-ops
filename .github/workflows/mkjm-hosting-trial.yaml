@@ -21,7 +21,7 @@ permissions:
 
 jobs:
   publish:
-    if: ${{ github.repository == 'heavybullets8/heavy-ops' && github.ref == 'refs/heads/trial/mkjm-home-20261002' }}
+    if: ${{ github.event.repository.private == true && github.repository == 'heavybullets8/heavy-ops' && github.ref == 'refs/heads/trial/mkjm-home-20261002' }}
     runs-on: heavy-ops-runner
     timeout-minutes: 90
     steps:

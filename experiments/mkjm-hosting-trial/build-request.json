@@ -2,6 +2,6 @@
   "schemaVersion": 1,
   "sourceBaseCommit": "b5337989ca4615ad57f14471435b9bd44af0102d",
   "sourceTreeSha256": "121ac0ffa209fffeffe0cf43f186ac01156a5a36f88ca53567c8420febe1d548",
-  "imageTag": "ghcr.io/heavybullets8/mkjm-hosting-trial:trial-b5337989ca46-121ac0ffa209",
+  "imageTag": "ghcr.io/heavybullets8/mkjm-hosting-trial-private:trial-b5337989ca46-121ac0ffa209",
   "platform": "linux/amd64"
 }

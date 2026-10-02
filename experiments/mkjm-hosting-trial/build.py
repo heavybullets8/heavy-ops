@@ -14,7 +14,7 @@ import tarfile
 import tempfile
 
 NAMESPACE = "mkjm-hosting-build"
-REPOSITORY = "ghcr.io/heavybullets8/mkjm-hosting-trial"
+REPOSITORY = "ghcr.io/heavybullets8/mkjm-hosting-trial-private"
 HERE = Path(__file__).resolve().parent
 
 
@@ -132,8 +132,13 @@ def main():
         with archive.open("rb") as stream:
             run([*exec_cmd, "-i", "--", "tar", "-xf", "-", "-C", "/work/source"], stdin=stream)
         request_text = json.dumps(request, indent=2) + "\n"
-        run([*exec_cmd, "-i", "--", "sh", "-c", "umask 077; cat > /work/build-request.json"],
-            input=request_text, text=True)
+        encoded = base64.b64encode(request_text.encode()).decode()
+        run([*exec_cmd, "--", "sh", "-c",
+             'umask 077; printf %s "$1" | base64 -d > /work/build-request.json',
+             "sh", encoded])
+        staged = output([*exec_cmd, "--", "cat", "/work/build-request.json"])
+        if staged != request_text.strip():
+            raise SystemExit("Staged build request differs from the local request")
         HERE.joinpath("build-request.json").write_text(request_text)
         print("Source staged on home server. Push the exact trial branch request to run the publishing workflow.", flush=True)
 
