@@ -1,0 +1,24 @@
+machine:
+  certSANs:
+    - 127.0.0.1
+    - 10.88.0.10
+---
+apiVersion: v1alpha1
+kind: KubeNodeConfig
+nodeIP:
+  validSubnets:
+    - 10.88.0.0/24
+labels:
+  node-role.kubernetes.io/control-plane: ""
+taints: {}
+---
+apiVersion: v1alpha1
+kind: KubeNetworkConfig
+podSubnets:
+  - 10.80.0.0/16
+serviceSubnets:
+  - 10.81.0.0/16
+---
+apiVersion: v1alpha1
+kind: KubeProxyConfig
+enabled: false

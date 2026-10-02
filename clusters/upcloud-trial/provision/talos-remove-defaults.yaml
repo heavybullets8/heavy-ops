@@ -1,0 +1,8 @@
+# Remove generated documents before supplying cloud-specific replacements.
+apiVersion: v1alpha1
+kind: KubeNodeConfig
+$patch: delete
+---
+apiVersion: v1alpha1
+kind: KubeFlannelCNIConfig
+$patch: delete

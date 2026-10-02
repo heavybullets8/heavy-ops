@@ -1,0 +1,7 @@
+# The trial blocks NTS and NTP replies to ephemeral client ports.
+# Use the verified KVM hypervisor clock exposed on this UpCloud VM.
+apiVersion: v1alpha1
+kind: TimeSyncConfig
+ptp:
+  devices:
+    - /dev/ptp_kvm
