@@ -23,4 +23,4 @@ spec:
   postBuild:
     substitute:
       # renovate: datasource=github-releases depName=siderolabs/talos
-      TALOS_VERSION: v1.14.1
+      TALOS_VERSION: v1.14.2
