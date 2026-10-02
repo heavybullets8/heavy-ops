@@ -11,12 +11,12 @@ The source-staging helper computes a deterministic tree hash and leaves the sour
   "schemaVersion": 1,
   "sourceBaseCommit": "b5337989ca4615ad57f14471435b9bd44af0102d",
   "sourceTreeSha256": "<64 lowercase hex characters>",
-  "imageTag": "ghcr.io/heavybullets8/mkjm-hosting-trial:trial-b5337989ca46-<first 12 source hash characters>",
+  "imageTag": "ghcr.io/heavybullets8/mkjm-hosting-trial-private:trial-b5337989ca46-<first 12 source hash characters>",
   "platform": "linux/amd64"
 }
 ```
 
-After staging, committing and pushing this request to the exact `trial/mkjm-home-20261002` branch runs [.github/workflows/mkjm-hosting-trial.yaml](../../.github/workflows/mkjm-hosting-trial.yaml) on the home runner. The workflow compares the committed and staged request byte for byte before using its job-scoped `packages: write` token to publish the image. It records `/work/build-result.json` and `/work/trial-manifest.json` in the builder pod; collect the latter before removing the builder. The token is deleted from the builder after the job. This workflow uses a branch-restricted `push` trigger because GitHub requires a manually dispatched workflow to exist on the default branch first. No mk-jm branch push is needed.
+Publishing runs through the [private publisher repository](https://github.com/heavybullets8/mkjm-hosting-publisher) using its [image workflow](https://github.com/heavybullets8/mkjm-hosting-publisher/blob/main/.github/workflows/image.yaml) and a temporary home runner with a namespace-scoped service account defined in its [publisher.yaml](https://github.com/heavybullets8/mkjm-hosting-publisher/blob/main/experiments/mkjm-hosting-trial/publisher.yaml). The legacy workflow in this public repository is gated on `repository.private` and cannot publish from here. Before publishing any application layers to GHCR, the publisher must push a metadata-only scratch image to the intended package and verify through package metadata that its visibility is **private**. Stop if the package is public or visibility cannot be verified. A previous trial package unexpectedly inherited public visibility and was deleted; a package name ending in `-private` is not itself proof of privacy. Compare the staged `/work/build-request.json` with the request used by the publisher, then retain the immutable image digest from `/work/build-result.json` in the trial manifest. Remove the temporary publisher credentials and runner when publishing ends.
 
 The image must have its default entrypoint set to the trial launcher. Kubernetes passes `mk` or `jm` as its sole argument. Each pod receives `HOSTING_TRIAL=1`, the matching `SITE_SCOPE`, `PORT=8000`, and a generated `DATABASE_URL`. Both use a single image digest so code and dependencies are identical. The launcher must not start migrations automatically; migrate and seed only the disposable database through the separate trial fixture workflow.
 
@@ -63,3 +63,5 @@ kubectl --kubeconfig "$TRIAL_KUBECONFIG" --context main -n mkjm-hosting-trial de
 ```
 
 DNS and trial PostgreSQL must succeed; the public IP attempt must fail. Repeat the negative check against the actual live production database service after confirming it exists from a trusted non-trial vantage point, so a nonexistent endpoint cannot yield a false pass. Inspect Cilium drop verdicts for the probe during the failed attempts. Check that neither app logs a QBO, email, R2, or production database connection attempt. A port-forward request to each `/api/health` should succeed without exposing either service publicly.
+
+Observed results and the selected business database direction are recorded in the [private trial report](https://github.com/heavybullets8/mkjm-hosting-publisher/blob/main/RESULTS.md).

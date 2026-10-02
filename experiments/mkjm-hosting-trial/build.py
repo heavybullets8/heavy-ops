@@ -15,6 +15,7 @@ import tempfile
 
 NAMESPACE = "mkjm-hosting-build"
 REPOSITORY = "ghcr.io/heavybullets8/mkjm-hosting-trial-private"
+SOURCE_BASE = "b5337989ca4615ad57f14471435b9bd44af0102d"
 HERE = Path(__file__).resolve().parent
 
 
@@ -36,11 +37,14 @@ def main():
     parser.add_argument("--result", type=Path, required=True)
     parser.add_argument("--apply", action="store_true")
     parser.add_argument("--collect", action="store_true")
+    parser.add_argument("--restage", action="store_true")
     args = parser.parse_args()
     source = args.source.resolve()
     if not (source / "deploy/hosting-trial/Dockerfile").is_file():
         parser.error("source must contain deploy/hosting-trial/Dockerfile")
-    base_commit = output(["git", "-C", str(source), "rev-parse", "HEAD"])
+    base_commit = output(["git", "-C", str(source), "merge-base", "HEAD", SOURCE_BASE])
+    if base_commit != SOURCE_BASE:
+        parser.error("source must descend from the reviewed accounting snapshot")
     kube = ["kubectl", "--kubeconfig", str(args.kubeconfig), "--context", args.context]
     actual_server = output([*kube, "config", "view", "--minify", "-o", "jsonpath={.clusters[0].cluster.server}"])
     if actual_server != args.expected_server:
@@ -112,22 +116,28 @@ def main():
         if ns and json.loads(ns)["metadata"].get("labels", {}).get("app.kubernetes.io/part-of") != "mkjm-hosting-trial":
             raise SystemExit("Refusing an unowned build namespace")
         existing = output([*kube, "get", "pod", "builder", "-n", NAMESPACE, "--ignore-not-found", "-o", "name"])
-        if existing:
+        if existing and not args.restage:
             raise SystemExit("Builder already exists; inspect it before a new build")
-        # Prepare only the namespace/policy first, before storing scoped secrets.
-        documents = HERE.joinpath("builder.yaml").read_text().split("\n---\n")
-        run([*kube, "apply", "-f", "-"], input="\n---\n".join(documents[:2]), text=True)
-        npmrc = args.npmrc.read_text()
-        if "//npm.pkg.github.com/:_authToken=" not in npmrc:
-            raise SystemExit("npmrc must contain the private package registry credential")
-        # Credentials travel only over the authenticated Kubernetes connection.
-        secret = {"apiVersion": "v1", "kind": "Secret", "metadata": {
-            "name": "build-credentials", "namespace": NAMESPACE,
-            "labels": {"app.kubernetes.io/part-of": "mkjm-hosting-trial"}},
-            "type": "Opaque", "data": {
-                "npmrc": base64.b64encode(npmrc.encode()).decode()}}
-        run([*kube, "create", "-f", "-"], input=json.dumps(secret), text=True)
-        run([*kube, "apply", "-f", str(HERE / "builder.yaml")])
+        if existing:
+            pod = json.loads(output([*kube, "get", "pod", "builder", "-n", NAMESPACE, "-o", "json"]))
+            if pod["metadata"].get("labels", {}).get("app.kubernetes.io/part-of") != "mkjm-hosting-trial":
+                raise SystemExit("Refusing an unowned builder")
+            run([*exec_cmd, "--", "sh", "-ec",
+                 "test ! -e /work/registry/config.json; rm -rf /work/source; mkdir /work/source; "
+                 "rm -f /work/build-request.json /work/build-result.json /work/trial-manifest.json"])
+        else:
+            documents = HERE.joinpath("builder.yaml").read_text().split("\n---\n")
+            run([*kube, "apply", "-f", "-"], input="\n---\n".join(documents[:2]), text=True)
+            npmrc = args.npmrc.read_text()
+            if "//npm.pkg.github.com/:_authToken=" not in npmrc:
+                raise SystemExit("npmrc must contain the private package registry credential")
+            secret = {"apiVersion": "v1", "kind": "Secret", "metadata": {
+                "name": "build-credentials", "namespace": NAMESPACE,
+                "labels": {"app.kubernetes.io/part-of": "mkjm-hosting-trial"}},
+                "type": "Opaque", "data": {
+                    "npmrc": base64.b64encode(npmrc.encode()).decode()}}
+            run([*kube, "create", "-f", "-"], input=json.dumps(secret), text=True)
+            run([*kube, "apply", "-f", str(HERE / "builder.yaml")])
         run([*kube, "wait", "pod/builder", "-n", NAMESPACE, "--for=condition=Ready", "--timeout=180s"])
         with archive.open("rb") as stream:
             run([*exec_cmd, "-i", "--", "tar", "-xf", "-", "-C", "/work/source"], stdin=stream)
@@ -140,7 +150,7 @@ def main():
         if staged != request_text.strip():
             raise SystemExit("Staged build request differs from the local request")
         HERE.joinpath("build-request.json").write_text(request_text)
-        print("Source staged on home server. Push the exact trial branch request to run the publishing workflow.", flush=True)
+        print("Source staged on home server. Copy the exact request to the private publisher repository to run its workflow.", flush=True)
 
 
 if __name__ == "__main__":
