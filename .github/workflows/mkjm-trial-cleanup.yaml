@@ -1,0 +1,40 @@
+name: Remove unintended public trial image
+on:
+  push:
+    branches: [trial/mkjm-home-20261002]
+    paths: [.github/workflows/mkjm-trial-cleanup.yaml]
+permissions:
+  contents: read
+  packages: write
+jobs:
+  remove:
+    runs-on: heavy-ops-runner
+    timeout-minutes: 5
+    steps:
+      - name: Remove only the image created by this trial
+        env:
+          PACKAGE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.request, urllib.error
+          endpoint = 'https://api.github.com/users/heavybullets8/packages/container/mkjm-hosting-trial'
+          headers = {'Authorization': 'Bearer ' + os.environ['PACKAGE_TOKEN'], 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28'}
+          def call(url, method='GET'):
+              with urllib.request.urlopen(urllib.request.Request(url, headers=headers, method=method), timeout=30) as response:
+                  data = response.read()
+                  return json.loads(data) if data else None
+          try:
+              package = call(endpoint)
+          except urllib.error.HTTPError as error:
+              if error.code == 404:
+                  print('Trial package already absent.')
+                  raise SystemExit(0)
+              raise
+          versions = call(endpoint + '/versions')
+          expected = 'sha256:3c9b9c35c2ca95de65a318915338e31dea9a9cd9b41b29cd1920fb6c82ab9339'
+          assert package['name'] == 'mkjm-hosting-trial'
+          assert package['visibility'] == 'public'
+          assert len(versions) == 1 and versions[0]['name'] == expected, 'Refusing to remove unrelated versions'
+          call(endpoint, 'DELETE')
+          print('Removed the unintended public trial image package.')
+          PY
