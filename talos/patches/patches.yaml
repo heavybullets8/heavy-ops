@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/siderolabs/talos/v1.13.6/pkg/machinery/config/schemas/config.schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/siderolabs/talos/v1.14.1/pkg/machinery/config/schemas/config.schema.json
 ---
 apiVersion: v1alpha1
 kind: EthernetConfig
@@ -67,6 +67,10 @@ apiVersion: v1alpha1
 kind: ResolverConfig
 searchDomains:
   disableDefault: true
+hostDNS:
+  enabled: true
+  forwardKubeDNSToHost: false
+  resolveMemberNames: true
 ---
 apiVersion: v1alpha1
 kind: RegistryAuthConfig

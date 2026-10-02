@@ -59,15 +59,15 @@ function main() {
         ;;
 
     "Upgrade Talos" | "upgrade")
-        check_env NODE_IP CONFIG_FILE
-        check_cli talosctl yq
+        check_env NODE_IP CONFIG_FILE TALOS_VERSION
+        check_cli talosctl yq envsubst
         gum log --structured --level info "Upgrading Talos on node ${NODE_IP}"
         generate_schematic
-        op_signin
-        if ! FACTORY_IMAGE=$(op inject -i "${CONFIG_FILE}" | envsubst | yq --exit-status '.machine.install.image'); then
+        if ! FACTORY_IMAGE=$(yq --exit-status 'select(.kind == "UnattendedInstallConfig") | .installer.image' "${CONFIG_FILE}"); then
             gum log --structured --level error "Failed to fetch factory image"
             exit 1
         fi
+        FACTORY_IMAGE=$(printf '%s' "${FACTORY_IMAGE}" | envsubst)
         if ! talosctl --nodes "${NODE_IP}" upgrade --image="${FACTORY_IMAGE}" --reboot-mode=powercycle --timeout=10m --drain=false; then
             gum log --structured --level error "Failed to upgrade Talos"
         else
@@ -154,8 +154,8 @@ function main() {
             tmp=$(mktemp -d)
             trap 'rm -rf "${tmp}"' EXIT
             op inject -i "${CONFIG_FILE}" | envsubst >"${tmp}/injected.yaml"
-            yq -er '.machine.ca.crt' "${tmp}/injected.yaml" | base64 -d >"${tmp}/ca.crt"
-            yq -er '.machine.ca.key' "${tmp}/injected.yaml" | base64 -d >"${tmp}/ca.key"
+            yq -er 'select(.version == "v1alpha1") | .machine.ca.crt' "${tmp}/injected.yaml" | base64 -d >"${tmp}/ca.crt"
+            yq -er 'select(.version == "v1alpha1") | .machine.ca.key' "${tmp}/injected.yaml" | base64 -d >"${tmp}/ca.key"
 
             cd "${tmp}"
             talosctl gen key --name admin

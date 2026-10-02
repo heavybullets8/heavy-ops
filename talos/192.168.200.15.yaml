@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/siderolabs/talos/v1.13.6/pkg/machinery/config/schemas/config.schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/siderolabs/talos/v1.14.1/pkg/machinery/config/schemas/config.schema.json
 version: v1alpha1
 debug: false
 machine:
@@ -10,100 +10,11 @@ machine:
   certSANs:
     - 192.168.200.16
     - 127.0.0.1
-  kubelet:
-    image: "ghcr.io/siderolabs/kubelet:${KUBERNETES_VERSION}"
-    extraArgs:
-      feature-gates: "ImageVolume=true"
-    extraConfig:
-      maxPods: 200
-      serializeImagePulls: false
-      imageGCHighThresholdPercent: 70
-      imageGCLowThresholdPercent: 65
-    defaultRuntimeSeccompProfileEnabled: true
-    nodeIP:
-      validSubnets:
-        - 192.168.200.0/23
-    disableManifestsDirectory: true
-  kernel:
-    modules:
-      - name: nvidia
-      - name: nvidia_uvm
-      - name: nvidia_drm
-      - name: nvidia_modeset
-      - name: zfs
-  install:
-    diskSelector:
-      model: INTEL SSDPE21D960GA
-    image: "factory.talos.dev/metal-installer/${TALOS_SCHEMATIC}:${TALOS_VERSION}"
-    wipe: true
-  files:
-    - op: create
-      path: /etc/cri/conf.d/20-customization.part
-      permissions: 0o644
-      content: |
-        [plugins."io.containerd.cri.v1.images"]
-        discard_unpacked_layers = false
-        [plugins."io.containerd.cri.v1.runtime"]
-          [plugins."io.containerd.cri.v1.runtime".containerd]
-            default_runtime_name = "nvidia"
-    - op: overwrite
-      path: /etc/nfsmount.conf
-      permissions: 420
-      content: |
-        [ NFSMount_Global_Options ]
-        proto=rdma
-        port=20049
-  sysctls:
-    fs.inotify.max_queued_events: "65536"
-    fs.inotify.max_user_instances: "8192"
-    fs.inotify.max_user_watches: "1048576"
-    net.core.bpf_jit_harden: "1"
-    net.core.default_qdisc: fq
-    net.core.rmem_max: "67108864"
-    net.core.wmem_max: "67108864"
-    net.core.rmem_default: "67108864"
-    net.core.wmem_default: "67108864"
-    net.core.optmem_max: "67108864"
-    net.core.netdev_max_backlog: "250000"
-    net.ipv4.tcp_congestion_control: bbr
-    net.ipv4.tcp_fastopen: "3"
-    net.ipv4.tcp_max_syn_backlog: "8192"
-    net.ipv4.tcp_rmem: 4096 262144 67108864
-    net.ipv4.tcp_wmem: 4096 262144 67108864
-    net.ipv4.tcp_mtu_probing: "1"
-    user.max_user_namespaces: "11255"
-    vm.nr_hugepages: "3072"
   features:
-    kubernetesTalosAPIAccess:
-      enabled: true
-      allowedRoles:
-        - os:admin
-      allowedKubernetesNamespaces:
-        - kube-system
-        - actions-runner-system
-        - system-upgrade
     diskQuotaSupport: true
-    kubePrism:
-      enabled: true
-      port: 7445
-    hostDNS:
-      enabled: true
-      forwardKubeDNSToHost: false
-      resolveMemberNames: true
 cluster:
   id: op://talos/talos/CLUSTER_ID
   secret: op://talos/talos/CLUSTER_SECRET
-  controlPlane:
-    endpoint: https://192.168.200.16:6443
-  clusterName: main
-  network:
-    cni:
-      name: none
-    dnsDomain: cluster.local
-    podSubnets:
-      - 10.69.0.0/16
-    serviceSubnets:
-      - 10.96.0.0/16
   token: op://talos/talos/CLUSTER_TOKEN
   secretboxEncryptionSecret: op://talos/talos/CLUSTER_SECRETBOXENCRYPTIONSECRET
   ca:
@@ -114,30 +25,6 @@ cluster:
     key: op://talos/talos/CLUSTER_AGGREGATORCA_KEY
   serviceAccount:
     key: op://talos/talos/CLUSTER_SERVICEACCOUNT_KEY
-  apiServer:
-    image: "registry.k8s.io/kube-apiserver:${KUBERNETES_VERSION}"
-    extraArgs:
-      enable-aggregator-routing: "true"
-      feature-gates: ImageVolume=true,MutatingAdmissionPolicy=true
-      runtime-config: admissionregistration.k8s.io/v1beta1=true
-    certSANs:
-      - 192.168.200.16
-      - 127.0.0.1
-    auditPolicy:
-      apiVersion: audit.k8s.io/v1
-      kind: Policy
-      rules:
-        - level: Metadata
-  controllerManager:
-    image: "registry.k8s.io/kube-controller-manager:${KUBERNETES_VERSION}"
-    extraArgs:
-      bind-address: 0.0.0.0
-  proxy:
-    disabled: true
-  scheduler:
-    image: "registry.k8s.io/kube-scheduler:${KUBERNETES_VERSION}"
-    extraArgs:
-      bind-address: 0.0.0.0
   etcd:
     ca:
       crt: op://talos/talos/CLUSTER_ETCD_CA_CRT
@@ -146,7 +33,184 @@ cluster:
       listen-metrics-urls: http://0.0.0.0:2381
     advertisedSubnets:
       - 192.168.200.0/23
-  coreDNS:
-    disabled: true
-  allowSchedulingOnControlPlanes: true
-
+  clusterName: main
+  controlPlane:
+    endpoint: https://192.168.200.16:6443
+---
+apiVersion: v1alpha1
+kind: KubeNodeConfig
+nodeIP:
+  validSubnets:
+    - 192.168.200.0/23
+labels:
+  node-role.kubernetes.io/control-plane: ""
+taints: {}
+---
+apiVersion: v1alpha1
+kind: KubeletConfig
+image: ghcr.io/siderolabs/kubelet:${KUBERNETES_VERSION}
+extraArgs:
+  feature-gates: ImageVolume=true
+defaultRuntimeSeccompProfileEnabled: true
+config:
+  maxPods: 200
+  serializeImagePulls: false
+  imageGCHighThresholdPercent: 70
+  imageGCLowThresholdPercent: 65
+---
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: nvidia
+---
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: nvidia_uvm
+---
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: nvidia_drm
+---
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: nvidia_modeset
+---
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: zfs
+---
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: rpcrdma
+---
+apiVersion: v1alpha1
+kind: UnattendedInstallConfig
+installer:
+  image: factory.talos.dev/metal-installer/${TALOS_SCHEMATIC}:${TALOS_VERSION}
+provisioning:
+  diskSelector:
+    match: disk.model == 'INTEL SSDPE21D960GA'
+  wipe: true
+---
+apiVersion: v1alpha1
+kind: CRICustomizationConfig
+name: home-runtime
+content: |
+  [plugins."io.containerd.cri.v1.images"]
+  discard_unpacked_layers = false
+  [plugins."io.containerd.cri.v1.runtime"]
+    [plugins."io.containerd.cri.v1.runtime".containerd]
+      default_runtime_name = "nvidia"
+---
+apiVersion: v1alpha1
+kind: EtcFileConfig
+name: nfsmount.conf
+mode: 420
+contents: |
+  [ NFSMount_Global_Options ]
+  proto=rdma
+  port=20049
+---
+apiVersion: v1alpha1
+kind: SysctlConfig
+params:
+  fs.inotify.max_queued_events: "65536"
+  fs.inotify.max_user_instances: "8192"
+  fs.inotify.max_user_watches: "1048576"
+  net.core.bpf_jit_harden: "1"
+  net.core.default_qdisc: fq
+  net.core.rmem_max: "67108864"
+  net.core.wmem_max: "67108864"
+  net.core.rmem_default: "67108864"
+  net.core.wmem_default: "67108864"
+  net.core.optmem_max: "67108864"
+  net.core.netdev_max_backlog: "250000"
+  net.ipv4.tcp_congestion_control: bbr
+  net.ipv4.tcp_fastopen: "3"
+  net.ipv4.tcp_max_syn_backlog: "8192"
+  net.ipv4.tcp_rmem: 4096 262144 67108864
+  net.ipv4.tcp_wmem: 4096 262144 67108864
+  net.ipv4.tcp_mtu_probing: "1"
+  user.max_user_namespaces: "11255"
+  vm.nr_hugepages: "3072"
+---
+apiVersion: v1alpha1
+kind: KubeTalosAPIAccessConfig
+allowedRoles:
+  - os:admin
+allowedKubernetesNamespaces:
+  - kube-system
+  - actions-runner-system
+  - system-upgrade
+---
+apiVersion: v1alpha1
+kind: KubePrismConfig
+port: 7445
+---
+apiVersion: v1alpha1
+kind: KubeNetworkConfig
+dnsDomain: cluster.local
+podSubnets:
+  - 10.69.0.0/16
+serviceSubnets:
+  - 10.96.0.0/16
+---
+apiVersion: v1alpha1
+kind: KubeAPIServerConfig
+image: registry.k8s.io/kube-apiserver:${KUBERNETES_VERSION}
+extraArgs:
+  enable-aggregator-routing: "true"
+  feature-gates: ImageVolume=true,MutatingAdmissionPolicy=true
+  runtime-config: admissionregistration.k8s.io/v1beta1=true
+certExtraSANs:
+  - 192.168.200.16
+  - 127.0.0.1
+---
+apiVersion: v1alpha1
+kind: KubeAuditPolicyConfig
+configuration:
+  apiVersion: audit.k8s.io/v1
+  kind: Policy
+  rules:
+    - level: Metadata
+---
+apiVersion: v1alpha1
+kind: KubeControllerManagerConfig
+image: registry.k8s.io/kube-controller-manager:${KUBERNETES_VERSION}
+extraArgs:
+  bind-address: 0.0.0.0
+---
+apiVersion: v1alpha1
+kind: KubeProxyConfig
+enabled: false
+image: registry.k8s.io/kube-proxy:${KUBERNETES_VERSION}
+---
+apiVersion: v1alpha1
+kind: KubeSchedulerConfig
+image: registry.k8s.io/kube-scheduler:${KUBERNETES_VERSION}
+extraArgs:
+  bind-address: 0.0.0.0
+---
+apiVersion: v1alpha1
+kind: KubeCoreDNSConfig
+enabled: false
+---
+apiVersion: v1alpha1
+kind: KubeAuthorizerConfig
+name: node
+type: Node
+---
+apiVersion: v1alpha1
+kind: KubeAuthorizerConfig
+name: rbac
+type: RBAC
+---
+apiVersion: v1alpha1
+kind: KubeAuthenticationConfig
+configuration:
+  anonymous:
+    enabled: true
+    conditions:
+      - path: /livez
+      - path: /readyz
+      - path: /healthz
+  jwt: []
