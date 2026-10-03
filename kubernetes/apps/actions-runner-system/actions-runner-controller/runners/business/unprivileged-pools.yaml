@@ -548,3 +548,53 @@ items:
                 emptyDir:
                   medium: Memory
                   sizeLimit: 12Gi
+  - <<: *ciPool
+    metadata:
+      name: heavy-ops-agent-runner-ci
+    spec:
+      <<: *ciPoolSpec
+      values:
+        <<: *ciPoolValues
+        githubConfigUrl: https://github.com/Heavybullets8/heavy-ops-agent-runner
+        runnerScaleSetName: heavy-ops-agent-runner-ci
+        minRunners: 0
+        maxRunners: 2
+        template:
+          spec:
+            <<: *buildPod
+            initContainers:
+              - <<: *buildkitSidecar
+                args:
+                  - |
+                    set -eu
+                    mkdir -p /run/buildkit/worker /state/worker
+                    chmod 0755 /run/buildkit/worker
+                    socket=/run/buildkit/worker/buildkitd.sock
+                    rootlesskit buildkitd \
+                      --root=/state/worker \
+                      --addr=unix:///run/buildkit/worker/buildkitd.sock \
+                      --oci-worker-snapshotter=overlayfs \
+                      --oci-worker-no-process-sandbox &
+                    child=$!
+                    trap 'kill "$child" 2>/dev/null || true' TERM INT EXIT
+                    until [ -S "$socket" ]; do
+                      kill -0 "$child" 2>/dev/null || { wait "$child"; exit 1; }
+                      sleep 0.1
+                    done
+                    chmod 0666 "$socket"
+                    wait "$child"
+                resources:
+                  requests:
+                    cpu: 500m
+                    memory: 1Gi
+                    ephemeral-storage: 512Mi
+                  limits:
+                    cpu: 4
+                    memory: 12Gi
+                    ephemeral-storage: 16Gi
+            volumes:
+              - *workVolume
+              - *buildkitSocket
+              - <<: *buildkitState
+                emptyDir:
+                  sizeLimit: 16Gi
