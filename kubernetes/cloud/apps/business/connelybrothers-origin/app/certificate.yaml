@@ -1,0 +1,17 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/cert-manager.io/certificate_v1.json
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: &app connelybrothers-origin
+spec:
+  secretName: connelybrothers-origin-tls
+  issuerRef:
+    group: cert-manager.k8s.cloudflare.com
+    kind: ClusterOriginIssuer
+    name: cloudflare-origin-ca
+  commonName: ${CB_PROD_CLOUD_FQDN}
+  dnsNames:
+    - ${CB_PROD_CLOUD_FQDN}
+  duration: 8760h
+  renewBefore: 720h

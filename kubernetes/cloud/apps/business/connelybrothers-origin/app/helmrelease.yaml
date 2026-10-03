@@ -26,7 +26,10 @@ spec:
             targetPort: 8443
 
     persistence:
-      data:
-        type: persistentVolumeClaim
-        sizeLimit: null
-        existingClaim: *app
+      tls:
+        type: secret
+        name: connelybrothers-origin-tls
+        defaultMode: 0440
+        globalMounts:
+          - path: /etc/caddy-tls
+            readOnly: true

@@ -1,0 +1,23 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: cert-manager
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: cert-manager
+  values:
+    crds:
+      enabled: true
+    dns01RecursiveNameservers: https://1.1.1.1:443/dns-query,https://1.0.0.1:443/dns-query
+    dns01RecursiveNameserversOnly: true
+    approveSignerNames:
+      - issuers.cert-manager.io/*
+      - clusterissuers.cert-manager.io/*
+      - clusteroriginissuers.cert-manager.k8s.cloudflare.com/cloudflare-origin-ca
+    prometheus:
+      enabled: false
+      servicemonitor:
+        enabled: false

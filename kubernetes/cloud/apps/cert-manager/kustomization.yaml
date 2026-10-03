@@ -2,8 +2,8 @@
 # yaml-language-server: $schema=https://json.schemastore.org/kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-components:
-  - ../../../../components/origin-ca-issuer
+namespace: cert-manager
 resources:
-  - ./ocirepository.yaml
-  - ./helmrelease.yaml
+  - ./namespace.yaml
+  - ./cert-manager/ks.yaml
+  - ./origin-ca-issuer/ks.yaml
