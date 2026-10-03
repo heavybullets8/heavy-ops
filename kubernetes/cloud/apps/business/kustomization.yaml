@@ -1,0 +1,13 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: business
+resources:
+  - ./namespace.yaml
+  - ../../../components/common/repos/app-template
+  - ../../../components/common/sops
+  - ./registry-secret.yaml
+  - ./cb-ha-domains.secret.sops.yaml
+  - ./connelybrothers-web/ks.yaml
+  - ./connelybrothers-origin/ks.yaml

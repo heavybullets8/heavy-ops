@@ -1,0 +1,86 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: patroni
+spec:
+  values:
+    controllers:
+      patroni:
+        containers:
+          db:
+            env:
+              PATRONI_NAME: home
+
+          etcd:
+            args:
+              - --name=home
+              - --data-dir=/ha-data/etcd
+              - --listen-client-urls=http://127.0.0.1:22379
+              - --advertise-client-urls=http://127.0.0.1:22379
+              - --listen-peer-urls=http://127.0.0.1:22380
+              - --initial-advertise-peer-urls=http://127.0.0.1:22380
+              - --initial-cluster=home=http://127.0.0.1:22380,cloud=http://127.0.0.1:32380,voter=http://127.0.0.1:12380
+              - --initial-cluster-token=business-ha-production-20261003
+              - --initial-cluster-state=new
+              - --heartbeat-interval=250
+              - --election-timeout=2500
+              - --log-level=warn
+
+          pgbackrest-scheduler:
+            args:
+              - --site
+              - home
+              - --stanza
+              - ${CB_PROD_BACKUP_STANZA}
+              - --state-dir
+              - /ha-forensics/backup-scheduler
+              - --primary-url
+              - http://127.0.0.1:8008/primary
+              - --metrics-port
+              - '9187'
+
+          ssh-voter:
+            args:
+              - client
+              - -L127.0.0.1:12379:127.0.0.1:12379
+              - -L127.0.0.1:12380:127.0.0.1:12380
+              - -R127.0.0.1:22379:127.0.0.1:22379
+              - -R127.0.0.1:22380:127.0.0.1:22380
+              - -R127.0.0.1:25432:127.0.0.1:5432
+              - -R127.0.0.1:28008:127.0.0.1:8008
+              - ha-prod-tunnel@95.111.215.193
+          ssh-cloud:
+            args:
+              - client
+              - -L127.0.0.1:32379:127.0.0.1:32379
+              - -L127.0.0.1:32380:127.0.0.1:32380
+              - -L0.0.0.0:25433:127.0.0.1:5432
+              - -L127.0.0.1:28009:127.0.0.1:8008
+              - -R127.0.0.1:22379:127.0.0.1:22379
+              - -R127.0.0.1:22380:127.0.0.1:22380
+              - -R0.0.0.0:25432:127.0.0.1:5432
+              - -R127.0.0.1:28008:127.0.0.1:8008
+              - ha-tunnel@209.50.58.65
+            securityContext:
+              runAsUser: 0
+            resources:
+              requests:
+                cpu: 25m
+                memory: 32Mi
+              limits:
+                cpu: 250m
+                memory: 128Mi
+
+    defaultPodOptions:
+      nodeSelector:
+        kubernetes.io/hostname: heavy-control
+
+    persistence:
+      ssh-client-identity:
+        advancedMounts:
+          patroni:
+            ssh-cloud:
+              - path: /etc/ha-ssh
+                readOnly: true

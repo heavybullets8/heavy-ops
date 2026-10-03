@@ -1,0 +1,37 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app connelybrothers-origin
+  namespace: &namespace business
+  labels:
+    substitution.flux.home.arpa/disabled: "true"
+spec:
+  suspend: true
+  targetNamespace: *namespace
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: onepassword
+      namespace: external-secrets
+    - name: patroni
+      namespace: database
+    - name: connelybrothers-web
+      namespace: business
+  path: ./kubernetes/apps/business/connelybrothers-origin/app
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  postBuild:
+    substituteFrom:
+      - kind: Secret
+        name: cb-ha-domains
+        optional: false
+  wait: false
+  interval: 30m
+  timeout: 15m

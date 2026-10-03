@@ -9,4 +9,5 @@ resources:
 - apps/external-secrets/onepassword/ks.yaml
 - apps/kube-system/reloader/ks.yaml
 - apps/external-secrets/onepassword/store-ks.yaml
-- apps/business-ha-production
+- apps/business
+- apps/database
