@@ -17,7 +17,7 @@ spec:
     name: flux-system
     namespace: flux-system
   deletionPolicy: Orphan
-  suspend: true
+  suspend: false
   targetNamespace: business-ha-production
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -39,7 +39,7 @@ spec:
     name: flux-system
     namespace: flux-system
   deletionPolicy: Orphan
-  suspend: true
+  suspend: false
   dependsOn:
   - name: onepassword
     namespace: external-secrets
