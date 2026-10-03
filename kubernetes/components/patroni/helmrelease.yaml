@@ -187,7 +187,7 @@ spec:
               - -ec
             args:
               - mkdir -p /ha-data/postgres /ha-data/etcd; chown 999:999 /ha-data /ha-data/postgres /ha-data/etcd
-                /ha-forensics /var/run/postgresql; chmod 0700 /ha-forensics; chmod 0770 /var/run/postgresql
+                /ha-forensics /var/run/postgresql; chmod 0700 /ha-data/postgres /ha-forensics; chmod 0770 /var/run/postgresql
             securityContext:
               runAsUser: 0
               capabilities:
