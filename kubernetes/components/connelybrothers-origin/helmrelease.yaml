@@ -24,7 +24,7 @@ spec:
           app:
             image: &image
               repository: docker.io/library/caddy
-              tag: 2.11.6@sha256:881bbc60f9986d5ab8e7cfd6cf7e4ef3c9c0439fef2429d035d065577882f028
+              tag: 2.11.6@sha256:907efba736324e43f891ccb9d760fe5abe545e313419b3d18d63d4ec670dad8d
               pullPolicy: IfNotPresent
             command:
               - /bin/sh
