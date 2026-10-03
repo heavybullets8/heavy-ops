@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- apps/kube-system/cilium/app
+- apps/flux-system/flux-operator/app
+- apps/flux-system/flux-instance/app
+- apps/external-secrets/namespace.yaml
+- apps/external-secrets/external-secrets/ks.yaml
+- apps/external-secrets/onepassword/ks.yaml
+- apps/kube-system/reloader/ks.yaml
+- apps/external-secrets/onepassword/store-ks.yaml
+- apps/business-ha-production

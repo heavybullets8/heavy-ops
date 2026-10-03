@@ -1,5 +1,11 @@
 ---
 creation_rules:
+  - path_regex: kubernetes/.*/cb-ha-domains\.secret\.sops\.yaml
+    encrypted_regex: ^(data|stringData)$
+    mac_only_encrypted: true
+    key_groups:
+      - age:
+        - age172ga8ydq62pezn7jcg2xkc4ytc4uf7ymzahvydqjszul30j2accstykn84
   - path_regex: kubernetes/.+\.sops\.yaml
     encrypted_regex: ^(age.agekey|token|crt|key|id|secret|secretboxEncryptionSecret|ca)$
     mac_only_encrypted: true
