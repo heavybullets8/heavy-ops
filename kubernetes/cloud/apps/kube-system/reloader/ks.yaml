@@ -11,7 +11,7 @@ spec:
   timeout: 10m
   prune: true
   wait: true
-  suspend: true
+  suspend: false
   sourceRef:
     kind: GitRepository
     name: flux-system
