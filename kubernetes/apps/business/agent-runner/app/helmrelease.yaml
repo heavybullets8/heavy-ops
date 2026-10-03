@@ -52,7 +52,7 @@ spec:
       enabled: false
 
     steering:
-      enabled: false
+      enabled: true
 
     dashboard:
       enabled: true
