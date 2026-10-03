@@ -64,7 +64,7 @@ spec:
     name: flux-system
     namespace: flux-system
   deletionPolicy: Orphan
-  suspend: true
+  suspend: false
   dependsOn:
   - name: cb-ha-storage
     namespace: business-ha-production
