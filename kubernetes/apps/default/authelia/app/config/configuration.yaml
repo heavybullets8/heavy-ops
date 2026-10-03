@@ -132,6 +132,7 @@ identity_providers:
       "jobs:read": { claims: [] }
       "jobs:cancel": { claims: [] }
       "jobs:edit": { claims: [] }
+      "jobs:admin": { claims: [] }
       "kubernetes:operate": { claims: [] }
       "outreach:read": { claims: [] }
       "outreach:write": { claims: [] }
@@ -209,7 +210,7 @@ identity_providers:
         access_token_signed_response_alg: RS256
         requested_audience_mode: implicit
         audience: ["https://agent-runner.${SECRET_DOMAIN}"]
-        scopes: [openid, offline_access, email, "jobs:launch", "jobs:read", "jobs:cancel", "jobs:edit"]
+        scopes: [openid, offline_access, email, "jobs:launch", "jobs:read", "jobs:cancel", "jobs:edit", "jobs:admin"]
         response_types: [code]
         grant_types: [authorization_code, refresh_token]
         redirect_uris: ["https://chatgpt.com/connector_platform_oauth_redirect"]
