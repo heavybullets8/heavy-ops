@@ -80,7 +80,7 @@ spec:
           app:
             image:
               repository: ghcr.io/heavybullets8/bighorn-byte-solver
-              tag: sha-bd0bb8c4db2bf147b27dfccba9bfc65d5ee9a2ed@sha256:06accf8e606080aa60aa095c073ff63f2d28ad2b00ac407b3c1e28677e2dd67a
+              tag: 0.1.0@sha256:a8f889ab383ebd3b10e5ef585c13da558130a9d9abf91c3d8a5b45814fec886a
               pullPolicy: Always
             env:
               CAPTCHA_SOLVER: "none"
