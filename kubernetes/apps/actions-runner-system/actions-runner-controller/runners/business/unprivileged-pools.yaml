@@ -224,36 +224,6 @@ items:
                   failureThreshold: 30
   - <<: *ciPool
     metadata:
-      name: connelybrothers-ci
-    spec:
-      <<: *ciPoolSpec
-      values:
-        <<: *ciPoolValues
-        githubConfigUrl: https://github.com/Heavybullets8/connelybrothers
-        runnerScaleSetName: connelybrothers-ci
-        maxRunners: 1
-        template:
-          spec:
-            <<: *databasePod
-            initContainers:
-              - <<: *postgresSidecar
-                args: ["-p", "5436", "-c", "listen_addresses=127.0.0.1"]
-                env:
-                  - name: POSTGRES_USER
-                    value: connelybros
-                  - name: POSTGRES_PASSWORD
-                    value: devpassword
-                  - name: POSTGRES_DB
-                    value: connelybros
-                  - name: PGDATA
-                    value: /var/lib/postgresql/data/pgdata
-                startupProbe:
-                  exec:
-                    command: [pg_isready, -h, "127.0.0.1", -p, "5436", -U, connelybros, -d, connelybros]
-                  periodSeconds: 2
-                  failureThreshold: 30
-  - <<: *ciPool
-    metadata:
       name: connelyslandscaping-ci
     spec:
       <<: *ciPoolSpec
@@ -448,6 +418,43 @@ items:
                 emptyDir:
                   medium: Memory
                   sizeLimit: 24Gi
+  - <<: *ciPool
+    metadata:
+      name: connelybrothers-ci
+    spec:
+      <<: *ciPoolSpec
+      values:
+        <<: *ciPoolValues
+        githubConfigUrl: https://github.com/Heavybullets8/connelybrothers
+        runnerScaleSetName: connelybrothers-ci
+        maxRunners: 1
+        template:
+          spec:
+            <<: *buildPod
+            initContainers:
+              - <<: *postgresSidecar
+                args: ["-p", "5436", "-c", "listen_addresses=127.0.0.1"]
+                env:
+                  - name: POSTGRES_USER
+                    value: connelybros
+                  - name: POSTGRES_PASSWORD
+                    value: devpassword
+                  - name: POSTGRES_DB
+                    value: connelybros
+                  - name: PGDATA
+                    value: /var/lib/postgresql/data/pgdata
+                startupProbe:
+                  exec:
+                    command: [pg_isready, -h, "127.0.0.1", -p, "5436", -U, connelybros, -d, connelybros]
+                  periodSeconds: 2
+                  failureThreshold: 30
+              - *buildkitSidecar
+            volumes:
+              - *workVolume
+              - *postgresData
+              - *postgresShm
+              - *buildkitSocket
+              - *buildkitState
   - <<: *ciPool
     metadata:
       name: scale-tv-ci
