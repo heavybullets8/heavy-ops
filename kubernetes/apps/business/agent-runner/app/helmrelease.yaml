@@ -44,7 +44,7 @@ spec:
                 ephemeral-storage: 128Mi
               limits:
                 cpu: 1
-                memory: 1Gi
+                memory: 3Gi
                 ephemeral-storage: 512Mi
             securityContext:
               allowPrivilegeEscalation: false
@@ -106,3 +106,8 @@ spec:
         globalMounts:
           - path: /credentials
             readOnly: true
+      tmp:
+        type: emptyDir
+        medium: Memory
+        globalMounts:
+          - path: /tmp
