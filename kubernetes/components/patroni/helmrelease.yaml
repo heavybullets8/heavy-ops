@@ -110,8 +110,8 @@ spec:
                 cpu: '1'
                 memory: 512Mi
             image:
-              repository: gcr.io/etcd-development/etcd
-              tag: v3.7.2@sha256:7c6c239825d00e3f6328a69caafd54be92063acf0c2ce78b8394699f52b75dc3
+              repository: registry.k8s.io/etcd
+              tag: 3.7.2-0@sha256:7c6c239825d00e3f6328a69caafd54be92063acf0c2ce78b8394699f52b75dc3
               pullPolicy: IfNotPresent
 
           pgbackrest-scheduler:
