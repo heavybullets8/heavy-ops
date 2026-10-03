@@ -45,6 +45,18 @@ spec:
         - name: envoy-external
           namespace: network
 
+    session:
+      enabled: true
+
+    dashboard:
+      enabled: true
+      hostname: "agents.${SECRET_DOMAIN}"
+      viewers:
+        - kyler
+      parentRefs:
+        - name: envoy-external
+          namespace: network
+
     networkPolicy:
       podCIDR: 10.69.0.0/16
       controllerIngressNamespaces:

@@ -12,6 +12,8 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+  components:
+    - ../../../../components/forward-auth
   dependsOn:
     - name: onepassword
       namespace: external-secrets
@@ -22,6 +24,9 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
+  postBuild:
+    substitute:
+      APP: agent-runner-dashboard
   wait: false
   interval: 30m
   timeout: 15m
