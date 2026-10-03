@@ -1,0 +1,10 @@
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: connelybrothers-origin
+spec:
+  endpoints:
+    - dnsName: ${CB_PROD_HOME_FQDN}
+      recordType: CNAME
+      targets:
+        - home.bighornbyte.com

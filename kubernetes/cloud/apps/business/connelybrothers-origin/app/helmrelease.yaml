@@ -1,0 +1,32 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app connelybrothers-origin
+spec:
+  values:
+    defaultPodOptions:
+      nodeSelector:
+        kubernetes.io/hostname: trial-talos
+
+    service:
+      public:
+        controller: *app
+        type: ClusterIP
+        externalIPs:
+          - 209.50.58.65
+        externalTrafficPolicy: Local
+        ports:
+          http:
+            port: 80
+            targetPort: 8080
+          https:
+            port: 443
+            targetPort: 8443
+
+    persistence:
+      data:
+        type: persistentVolumeClaim
+        sizeLimit: null
+        existingClaim: *app

@@ -1,0 +1,112 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: patroni
+spec:
+  values:
+    controllers:
+      patroni:
+        containers:
+          db:
+            env:
+              PATRONI_NAME: cloud
+
+          etcd:
+            args:
+              - --name=cloud
+              - --data-dir=/ha-data/etcd
+              - --listen-client-urls=http://127.0.0.1:32379
+              - --advertise-client-urls=http://127.0.0.1:32379
+              - --listen-peer-urls=http://127.0.0.1:32380
+              - --initial-advertise-peer-urls=http://127.0.0.1:32380
+              - --initial-cluster=home=http://127.0.0.1:22380,cloud=http://127.0.0.1:32380,voter=http://127.0.0.1:12380
+              - --initial-cluster-token=business-ha-production-20261003
+              - --initial-cluster-state=new
+              - --heartbeat-interval=250
+              - --election-timeout=2500
+              - --log-level=warn
+
+          pgbackrest-scheduler:
+            args:
+              - --site
+              - cloud
+              - --stanza
+              - ${CB_PROD_BACKUP_STANZA}
+              - --state-dir
+              - /ha-forensics/backup-scheduler
+              - --primary-url
+              - http://127.0.0.1:8008/primary
+              - --metrics-port
+              - '9187'
+
+          ssh-voter:
+            args:
+              - client
+              - -L127.0.0.1:12379:127.0.0.1:12379
+              - -L127.0.0.1:12380:127.0.0.1:12380
+              - -R127.0.0.1:32379:127.0.0.1:32379
+              - -R127.0.0.1:32380:127.0.0.1:32380
+              - -R127.0.0.1:25433:127.0.0.1:5432
+              - -R127.0.0.1:28009:127.0.0.1:8008
+              - ha-prod-tunnel@172.31.88.2
+          ssh-server:
+            args:
+              - server
+            securityContext:
+              runAsUser: 0
+              capabilities:
+                add:
+                  - SETUID
+                  - SETGID
+                  - CHOWN
+                  - SYS_CHROOT
+                  - DAC_OVERRIDE
+                  - FOWNER
+            resources:
+              requests:
+                cpu: 25m
+                memory: 32Mi
+              limits:
+                cpu: 250m
+                memory: 128Mi
+
+    defaultPodOptions:
+      nodeSelector:
+        kubernetes.io/hostname: trial-talos
+
+    service:
+      app:
+        ports:
+          peer:
+            targetPort: 25432
+      ssh:
+        forceRename: patroni-ssh
+        controller: patroni
+        type: ClusterIP
+        externalIPs:
+          - 209.50.58.65
+        publishNotReadyAddresses: true
+        externalTrafficPolicy: Local
+        ports:
+          ssh:
+            port: 22
+            targetPort: 2222
+
+    persistence:
+      ssh-server-identity:
+        type: secret
+        name: patroni-ssh-secret
+        defaultMode: 256
+        items:
+          - key: host_ed25519_key
+            path: host_ed25519_key
+          - key: authorized_keys
+            path: authorized_keys
+        globalMounts: []
+        advancedMounts:
+          patroni:
+            ssh-server:
+              - path: /etc/ha-ssh
+                readOnly: true

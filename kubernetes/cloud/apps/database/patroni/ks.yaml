@@ -1,0 +1,37 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app patroni
+  namespace: &namespace database
+  labels:
+    substitution.flux.home.arpa/disabled: "true"
+spec:
+  suspend: true
+  targetNamespace: *namespace
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  dependsOn:
+    - name: onepassword-store
+      namespace: external-secrets
+  path: ./kubernetes/cloud/apps/database/patroni/app
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  postBuild:
+    substitute:
+      BUSINESS_POSTGRES_POD_CIDR: 10.80.0.0/16
+      BUSINESS_POSTGRES_DB_CONNECT_PORT: '25433'
+      BUSINESS_POSTGRES_REST_CONNECT_PORT: '28009'
+    substituteFrom:
+      - kind: Secret
+        name: cb-ha-domains
+        optional: false
+  wait: false
+  interval: 30m
+  timeout: 15m

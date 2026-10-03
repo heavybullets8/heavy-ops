@@ -1,0 +1,17 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+resources:
+  - helmrelease.yaml
+  - configmap.yaml
+  - externalsecret.yaml
+  - networkpolicy.yaml
+configMapGenerator:
+  - name: patroni-scripts
+    files:
+      - scripts/pg_rewind
+      - scripts/backup_scheduler.py
+      - scripts/wal_metrics.py
+generatorOptions:
+  disableNameSuffixHash: true

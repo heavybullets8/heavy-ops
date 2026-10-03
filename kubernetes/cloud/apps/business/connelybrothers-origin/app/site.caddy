@@ -1,0 +1,7 @@
+:18091 {
+    import _ha_protected
+}
+
+${CB_PROD_CLOUD_FQDN} {
+    import _ha_protected
+}

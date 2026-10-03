@@ -1,0 +1,92 @@
+{
+    http_port 8080
+    https_port 8443
+}
+
+(_ha_protected) {
+    @backupMetrics {
+        path /_ha/backup-metrics
+        header Authorization "Bearer {$HA_MONITOR_TOKEN}"
+    }
+    handle @backupMetrics {
+        rewrite * /metrics
+        reverse_proxy patroni.database.svc.cluster.local:9187 {
+            header_up -Authorization
+        }
+    }
+
+    @walMetrics {
+        path /_ha/wal-metrics
+        header Authorization "Bearer {$HA_MONITOR_TOKEN}"
+    }
+    handle @walMetrics {
+        rewrite * /metrics
+        reverse_proxy patroni.database.svc.cluster.local:9188 {
+            header_up -Authorization
+        }
+    }
+
+    @patroni {
+        path /_ha/patroni
+        header Authorization "Bearer {$HA_MONITOR_TOKEN}"
+    }
+    handle @patroni {
+        rewrite * /
+        reverse_proxy patroni.database.svc.cluster.local:8008 {
+            header_up -Authorization
+        }
+    }
+
+    @primary {
+        path /_ha/primary
+        header Authorization "Bearer {$HA_MONITOR_TOKEN}"
+    }
+    handle @primary {
+        rewrite * /primary
+        reverse_proxy patroni.database.svc.cluster.local:8008 {
+            header_up -Authorization
+        }
+    }
+
+    @cluster {
+        path /_ha/cluster
+        header Authorization "Bearer {$HA_MONITOR_TOKEN}"
+    }
+    handle @cluster {
+        rewrite * /cluster
+        reverse_proxy patroni.database.svc.cluster.local:8008 {
+            header_up -Authorization
+        }
+    }
+
+    @monitorPath path /_ha/backup-metrics /_ha/wal-metrics /_ha/patroni /_ha/primary /_ha/cluster
+    handle @monitorPath {
+        respond 404
+    }
+
+    @appForwarded {
+        header X-HA-Origin-Token {$HA_ORIGIN_TOKEN}
+        header X-Forwarded-Host *
+    }
+    handle @appForwarded {
+        reverse_proxy connelybrothers-web:8000 {
+            header_up Host {http.request.header.X-Forwarded-Host}
+            header_up X-Forwarded-Proto https
+            header_up -X-HA-Origin-Token
+        }
+    }
+
+    @app header X-HA-Origin-Token {$HA_ORIGIN_TOKEN}
+    handle @app {
+        reverse_proxy connelybrothers-web:8000 {
+            header_up X-Forwarded-Proto https
+            header_up -X-HA-Origin-Token
+        }
+    }
+
+    handle {
+        respond 404
+    }
+}
+
+import /etc/caddy/site.caddy
