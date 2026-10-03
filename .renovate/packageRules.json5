@@ -2,11 +2,12 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "packageRules": [
     {
-      "description": ["Promote tested agent runner image pairs and admission pins together"],
+      "description": ["Promote tested agent runner image pairs and the chart that pins them together"],
       "matchDatasources": ["docker"],
       "matchPackageNames": [
         "ghcr.io/heavybullets8/heavy-ops-agent-runner-controller",
-        "ghcr.io/heavybullets8/heavy-ops-agent-runner-worker"
+        "ghcr.io/heavybullets8/heavy-ops-agent-runner-worker",
+        "ghcr.io/heavybullets8/charts/agent-runner"
       ],
       "enabled": false
     },

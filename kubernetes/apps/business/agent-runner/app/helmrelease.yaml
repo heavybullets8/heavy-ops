@@ -1,113 +1,134 @@
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &app agent-runner
+  name: agent-runner
 spec:
   interval: 30m
   chartRef:
     kind: OCIRepository
-    name: app-template
+    name: agent-runner
 
   values:
-    controllers:
-      agent-runner:
-        # Controller starts before provider jobs are enabled.
-        replicas: 1
-        strategy: Recreate
-        annotations:
-          reloader.stakater.com/auto: "true"
-        serviceAccount:
-          name: *app
-        containers:
-          app:
-            image:
-              repository: ghcr.io/heavybullets8/heavy-ops-agent-runner-controller
-              tag: candidate@sha256:c10d27ef0eefa3d4f41fbd517098f6f1966ff224b7760666d5a901de0117caa8
-            probes:
-              liveness: &probes
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /healthz
-                    port: &port 8080
-                  periodSeconds: 10
-                  timeoutSeconds: 2
-                  failureThreshold: 3
-              readiness: *probes
-            resources:
-              requests:
-                cpu: 100m
-                memory: 256Mi
-                ephemeral-storage: 128Mi
-              limits:
-                cpu: 1
-                memory: 3Gi
-                ephemeral-storage: 512Mi
-            securityContext:
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
-              capabilities: { drop: ["ALL"] }
+    imagePullSecrets:
+      - name: business-ghcr
 
-    defaultPodOptions:
-      imagePullSecrets:
-        - name: business-ghcr
-      automountServiceAccountToken: true
-      enableServiceLinks: true
-      hostUsers: false
-      terminationGracePeriodSeconds: 60
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 1001
-        runAsGroup: 1001
-        fsGroup: 1001
-        fsGroupChangePolicy: OnRootMismatch
-        seccompProfile:
-          type: RuntimeDefault
+    deployment:
+      annotations:
+        secret.reloader.stakater.com/reload: agent-runner-credentials
 
-    service:
-      app:
-        controller: *app
-        ports:
-          http:
-            port: *port
-          worker:
-            port: 8081
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+        ephemeral-storage: 128Mi
+      limits:
+        cpu: 1
+        memory: 3Gi
+        ephemeral-storage: 512Mi
 
-    route:
-      app:
-        hostnames:
-          - "agent-runner.${SECRET_DOMAIN}"
-        parentRefs:
-          - name: envoy-external
-            namespace: network
-        rules:
-          - backendRefs:
-              - identifier: app
-                port: *port
+    tmp:
+      medium: Memory
 
     persistence:
-      data:
-        existingClaim: agent-runner-data
-        globalMounts:
-          - path: /data
-      config:
-        type: configMap
-        name: agent-runner-configmap
-        globalMounts:
-          - path: /config
-            readOnly: true
-      credentials:
-        type: secret
-        name: agent-runner-credentials
-        defaultMode: 0440
-        globalMounts:
-          - path: /credentials
-            readOnly: true
-      tmp:
-        type: emptyDir
-        medium: Memory
-        globalMounts:
-          - path: /tmp
+      existingClaim: agent-runner-data
+
+    credentials:
+      existingSecret: agent-runner-credentials
+
+    route:
+      enabled: true
+      hostnames:
+        - "agent-runner.${SECRET_DOMAIN}"
+      parentRefs:
+        - name: envoy-external
+          namespace: network
+
+    networkPolicy:
+      podCIDR: 10.69.0.0/16
+      controllerIngressNamespaces:
+        - network
+
+    config:
+      public_url: https://agent-runner.${SECRET_DOMAIN}
+      issuer: https://auth.${SECRET_DOMAIN}
+      jwks_url: https://auth.${SECRET_DOMAIN}/jwks.json
+      package_scope: '@heavybullets8'
+      owners:
+        - 463c69e1-db21-4eb3-8b29-bf87dbced4df
+      providers:
+        claude: true
+        codex: true
+      repositories:
+        runner:
+          github: heavybullets8/heavy-ops-agent-runner
+          checks:
+            format:
+              - deno
+              - fmt
+              - --check
+            lint:
+              - deno
+              - lint
+            check:
+              - deno
+              - task
+              - check
+            test:
+              - deno
+              - task
+              - test
+        heavy-ops:
+          github: heavybullets8/heavy-ops
+          checks: {}
+      queue_limit: 8
+      retention_days: 7
+      max_source_bytes: 67108864
+      provider_policies:
+        claude:
+          default_model: claude-opus-5-5
+          allowed_models:
+            - claude-opus-5-5
+          child_model: inherit
+          max_parallel_jobs: 2
+          max_concurrent_children: 2
+          child_max_turns: 12
+          model_efforts:
+            claude-opus-5-5:
+              default: xhigh
+              supported:
+                - low
+                - medium
+                - high
+                - xhigh
+                - max
+              allowed:
+                - low
+                - medium
+                - high
+                - xhigh
+                - max
+        codex:
+          default_model: gpt-6.1-sol
+          allowed_models:
+            - gpt-6.1-sol
+          child_model: inherit
+          max_parallel_jobs: 1
+          max_concurrent_children: 2
+          child_max_turns: 12
+          model_efforts:
+            gpt-6.1-sol:
+              default: xhigh
+              supported:
+                - low
+                - medium
+                - high
+                - xhigh
+                - max
+              allowed:
+                - low
+                - medium
+                - high
+                - xhigh
+                - max

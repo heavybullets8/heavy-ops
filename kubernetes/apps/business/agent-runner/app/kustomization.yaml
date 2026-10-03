@@ -7,6 +7,7 @@ resources:
   - ./externalsecret.yaml
   - ./helmrelease.yaml
   - ./networkpolicy.yaml
+  - ./ocirepository.yaml
   - ./pvc.yaml
   - ./rbac.yaml
 configMapGenerator:
