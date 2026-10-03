@@ -1,0 +1,31 @@
+instance:
+  distribution:
+    artifact: oci://ghcr.io/controlplaneio-fluxcd/flux-operator-manifests:v0.61.0
+    version: 2.x
+  components:
+    - source-controller
+    - kustomize-controller
+    - helm-controller
+    - notification-controller
+  cluster:
+    type: kubernetes
+    size: small
+    networkPolicy: false
+  sync:
+    kind: GitRepository
+    url: https://github.com/heavybullets8/heavy-ops
+    ref: refs/heads/main
+    path: kubernetes/cloud
+    interval: 1m
+  kustomize:
+    patches:
+      - patch: |
+          - op: add
+            path: /spec/decryption
+            value:
+              provider: sops
+              secretRef:
+                name: sops-age
+        target:
+          group: kustomize.toolkit.fluxcd.io
+          kind: Kustomization
