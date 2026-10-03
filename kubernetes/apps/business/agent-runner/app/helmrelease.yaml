@@ -49,7 +49,7 @@ spec:
       enabled: true
 
     workspace:
-      enabled: true
+      enabled: false
 
     steering:
       enabled: true
