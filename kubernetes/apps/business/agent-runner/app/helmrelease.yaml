@@ -54,6 +54,9 @@ spec:
     steering:
       enabled: true
 
+    recovery:
+      enabled: true
+
     dashboard:
       enabled: true
       hostname: "agents.${SECRET_DOMAIN}"
