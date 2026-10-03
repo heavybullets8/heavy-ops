@@ -22,9 +22,7 @@
       "matchDatasources": ["docker"],
       "matchPackageNames": [
         "ghcr.io/heavybullets8/bighorn-byte-web",
-        "ghcr.io/heavybullets8/bighorn-byte-outreach",
-        "ghcr.io/heavybullets8/bighorn-byte-browser",
-        "ghcr.io/heavybullets8/bighorn-byte-solver"
+        "ghcr.io/heavybullets8/bighorn-byte-outreach"
       ],
       "groupName": "BighornByte application",
       "separateMajorMinor": false,
@@ -35,10 +33,17 @@
       "matchDatasources": ["docker"],
       "matchPackageNames": [
         "ghcr.io/heavybullets8/heavy-ops-agent-runner-controller",
-        "ghcr.io/heavybullets8/heavy-ops-agent-runner-worker",
-        "ghcr.io/heavybullets8/charts/agent-runner"
+        "ghcr.io/heavybullets8/heavy-ops-agent-runner-worker"
       ],
       "enabled": false
+    },
+    {
+      "description": ["Follow tested agent runner chart releases"],
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["ghcr.io/heavybullets8/charts/agent-runner"],
+      "versioning": "semver",
+      "allowedVersions": "/^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$/",
+      "automerge": false
     },
     {
       "description": ["Custom schedule for frequently updated container digests"],
