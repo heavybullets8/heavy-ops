@@ -8,12 +8,13 @@ metadata:
   labels:
     substitution.flux.home.arpa/disabled: "true"
 spec:
-  suspend: true
   targetNamespace: *namespace
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
+    - name: origin-ca-issuer-issuers
+      namespace: cert-manager
     - name: onepassword-store
       namespace: external-secrets
     - name: patroni

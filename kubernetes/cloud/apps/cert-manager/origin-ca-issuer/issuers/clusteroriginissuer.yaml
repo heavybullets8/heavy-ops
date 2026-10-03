@@ -1,0 +1,12 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/cert-manager.k8s.cloudflare.com/clusteroriginissuer_v1.json
+apiVersion: cert-manager.k8s.cloudflare.com/v1
+kind: ClusterOriginIssuer
+metadata:
+  name: cloudflare-origin-ca
+spec:
+  requestType: OriginECC
+  auth:
+    tokenRef:
+      name: cloudflare-business-secret
+      key: ORIGIN_CA_API_TOKEN

@@ -11,3 +11,4 @@ resources:
 - apps/external-secrets/onepassword/store-ks.yaml
 - apps/business
 - apps/database
+- apps/cert-manager
