@@ -568,6 +568,8 @@ items:
                   - |
                     set -eu
                     mkdir -p /run/buildkit/worker /state/worker
+                    chgrp "$(id -g)" /state/worker
+                    chmod g-s /state/worker
                     chmod 0755 /run/buildkit/worker
                     socket=/run/buildkit/worker/buildkitd.sock
                     rootlesskit buildkitd \
