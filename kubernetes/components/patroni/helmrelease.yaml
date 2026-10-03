@@ -194,6 +194,7 @@ spec:
                 add:
                   - CHOWN
                   - FOWNER
+                  - DAC_OVERRIDE
             image: *image
 
     defaultPodOptions:
