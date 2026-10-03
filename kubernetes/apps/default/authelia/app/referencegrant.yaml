@@ -25,6 +25,9 @@ spec:
     - group: gateway.envoyproxy.io
       kind: SecurityPolicy
       namespace: network
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: business
   to:
     - group: ""
       kind: Service
