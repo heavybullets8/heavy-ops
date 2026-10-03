@@ -48,6 +48,12 @@ spec:
     session:
       enabled: true
 
+    workspace:
+      enabled: true
+
+    steering:
+      enabled: true
+
     dashboard:
       enabled: true
       hostname: "agents.${SECRET_DOMAIN}"
