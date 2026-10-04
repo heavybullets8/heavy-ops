@@ -18,15 +18,23 @@ spec:
           podSelector:
             matchLabels:
               app.kubernetes.io/name: connelybrothers-web
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: business
-          podSelector:
-            matchLabels:
-              app.kubernetes.io/name: connelybrothers-origin
       ports:
         - protocol: TCP
           port: 5432
+        - protocol: TCP
+          port: 8008
+        - protocol: TCP
+          port: 25432
+        - protocol: TCP
+          port: 25433
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: network
+          podSelector:
+            matchLabels:
+              gateway.envoyproxy.io/owning-gateway-name: envoy-external
+      ports:
         - protocol: TCP
           port: 8008
         - protocol: TCP

@@ -3,15 +3,16 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: &app connelybrothers-origin
+  name: bighornbyte-origin
 spec:
-  secretName: connelybrothers-origin-tls
+  secretName: bighornbyte-origin-tls
   issuerRef:
     group: cert-manager.k8s.cloudflare.com
     kind: ClusterOriginIssuer
     name: cloudflare-origin-ca
-  commonName: ${CB_PROD_CLOUD_FQDN}
+  commonName: bighornbyte.com
   dnsNames:
-    - ${CB_PROD_CLOUD_FQDN}
+    - bighornbyte.com
+    - '*.bighornbyte.com'
   duration: 8760h
   renewBefore: 720h

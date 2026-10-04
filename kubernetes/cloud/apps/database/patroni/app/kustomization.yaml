@@ -11,4 +11,13 @@ resources:
   - registry-secret.yaml
 patches:
   - path: helmrelease.yaml
-  - path: networkpolicy.yaml
+  - target:
+      kind: NetworkPolicy
+      name: patroni
+    patch: |-
+      - op: add
+        path: /spec/ingress/-
+        value:
+          ports:
+            - protocol: TCP
+              port: 2222
