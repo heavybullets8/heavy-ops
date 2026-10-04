@@ -10,7 +10,6 @@ spec:
   chartRef:
     kind: OCIRepository
     name: app-template
-
   values:
     controllers:
       patroni:
@@ -65,8 +64,7 @@ spec:
                     command:
                       - /opt/patroni/bin/python
                       - -c
-                      - import urllib.request; assert urllib.request.urlopen('http://127.0.0.1:8008/liveness',
-                        timeout=0.8).status == 200
+                      - import urllib.request; assert urllib.request.urlopen('http://127.0.0.1:8008/liveness', timeout=0.8).status == 200
                   periodSeconds: 3
                   failureThreshold: 60
                   timeoutSeconds: 1
@@ -78,8 +76,7 @@ spec:
                     command:
                       - /opt/patroni/bin/python
                       - -c
-                      - import urllib.request; assert urllib.request.urlopen('http://127.0.0.1:8008/liveness',
-                        timeout=0.8).status == 200
+                      - import urllib.request; assert urllib.request.urlopen('http://127.0.0.1:8008/liveness', timeout=0.8).status == 200
                   periodSeconds: 3
                   failureThreshold: 3
                   timeoutSeconds: 1
@@ -91,12 +88,10 @@ spec:
                     command:
                       - /opt/patroni/bin/python
                       - -c
-                      - import urllib.request; assert urllib.request.urlopen('http://127.0.0.1:8008/liveness',
-                        timeout=0.8).status == 200
+                      - import urllib.request; assert urllib.request.urlopen('http://127.0.0.1:8008/liveness', timeout=0.8).status == 200
                   periodSeconds: 3
                   failureThreshold: 1
                   timeoutSeconds: 1
-
           etcd:
             command:
               - /usr/local/bin/etcd
@@ -115,7 +110,6 @@ spec:
               repository: registry.k8s.io/etcd
               tag: 3.7.2-0@sha256:7c6c239825d00e3f6328a69caafd54be92063acf0c2ce78b8394699f52b75dc3
               pullPolicy: IfNotPresent
-
             args:
               - --name=cloud
               - --data-dir=/ha-data/etcd
@@ -129,7 +123,6 @@ spec:
               - --heartbeat-interval=250
               - --election-timeout=2500
               - --log-level=warn
-
           pgbackrest-scheduler:
             command:
               - /opt/patroni/bin/python
@@ -156,7 +149,6 @@ spec:
                     port: 9187
                   periodSeconds: 15
                   failureThreshold: 3
-
             args:
               - --site
               - cloud
@@ -168,7 +160,6 @@ spec:
               - http://127.0.0.1:8008/primary
               - --metrics-port
               - '9187'
-
           wal-metrics:
             command:
               - /opt/patroni/bin/python
@@ -194,11 +185,9 @@ spec:
                     command:
                       - /opt/patroni/bin/python
                       - -c
-                      - import urllib.request; assert
-                        urllib.request.urlopen('http://127.0.0.1:9188/healthz',timeout=1).status==200
+                      - import urllib.request; assert urllib.request.urlopen('http://127.0.0.1:9188/healthz',timeout=1).status==200
                   periodSeconds: 5
                   timeoutSeconds: 2
-
           ssh-voter:
             securityContext:
               runAsUser: 0
@@ -238,16 +227,13 @@ spec:
               limits:
                 cpu: 250m
                 memory: 128Mi
-
         initContainers:
           prepare-volumes:
             command:
               - /bin/sh
               - -ec
             args:
-              - mkdir -p /ha-data/postgres /ha-data/etcd; chown 999:999 /ha-data /ha-data/postgres /ha-data/etcd
-                /ha-forensics /var/run/postgresql; chmod 0700 /ha-data/postgres /ha-forensics; chmod 0770
-                /var/run/postgresql
+              - mkdir -p /ha-data/postgres /ha-data/etcd; chown 999:999 /ha-data /ha-data/postgres /ha-data/etcd /ha-forensics /var/run/postgresql; chmod 0700 /ha-data/postgres /ha-forensics; chmod 0770 /var/run/postgresql
             securityContext:
               runAsUser: 0
               capabilities:
@@ -256,17 +242,14 @@ spec:
                   - FOWNER
                   - DAC_OVERRIDE
             image: *image
-
     defaultPodOptions:
       automountServiceAccountToken: false
       enableServiceLinks: false
       terminationGracePeriodSeconds: 60
       imagePullSecrets:
         - name: business-ghcr
-
       nodeSelector:
         kubernetes.io/hostname: trial-talos
-
     service:
       app:
         forceRename: *app
@@ -284,11 +267,9 @@ spec:
           backup-metrics:
             port: 9187
             targetPort: 9187
-
           wal-metrics:
             port: 9188
             targetPort: 9188
-
       ssh:
         forceRename: patroni-ssh
         controller: patroni
@@ -301,7 +282,6 @@ spec:
           ssh:
             port: 8443
             targetPort: 2222
-
     persistence:
       data:
         existingClaim: *app
