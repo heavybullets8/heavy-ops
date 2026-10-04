@@ -3,11 +3,19 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: database
-components:
-  - ../../../../components/patroni
 resources:
   - externalsecret.yaml
   - pvc.yaml
   - registry-secret.yaml
-patches:
-  - path: helmrelease.yaml
+  - helmrelease.yaml
+  - configmap.yaml
+  - networkpolicy.yaml
+  - referencegrant.yaml
+configMapGenerator:
+  - name: patroni-scripts
+    files:
+      - scripts/pg_rewind
+      - scripts/backup_scheduler.py
+      - scripts/wal_metrics.py
+generatorOptions:
+  disableNameSuffixHash: true

@@ -5,5 +5,5 @@ kind: Kustomization
 resources:
   - ./grafanadashboard.yaml
   - ./observability.yaml
-components:
-  - ../../../../components/envoy-gateway
+  - ./helmrelease.yaml
+  - ./ocirepository.yaml

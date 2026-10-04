@@ -1,0 +1,97 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/v1/configmap.json
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: patroni-configmap
+data:
+  patroni.yml: |
+    {
+      "scope": "business-ha-production",
+      "namespace": "/business-ha/production/",
+      "restapi": {
+        "listen": "0.0.0.0:8008",
+        "connect_address": "127.0.0.1:${BUSINESS_POSTGRES_REST_CONNECT_PORT}"
+      },
+      "etcd3": {
+        "hosts": "127.0.0.1:22379,127.0.0.1:32379,127.0.0.1:12379"
+      },
+      "bootstrap": {
+        "dcs": {
+          "ttl": 30,
+          "loop_wait": 3,
+          "retry_timeout": 5,
+          "primary_start_timeout": 0,
+          "maximum_lag_on_failover": 1048576,
+          "check_timeline": true,
+          "synchronous_mode": false,
+          "synchronous_mode_strict": false,
+          "failsafe_mode": false,
+          "postgresql": {
+            "use_slots": true,
+            "use_pg_rewind": true,
+            "remove_data_directory_on_rewind_failure": false,
+            "remove_data_directory_on_diverged_timelines": false,
+            "parameters": {
+              "synchronous_commit": "on",
+              "fsync": "on",
+              "full_page_writes": "on",
+              "wal_log_hints": "on",
+              "unix_socket_directories": "/var/run/postgresql",
+              "max_connections": 100,
+              "shared_buffers": "64MB",
+              "archive_mode": "on",
+              "archive_timeout": "30s",
+              "wal_keep_size": "128MB",
+              "max_slot_wal_keep_size": "512MB",
+              "archive_command": "pgbackrest --stanza=${CB_PROD_BACKUP_STANZA} archive-push %p"
+            }
+          }
+        },
+        "initdb": [
+          {
+            "encoding": "UTF8"
+          },
+          "data-checksums"
+        ],
+        "pg_hba": [
+          "local all postgres peer",
+          "host all all 127.0.0.1/32 scram-sha-256",
+          "host replication replicator 127.0.0.1/32 scram-sha-256",
+          "host cb cb_app ${BUSINESS_POSTGRES_POD_CIDR} scram-sha-256",
+          "host cb ha_outbox_observer ${BUSINESS_POSTGRES_POD_CIDR} scram-sha-256"
+        ]
+      },
+      "postgresql": {
+        "listen": "0.0.0.0:5432",
+        "connect_address": "127.0.0.1:${BUSINESS_POSTGRES_DB_CONNECT_PORT}",
+        "data_dir": "/ha-data/postgres",
+        "bin_name": {
+          "pg_rewind": "/opt/ha/pg_rewind"
+        },
+        "recovery_conf": {
+          "restore_command": "pgbackrest --stanza=${CB_PROD_BACKUP_STANZA} archive-get %f %p"
+        },
+        "authentication": {
+          "superuser": {
+            "username": "postgres"
+          },
+          "replication": {
+            "username": "replicator"
+          },
+          "rewind": {
+            "username": "rewind_user"
+          }
+        },
+        "pg_hba": [
+          "local all postgres peer",
+          "host all all 127.0.0.1/32 scram-sha-256",
+          "host replication replicator 127.0.0.1/32 scram-sha-256",
+          "host cb cb_app ${BUSINESS_POSTGRES_POD_CIDR} scram-sha-256",
+          "host cb ha_outbox_observer ${BUSINESS_POSTGRES_POD_CIDR} scram-sha-256"
+        ]
+      },
+      "watchdog": {
+        "mode": "off"
+      }
+    }
