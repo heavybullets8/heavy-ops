@@ -12,3 +12,4 @@ resources:
 - apps/business
 - apps/database
 - apps/cert-manager
+- apps/network

@@ -13,6 +13,8 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
+    - name: envoy-gateway
+      namespace: network
     - name: onepassword-store
       namespace: external-secrets
   path: ./kubernetes/cloud/apps/database/patroni/app

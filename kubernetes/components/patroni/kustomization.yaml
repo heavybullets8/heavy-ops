@@ -7,6 +7,7 @@ resources:
   - configmap.yaml
   - externalsecret.yaml
   - networkpolicy.yaml
+  - referencegrant.yaml
 configMapGenerator:
   - name: patroni-scripts
     files:

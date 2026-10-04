@@ -11,4 +11,3 @@ resources:
   - registry-secret.yaml
 patches:
   - path: helmrelease.yaml
-  - path: networkpolicy.yaml

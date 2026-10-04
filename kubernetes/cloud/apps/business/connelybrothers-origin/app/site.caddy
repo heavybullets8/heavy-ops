@@ -1,8 +1,0 @@
-:18091 {
-    import _ha_protected
-}
-
-${CB_PROD_CLOUD_FQDN} {
-    tls /etc/caddy-tls/tls.crt /etc/caddy-tls/tls.key
-    import _ha_protected
-}
