@@ -81,9 +81,18 @@ def merge_phase(store, state, phase):
     require(current["headRefOid"] == pr["headRefOid"], "The maintenance pull request changed; review it before resuming.")
     require(current["state"] != "CLOSED", "The maintenance pull request was closed without merging.")
     if current["state"] != "MERGED":
+        def checks_registered():
+            result = run(["gh", "pr", "checks", str(pr["number"]), "--repo", repository,
+                          "--json", "name,workflow"], check=False)
+            if "no checks reported" in (result.stdout + result.stderr).lower():
+                return False
+            require(result.returncode in (0, 8), "Unable to read maintenance pull request checks.")
+            return any(check["workflow"] == "PostgreSQL Operations" and check["name"] == "check"
+                       for check in json.loads(result.stdout))
+        wait_for(checks_registered, "PostgreSQL Operations checks to register", 300)
         checks = run(["gh", "pr", "checks", str(pr["number"]), "--repo", repository,
                       "--watch", "--interval", "10"], timeout=1800, check=False)
-        require(checks.returncode == 0 or "no checks reported" in (checks.stdout + checks.stderr).lower(),
+        require(checks.returncode == 0,
                 "Maintenance pull request checks have not passed. Resume after resolving the checks.")
         run(["gh", "pr", "merge", str(pr["number"]), "--repo", repository, "--squash",
              "--match-head-commit", pr["headRefOid"]], timeout=120)
