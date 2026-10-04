@@ -12,7 +12,7 @@ spec:
       namespace: network
       sectionName: https-bighornbyte
   hostnames:
-    - ${CB_PROD_HOME_FQDN}
+    - connely-ha-home.bighornbyte.com
   rules:
     - filters:
         - type: ExtensionRef
@@ -54,7 +54,7 @@ spec:
       namespace: network
       sectionName: https-bighornbyte
   hostnames:
-    - ${CB_PROD_HOME_FQDN}
+    - connely-ha-home.bighornbyte.com
   rules:
     - matches:
         - path:

@@ -7,5 +7,4 @@ resources:
   - ./namespace.yaml
   - ../../../components/common/repos/app-template
   - ../../../components/common/sops
-  - ./cb-ha-domains.secret.sops.yaml
   - ./patroni/ks.yaml

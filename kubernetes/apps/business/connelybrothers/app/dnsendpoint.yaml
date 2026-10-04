@@ -4,7 +4,7 @@ metadata:
   name: connelybrothers-origin
 spec:
   endpoints:
-    - dnsName: ${CB_PROD_HOME_FQDN}
+    - dnsName: connely-ha-home.bighornbyte.com
       recordType: CNAME
       targets:
         - home.bighornbyte.com
