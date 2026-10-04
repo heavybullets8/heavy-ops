@@ -9,5 +9,4 @@ resources:
   - ../../../components/common/sops
   - ./registry-secret.yaml
   - ./cb-ha-domains.secret.sops.yaml
-  - ./connelybrothers-web/ks.yaml
-  - ./connelybrothers-origin/ks.yaml
+  - ./connelybrothers/ks.yaml
