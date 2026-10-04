@@ -34,6 +34,10 @@ def configure(args, store):
         identity = Path(args.controller_identity).resolve()
         require(identity.is_file(), "Missing controller SSH identity file.")
         config["controller_identity"] = str(identity)
+    if args.controller_known_hosts:
+        known_hosts = Path(args.controller_known_hosts).resolve()
+        require(known_hosts.is_file(), "Missing controller SSH known-hosts file.")
+        config["controller_known_hosts"] = str(known_hosts)
     for site in ("home", "cloud"):
         value = getattr(args, site + "_kubeconfig")
         require(Path(value).is_file(), f"Missing {site} kubeconfig: {value}")
@@ -279,6 +283,7 @@ def main():
         setup.add_argument("--" + site + "-context")
     setup.add_argument("--controller-ssh", required=True)
     setup.add_argument("--controller-identity", help="Optional SSH identity file for the preferred-home controller")
+    setup.add_argument("--controller-known-hosts", help="Optional SSH known-hosts file containing the verified controller host key")
     setup.add_argument("--controller-hold", default="/var/lib/ha-prod-controller/hold")
     setup.add_argument("--controller-state", default="/var/lib/ha-prod-controller/state.json")
     setup.add_argument("--timeout", type=int, default=3600)

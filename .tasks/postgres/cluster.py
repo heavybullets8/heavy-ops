@@ -317,4 +317,6 @@ finally:
 """
     command = "sudo -n python3 - " + shlex.quote(payload)
     identity = ["-i", config["controller_identity"], "-o", "IdentitiesOnly=yes"] if config.get("controller_identity") else []
-    run(["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10", *identity, host, command], input=script, timeout=60)
+    known_hosts = ["-o", "UserKnownHostsFile=" + config["controller_known_hosts"]] if config.get("controller_known_hosts") else []
+    run(["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10", "-o", "StrictHostKeyChecking=yes",
+         *identity, *known_hosts, host, command], input=script, timeout=60)
