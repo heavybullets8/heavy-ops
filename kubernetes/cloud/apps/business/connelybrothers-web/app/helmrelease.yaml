@@ -5,14 +5,110 @@ kind: HelmRelease
 metadata:
   name: &app connelybrothers-web
 spec:
+  interval: 30m
+  timeout: 15m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+
   values:
-    defaultPodOptions:
-      nodeSelector:
-        kubernetes.io/hostname: trial-talos
     controllers:
       connelybrothers-web:
+        type: deployment
+        replicas: 1
+        strategy: RollingUpdate
+        annotations:
+          reloader.stakater.com/auto: "true"
 
         containers:
           app:
+            image:
+              repository: ghcr.io/heavybullets8/cb-ha-app
+              tag: 0.1.1@sha256:ca97eb64f50ed01ad133f79d3a45a1ee494722826047ad9ee4dd2b408ec9c972
+              pullPolicy: IfNotPresent
             env:
+              PORT: &port 8000
+              HA_RUNTIME: "1"
+              HA_PROFILE: production
               HA_SITE: cloud
+              HA_PATRONI_URL: http://patroni.database.svc.cluster.local:8008
+              HA_CRON_ENABLED: "false"
+              DENO_ENV: production
+              SITE_URL: https://${CB_PUBLIC_HOST}
+            envFrom:
+              - secretRef:
+                  name: connelybrothers-web-secret
+            securityContext:
+              runAsUser: 10001
+              runAsGroup: 10001
+              allowPrivilegeEscalation: false
+              capabilities: {drop: ["ALL"]}
+              seccompProfile:
+                type: RuntimeDefault
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                cpu: 2
+                memory: 3Gi
+            probes:
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: *port
+                  periodSeconds: 5
+                  timeoutSeconds: 2
+                  failureThreshold: 60
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: *port
+                  periodSeconds: 15
+                  timeoutSeconds: 2
+                  failureThreshold: 3
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: *port
+                  periodSeconds: 5
+                  timeoutSeconds: 3
+                  failureThreshold: 2
+
+    defaultPodOptions:
+      imagePullSecrets:
+        - name: business-ghcr
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+
+      nodeSelector:
+        kubernetes.io/hostname: trial-talos
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: *port
+
+    persistence:
+      tmp:
+        type: emptyDir
+        sizeLimit: 256Mi
+        globalMounts:
+          - path: /tmp

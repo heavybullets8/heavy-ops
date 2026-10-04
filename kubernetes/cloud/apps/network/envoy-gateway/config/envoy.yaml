@@ -24,6 +24,12 @@ spec:
       envoyService:
         type: ClusterIP
         externalTrafficPolicy: Local
+        patch:
+          type: StrategicMerge
+          value:
+            spec:
+              externalIPs:
+                - 209.50.58.65
   shutdown:
     drainTimeout: 180s
 ---
@@ -47,9 +53,6 @@ metadata:
   name: envoy-external
 spec:
   gatewayClassName: envoy
-  addresses:
-    - type: IPAddress
-      value: 209.50.58.65
   listeners:
     - name: http
       protocol: HTTP
