@@ -1,0 +1,128 @@
+---
+name: PostgreSQL Image
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - containers/postgres/**
+      - .github/workflows/postgres-image.yaml
+  push:
+    branches: [main]
+    paths:
+      - containers/postgres/**
+      - .github/workflows/postgres-image.yaml
+  workflow_dispatch:
+
+concurrency:
+  group: postgres-image-${{ github.event.pull_request.number || 'release' }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7
+        with:
+          context: containers/postgres
+          load: true
+          tags: postgres-patroni:check
+          cache-from: type=gha,scope=postgres
+          cache-to: type=gha,mode=max,scope=postgres
+      - name: Verify PostgreSQL, Patroni, backups, and separate application databases
+        run: python3 containers/postgres/check.py postgres-patroni:check
+
+  publish:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    env:
+      IMAGE: ghcr.io/heavybullets8/postgres-patroni
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Select PostgreSQL release version
+        id: version
+        run: |
+          set -euo pipefail
+          postgres=$(python3 containers/postgres/check.py --version)
+          echo "value=$postgres.$GITHUB_RUN_NUMBER" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - name: Preserve existing immutable release
+        id: existing
+        env:
+          VERSION: ${{ steps.version.outputs.value }}
+        run: |
+          set -euo pipefail
+          token=$(curl --fail --silent --show-error --get --user "$GITHUB_ACTOR:$GH_TOKEN" \
+            --data-urlencode 'service=ghcr.io' \
+            --data-urlencode 'scope=repository:heavybullets8/postgres-patroni:pull,push' \
+            https://ghcr.io/token | jq -er '.token // .access_token')
+          echo "::add-mask::$token"
+          status=$(curl --silent --show-error --head --output /dev/null --write-out '%{http_code}' \
+            --header "Authorization: Bearer $token" \
+            --header 'Accept: application/vnd.oci.image.index.v1+json, application/vnd.oci.image.manifest.v1+json, application/vnd.docker.distribution.manifest.v2+json' \
+            "https://ghcr.io/v2/heavybullets8/postgres-patroni/manifests/$VERSION")
+          case "$status" in
+            404) echo 'value=false' >> "$GITHUB_OUTPUT" ;;
+            200)
+              docker pull "$IMAGE:$VERSION"
+              docker image inspect "$IMAGE:$VERSION" | jq -e --arg revision "$GITHUB_SHA" \
+                '.[0].Config.Labels["org.opencontainers.image.revision"] == $revision'
+              echo 'value=true' >> "$GITHUB_OUTPUT"
+              ;;
+            *) echo "::error::Cannot check the existing image (HTTP $status)."; exit 1 ;;
+          esac
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7
+        if: steps.existing.outputs.value == 'false'
+        with:
+          context: containers/postgres
+          load: true
+          tags: ${{ env.IMAGE }}:${{ steps.version.outputs.value }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ steps.version.outputs.value }}
+          cache-from: type=gha,scope=postgres
+      - name: Verify the exact release image
+        env:
+          VERSION: ${{ steps.version.outputs.value }}
+        run: |
+          python3 containers/postgres/check.py "$IMAGE:$VERSION"
+          python3 .tasks/postgres/tests/integration.py "$IMAGE:$VERSION"
+      - name: Publish the tested image
+        if: steps.existing.outputs.value == 'false'
+        env:
+          VERSION: ${{ steps.version.outputs.value }}
+        run: docker push "$IMAGE:$VERSION"
+      - name: Publish release metadata
+        env:
+          VERSION: ${{ steps.version.outputs.value }}
+        run: |
+          set -euo pipefail
+          tag="postgres-v$VERSION"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            exit 0
+          fi
+          digest=$(docker buildx imagetools inspect "$IMAGE:$VERSION" --format '{{.Manifest.Digest}}')
+          printf 'PostgreSQL infrastructure image, built and tested from %s.\n\n%s:%s@%s\n' \
+            "$GITHUB_SHA" "$IMAGE" "$VERSION" "$digest" > "$RUNNER_TEMP/postgres-release.md"
+          gh release create "$tag" --target "$GITHUB_SHA" --title "PostgreSQL $VERSION" \
+            --notes-file "$RUNNER_TEMP/postgres-release.md" --latest=false

@@ -15,6 +15,7 @@ spec:
     controllers:
       patroni:
         type: statefulset
+        strategy: OnDelete
         replicas: 1
         annotations:
           reloader.stakater.com/auto: "true"
