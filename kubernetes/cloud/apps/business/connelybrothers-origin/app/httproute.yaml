@@ -12,7 +12,7 @@ spec:
       namespace: network
       sectionName: https-bighornbyte
   hostnames:
-    - ${CB_ORIGIN_FQDN}
+    - ${CB_PROD_CLOUD_FQDN}
   rules:
     - filters:
         - type: ExtensionRef
@@ -54,7 +54,7 @@ spec:
       namespace: network
       sectionName: https-bighornbyte
   hostnames:
-    - ${CB_ORIGIN_FQDN}
+    - ${CB_PROD_CLOUD_FQDN}
   rules:
     - matches:
         - path:

@@ -3,12 +3,8 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: business
-components:
-  - ../../../../../components/connelybrothers-origin
-patches:
-  - target:
-      kind: HTTPRoute
-    patch: |-
-      - op: replace
-        path: /spec/hostnames/0
-        value: ${CB_PROD_CLOUD_FQDN}
+resources:
+  - ./externalsecret.yaml
+  - ./httproute.yaml
+  - ./securitypolicy.yaml
+  - ./backendtrafficpolicy.yaml
