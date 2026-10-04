@@ -35,7 +35,7 @@ spec:
       allow_assign_grafana_admin: "true"
     database:
       type: postgres
-      host: postgres16-rw.database.svc.cluster.local:5432
+      host: postgres-rw.database.svc.cluster.local:5432
       name: grafana
       ssl_mode: disable
     log:
