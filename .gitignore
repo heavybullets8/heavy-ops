@@ -2,6 +2,7 @@
 Thumbs.db
 .private/
 .venv/
+__pycache__/
 .task/
 .terraform
 *.tfvars
