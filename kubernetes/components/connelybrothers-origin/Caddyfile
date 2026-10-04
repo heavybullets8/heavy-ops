@@ -31,7 +31,7 @@
         header Authorization "Bearer {$HA_MONITOR_TOKEN}"
     }
     handle @patroni {
-        rewrite * /
+        rewrite * /patroni
         reverse_proxy patroni.database.svc.cluster.local:8008 {
             header_up -Authorization
         }
