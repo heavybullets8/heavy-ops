@@ -66,7 +66,7 @@ def status(config):
 def updates(config):
     prs = json.loads(output(["gh", "pr", "list", "--repo", config["github_repository"], "--state", "open",
                              "--limit", "1000", "--json", "number,title,url,files,author"]))
-    relevant = ("containers/postgres/", "kubernetes/apps/database/cloudnative-pg/",
+    relevant = (".tasks/postgres/image/", "kubernetes/apps/database/cloudnative-pg/",
                 "kubernetes/apps/database/patroni/", "kubernetes/cloud/apps/database/patroni/")
     for pr in prs:
         if any(file["path"].startswith(relevant) for file in pr["files"]):

@@ -13,7 +13,7 @@
     {
       "description": ["PostgreSQL base image for the Patroni infrastructure release"],
       "matchManagers": ["dockerfile"],
-      "matchFileNames": ["containers/postgres/Dockerfile"],
+      "matchFileNames": [".tasks/postgres/image/Dockerfile"],
       "matchPackageNames": ["postgres"],
       "allowedVersions": "/^\\d+\\.\\d+-trixie$/",
       "pinDigests": true,
@@ -22,7 +22,7 @@
     {
       "description": ["Patroni infrastructure dependency"],
       "matchManagers": ["pip_requirements"],
-      "matchFileNames": ["containers/postgres/requirements.txt"],
+      "matchFileNames": [".tasks/postgres/image/requirements.txt"],
       "matchPackageNames": ["patroni"],
       "automerge": false
     },

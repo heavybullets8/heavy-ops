@@ -5,12 +5,12 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - containers/postgres/**
+      - .tasks/postgres/image/**
       - .github/workflows/postgres-image.yaml
   push:
     branches: [main]
     paths:
-      - containers/postgres/**
+      - .tasks/postgres/image/**
       - .github/workflows/postgres-image.yaml
   workflow_dispatch:
 
@@ -31,13 +31,13 @@ jobs:
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
       - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7
         with:
-          context: containers/postgres
+          context: .tasks/postgres/image
           load: true
           tags: postgres-patroni:check
           cache-from: type=gha,scope=postgres
           cache-to: type=gha,mode=max,scope=postgres
       - name: Verify PostgreSQL, Patroni, backups, and separate application databases
-        run: python3 containers/postgres/check.py postgres-patroni:check
+        run: python3 .tasks/postgres/image/check.py postgres-patroni:check
 
   publish:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
@@ -57,7 +57,7 @@ jobs:
         id: version
         run: |
           set -euo pipefail
-          postgres=$(python3 containers/postgres/check.py --version)
+          postgres=$(python3 .tasks/postgres/image/check.py --version)
           echo "value=$postgres.$GITHUB_RUN_NUMBER" >> "$GITHUB_OUTPUT"
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
       - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
@@ -93,7 +93,7 @@ jobs:
       - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7
         if: steps.existing.outputs.value == 'false'
         with:
-          context: containers/postgres
+          context: .tasks/postgres/image
           load: true
           tags: ${{ env.IMAGE }}:${{ steps.version.outputs.value }}
           labels: |
@@ -105,7 +105,7 @@ jobs:
         env:
           VERSION: ${{ steps.version.outputs.value }}
         run: |
-          python3 containers/postgres/check.py "$IMAGE:$VERSION"
+          python3 .tasks/postgres/image/check.py "$IMAGE:$VERSION"
           python3 .tasks/postgres/tests/integration.py "$IMAGE:$VERSION"
       - name: Publish the tested image
         if: steps.existing.outputs.value == 'false'
