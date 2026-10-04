@@ -112,3 +112,30 @@ spec:
           requestRedirect:
             scheme: https
             statusCode: 301
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/gateway.envoyproxy.io/backendtrafficpolicy_v1alpha1.json
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: envoy
+  namespace: network
+spec:
+  compressor:
+    - type: Zstd
+      zstd: {}
+    - type: Brotli
+      brotli: {}
+    - type: Gzip
+      gzip: {}
+  retry:
+    numRetries: 2
+    retryOn:
+      triggers:
+        - reset
+  tcpKeepalive: {}
+  timeout:
+    http:
+      requestTimeout: 0s
+  targetSelectors:
+    - group: gateway.networking.k8s.io
+      kind: Gateway

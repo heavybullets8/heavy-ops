@@ -5,12 +5,10 @@ kind: BackendTrafficPolicy
 metadata:
   name: connelybrothers-origin
 spec:
+  mergeType: StrategicMerge
   targetRefs:
     - group: gateway.networking.k8s.io
       kind: HTTPRoute
       name: connelybrothers-origin
   retry:
     numRetries: 0
-  timeout:
-    http:
-      requestTimeout: 0s
