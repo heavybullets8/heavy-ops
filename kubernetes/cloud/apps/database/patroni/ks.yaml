@@ -36,3 +36,4 @@ spec:
   wait: false
   interval: 30m
   timeout: 15m
+  suspend: true

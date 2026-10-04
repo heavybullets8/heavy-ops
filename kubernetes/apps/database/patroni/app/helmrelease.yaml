@@ -53,8 +53,8 @@ spec:
                 cpu: '2'
                 memory: 1Gi
             image: &image
-              repository: ghcr.io/heavybullets8/cb-ha-db
-              tag: 0.1.1@sha256:bd1d9e4af7dc6af5a9dba010b539e056921f16dc408edc963287d5f431d4ea5c
+              repository: ghcr.io/heavybullets8/postgres-patroni
+              tag: 18.6.3@sha256:40203970920660e6ea365c7f1c5de2b1191081644cad1644079f1fea66718324
               pullPolicy: IfNotPresent
             probes:
               startup:
