@@ -79,6 +79,16 @@ items:
                   sizeLimit: 20Gi
   - <<: *ciPool
     metadata:
+      name: business-ops-ci
+    spec:
+      <<: *ciPoolSpec
+      values:
+        <<: *ciPoolValues
+        githubConfigUrl: https://github.com/Heavybullets8/business-ops
+        runnerScaleSetName: business-ops-ci
+        maxRunners: 1
+  - <<: *ciPool
+    metadata:
       name: site-fallback-worker-ci
     spec:
       <<: *ciPoolSpec
