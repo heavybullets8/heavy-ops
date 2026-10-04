@@ -11,10 +11,6 @@ import sys
 import tarfile
 import uuid
 
-REAL = '/usr/lib/postgresql/18/bin/pg_rewind'
-PG_CTL = '/usr/lib/postgresql/18/bin/pg_ctl'
-CONTROL = '/usr/lib/postgresql/18/bin/pg_controldata'
-
 def target_arg(args):
     for index, value in enumerate(args):
         if value in ('-D', '--target-pgdata'):
@@ -34,8 +30,15 @@ def sync_directory(path):
 
 def main():
     args = sys.argv[1:]
+    major = os.environ.get('PG_MAJOR', '')
+    if not major.isascii() or not major.isdecimal():
+        raise RuntimeError('The PostgreSQL image must provide a numeric PG_MAJOR')
+    bin_dir = f'/usr/lib/postgresql/{major}/bin'
+    real = f'{bin_dir}/pg_rewind'
+    pg_ctl = f'{bin_dir}/pg_ctl'
+    pg_controldata = f'{bin_dir}/pg_controldata'
     if any(flag in args for flag in ('--help', '-?', '--version', '-V')):
-        os.execv(REAL, [REAL, *args])
+        os.execv(real, [real, *args])
     target_text = target_arg(args)
     if not target_text:
         raise RuntimeError('Refusing rewind without an explicit target PGDATA')
@@ -43,6 +46,8 @@ def main():
     allowed = Path(os.environ.get('HA_REWIND_PGDATA', '/ha-data/postgres')).resolve()
     if target != allowed or not (target / 'PG_VERSION').is_file():
         raise RuntimeError('Rewind target does not match the configured HA data directory')
+    if (target / 'PG_VERSION').read_text().strip() != major:
+        raise RuntimeError('Rewind target major version does not match the PostgreSQL image')
     quarantine = Path(os.environ.get('HA_REWIND_QUARANTINE', '/ha-forensics')).resolve()
     if quarantine == target or quarantine.is_relative_to(target):
         raise RuntimeError('Quarantine must be outside PGDATA')
@@ -53,7 +58,7 @@ def main():
     os.chmod(quarantine, 0o700)
     lock = (quarantine / '.snapshot.lock').open('a')
     fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-    status = subprocess.run([PG_CTL, '-D', str(target), 'status'],
+    status = subprocess.run([pg_ctl, '-D', str(target), 'status'],
                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if status.returncode != 3:
         raise RuntimeError('PostgreSQL must be stopped before preserving rewind evidence')
@@ -84,7 +89,7 @@ def main():
             for chunk in iter(lambda: stream.read(1024 * 1024), b''):
                 digest.update(chunk)
         os.replace(partial, final)
-        control = subprocess.run([CONTROL, str(target)], check=True, capture_output=True, text=True).stdout
+        control = subprocess.run([pg_controldata, str(target)], check=True, capture_output=True, text=True).stdout
         record = {'created_at': dt.datetime.now(dt.timezone.utc).isoformat(),
                   'archive': final.name, 'sha256': digest.hexdigest(),
                   'archive_bytes': final.stat().st_size, 'source_bytes': source_bytes,
@@ -102,7 +107,7 @@ def main():
                           'sha256': record['sha256'], 'bytes': record['archive_bytes']}), flush=True)
     except Exception:
         raise
-    os.execv(REAL, [REAL, *args])
+    os.execv(real, [real, *args])
 
 if __name__ == '__main__':
     try:

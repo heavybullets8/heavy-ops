@@ -34,7 +34,7 @@ spec:
               HA_PATRONI_URL: http://patroni.database.svc.cluster.local:8008
               HA_CRON_ENABLED: "true"
               DENO_ENV: production
-              SITE_URL: https://${CB_PUBLIC_HOST}
+              SITE_URL: https://www.connelybros.com
             envFrom:
               - secretRef:
                   name: connelybrothers-web-secret

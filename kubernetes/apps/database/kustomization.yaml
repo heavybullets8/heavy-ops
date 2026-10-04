@@ -10,5 +10,4 @@ resources:
   - ./cloudnative-pg/ks.yaml
   - ./dragonfly/ks.yaml
   - ./mariadb/ks.yaml
-  - ./cb-ha-domains.secret.sops.yaml
   - ./patroni/ks.yaml

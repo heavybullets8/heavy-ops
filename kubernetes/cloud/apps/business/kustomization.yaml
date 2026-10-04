@@ -8,5 +8,4 @@ resources:
   - ../../../components/common/repos/app-template
   - ../../../components/common/sops
   - ./registry-secret.yaml
-  - ./cb-ha-domains.secret.sops.yaml
   - ./connelybrothers/ks.yaml

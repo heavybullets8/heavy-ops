@@ -44,7 +44,7 @@ data:
               "archive_timeout": "30s",
               "wal_keep_size": "128MB",
               "max_slot_wal_keep_size": "512MB",
-              "archive_command": "pgbackrest --stanza=${CB_PROD_BACKUP_STANZA} archive-push %p"
+              "archive_command": "pgbackrest --stanza=connely-ha-production archive-push %p"
             }
           }
         },
@@ -70,7 +70,7 @@ data:
           "pg_rewind": "/opt/ha/pg_rewind"
         },
         "recovery_conf": {
-          "restore_command": "pgbackrest --stanza=${CB_PROD_BACKUP_STANZA} archive-get %f %p"
+          "restore_command": "pgbackrest --stanza=connely-ha-production archive-get %f %p"
         },
         "authentication": {
           "superuser": {

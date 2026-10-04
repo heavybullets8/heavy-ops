@@ -29,10 +29,6 @@ spec:
       BUSINESS_POSTGRES_POD_CIDR: 10.80.0.0/16
       BUSINESS_POSTGRES_DB_CONNECT_PORT: '25433'
       BUSINESS_POSTGRES_REST_CONNECT_PORT: '28009'
-    substituteFrom:
-      - kind: Secret
-        name: cb-ha-domains
-        optional: false
   wait: false
   interval: 30m
   timeout: 15m

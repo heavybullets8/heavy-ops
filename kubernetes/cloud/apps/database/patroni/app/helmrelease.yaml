@@ -153,7 +153,7 @@ spec:
               - --site
               - cloud
               - --stanza
-              - ${CB_PROD_BACKUP_STANZA}
+              - connely-ha-production
               - --state-dir
               - /ha-forensics/backup-scheduler
               - --primary-url

@@ -12,6 +12,37 @@ def run(*argv, check=True):
     return result
 
 
+def verify_rewind(image, mounts):
+    repository = Path(__file__).resolve().parents[3]
+    for root in ("kubernetes/apps", "kubernetes/cloud/apps"):
+        wrapper = repository / root / "database/patroni/app/scripts/pg_rewind"
+        run("docker", "run", "--rm", "--network=none", "--user=999:999", *mounts,
+            "-v", str(wrapper) + ":/opt/ha/pg_rewind:ro",
+            "--tmpfs=/ha-forensics:rw,size=256m,uid=999,gid=999,mode=0700",
+            "--entrypoint=/opt/patroni/bin/python", image, "-c", """
+import hashlib,json,os,shutil,subprocess,tarfile
+from pathlib import Path
+wrapper = ['/opt/patroni/bin/python', '/opt/ha/pg_rewind']
+version = subprocess.check_output([*wrapper, '--version'], text=True)
+assert version.split()[2].split('.')[0] == os.environ['PG_MAJOR'], version
+shutil.copytree('/ha-data/postgres', '/tmp/rewind-source')
+result = subprocess.check_output([*wrapper, '-D', '/ha-data/postgres',
+                                  '--source-pgdata=/tmp/rewind-source', '--dry-run'], text=True)
+assert 'pre_rewind_snapshot_durable' in result, result
+records = list(Path('/ha-forensics').glob('*.json'))
+assert len(records) == 1, records
+record = json.loads(records[0].read_text())
+archive = records[0].parent / record['archive']
+assert hashlib.sha256(archive.read_bytes()).hexdigest() == record['sha256']
+assert record['includes_pg_wal'] and record['pg_control']
+with tarfile.open(archive) as snapshot:
+    assert snapshot.extractfile('pgdata/PG_VERSION').read().decode().strip() == os.environ['PG_MAJOR']
+    assert any(name.startswith('pgdata/pg_wal/') for name in snapshot.getnames())
+assert not list(Path('/ha-forensics').glob('*.partial'))
+""")
+    print("PASS: both rewind wrappers use native image binaries and preserve stopped PGDATA/WAL with verified checksums before dry-run rewind.")
+
+
 def main(image):
     directory = Path(__file__).resolve().parent
     old = (directory / "Dockerfile").read_text().strip().split()[1]
@@ -86,6 +117,7 @@ test "$(psql -h /tmp -d second_app -Atc 'SELECT payload FROM proof')" = 'preserv
 test "$(psql -h /tmp -d first_app -Atc \"INSERT INTO proof(payload) VALUES ('sequence survived') RETURNING id\" | head -1)" = 2
 """, "--", str(new_major))
         print(f"PASS: PostgreSQL 17 → {new_major}; two application databases, roles, sequences, retained old data, interruption/resume, and parameter mismatch rejection.")
+        verify_rewind(image, mounts)
     finally:
         for volume in volumes:
             run("docker", "volume", "rm", volume, check=False)

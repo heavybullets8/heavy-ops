@@ -13,5 +13,4 @@ resources:
   - ./docmost-bhb/ks.yaml
   - ./documenso/ks.yaml
   - ./agent-runner/ks.yaml
-  - ./cb-ha-domains.secret.sops.yaml
   - ./connelybrothers/ks.yaml

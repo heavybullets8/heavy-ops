@@ -26,11 +26,6 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  postBuild:
-    substituteFrom:
-      - kind: Secret
-        name: cb-ha-domains
-        optional: false
   wait: false
   interval: 30m
   timeout: 15m
