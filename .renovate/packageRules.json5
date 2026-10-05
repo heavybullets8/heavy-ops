@@ -2,46 +2,10 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "packageRules": [
     {
-      "description": ["Keep the major upgrade test fixture on PostgreSQL 17"],
-      "matchManagers": ["dockerfile"],
-      "matchFileNames": [".tasks/postgres/tests/Dockerfile"],
-      "matchPackageNames": ["postgres"],
-      "allowedVersions": "/^17\\.\\d+-trixie$/",
-      "pinDigests": true,
-      "automerge": false
-    },
-    {
-      "description": ["PostgreSQL base image for the Patroni infrastructure release"],
-      "matchManagers": ["dockerfile"],
-      "matchFileNames": [".tasks/postgres/image/Dockerfile"],
-      "matchPackageNames": ["postgres"],
-      "allowedVersions": "/^\\d+\\.\\d+-trixie$/",
-      "pinDigests": true,
-      "automerge": false
-    },
-    {
-      "description": ["Patroni infrastructure dependency"],
-      "matchManagers": ["pip_requirements"],
-      "matchFileNames": [".tasks/postgres/image/requirements.txt"],
-      "matchPackageNames": ["patroni"],
-      "automerge": false
-    },
-    {
-      "description": ["Update the home and cloud PostgreSQL release together"],
-      "matchDatasources": ["docker"],
-      "matchPackageNames": ["ghcr.io/heavybullets8/postgres-patroni"],
-      "groupName": "Patroni PostgreSQL",
-      "versioning": "semver",
-      "allowedVersions": "/^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$/",
-      "pinDigests": true,
-      "automerge": false
-    },
-    {
       "description": ["Follow stable releases for owned application containers"],
       "matchDatasources": ["docker"],
       "matchPackageNames": [
         "ghcr.io/heavybullets8/scale-tv",
-        "ghcr.io/heavybullets8/cb-ha-app",
         "ghcr.io/heavybullets8/bighorn-byte-web",
         "ghcr.io/heavybullets8/bighorn-byte-outreach",
         "ghcr.io/heavybullets8/bighorn-byte-browser",
@@ -83,7 +47,7 @@
     {
       "description": ["Custom schedule for frequently updated container digests"],
       "matchDatasources": ["docker"],
-      "matchPackageNames": ["/postgresql/", "/tensorchord/", "postgres", "ghcr.io/heavybullets8/postgres-patroni"],
+      "matchPackageNames": ["/postgresql/", "/tensorchord/"],
       "matchUpdateTypes": ["digest"],
       "schedule": ["* 0-3 1 */3 *"],
       "updateNotScheduled": false
