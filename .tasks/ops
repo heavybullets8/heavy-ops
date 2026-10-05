@@ -13,7 +13,7 @@ source "$TASK_DIR/common.sh"
 
 function show_help() {
   echo "Usage: $0 [command] [args...]"
-  echo "Commands: bootstrap, flux, kubernetes, talos, kopiur, postgres"
+  echo "Commands: bootstrap, flux, kubernetes, talos, kopiur"
   echo "Run without arguments to open the interactive menu."
   echo "Options:"
   echo "  -h, --help, help    Display this help message"
@@ -55,10 +55,6 @@ function main() {
 
   "kopiur")
     source "$TASK_DIR/kopiur/kopiur.sh" "${args[@]:1}"
-    ;;
-
-  "postgres")
-    bash "$TASK_DIR/postgres/postgres.sh" "${args[@]:1}"
     ;;
 
   "-h" | "--help" | "help")

@@ -7,4 +7,3 @@ resources:
   - ./namespace.yaml
   - ../../../components/common/repos/app-template
   - ../../../components/common/sops
-  - ./patroni/ks.yaml
