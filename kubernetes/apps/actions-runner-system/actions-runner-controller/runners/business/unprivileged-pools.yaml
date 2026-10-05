@@ -51,6 +51,15 @@ items:
                 name: runner
                 image: ghcr.io/home-operations/actions-runner:2.337.0@sha256:8b8e8326b5a08e658a0a41cfd2867afab69ca4194a152f986aa6fcd5430d09e7
                 command: ["/home/runner/run.sh"]
+                # Keep dependency caches with the disposable workspace, off
+                # the node root filesystem used by containerd image layers.
+                env:
+                  - name: DENO_DIR
+                    value: /home/runner/_work/.cache/deno
+                  - name: XDG_CACHE_HOME
+                    value: /home/runner/_work/.cache
+                  - name: NPM_CONFIG_CACHE
+                    value: /home/runner/_work/.cache/npm
                 securityContext: &ciSecurity
                   privileged: false
                   runAsNonRoot: true
@@ -75,8 +84,14 @@ items:
             volumes:
               - &workVolume
                 name: work
-                emptyDir:
-                  sizeLimit: 20Gi
+                ephemeral:
+                  volumeClaimTemplate:
+                    spec:
+                      accessModes: [ReadWriteOnce]
+                      storageClassName: openebs-zfs-128k
+                      resources:
+                        requests:
+                          storage: 20Gi
   - <<: *ciPool
     metadata:
       name: business-ops-ci
