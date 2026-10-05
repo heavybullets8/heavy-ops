@@ -22,7 +22,7 @@ spec:
         defaultContainerOptions:
           image:
             repository: ghcr.io/heavybullets8/cb-ha-transport
-            tag: 0.1.1@sha256:7d6d0eb0b53bc971d148c3fba95ce00b1215df2f92436d38a52b004539919441
+            tag: 0.2.0@sha256:50f89d8aa89334f52338b3f0de697b17b01c845ed270a5cab3ac6ea3a9749818
             pullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
