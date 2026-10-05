@@ -663,3 +663,23 @@ items:
         template:
           spec:
             <<: *buildPod
+
+  # Dedicated home BuildKit for MK/JM qualification and image publication.
+  - <<: *ciPool
+    metadata:
+      name: mk-jm-build
+    spec:
+      <<: *buildPoolSpec
+      suspend: false
+      values:
+        <<: *ciPoolValues
+        githubConfigUrl: https://github.com/Heavybullets8/mk-jm
+        runnerScaleSetName: mk-jm-build
+        minRunners: 0
+        maxRunners: 1
+        template:
+          spec:
+            <<: *buildPod
+            containers:
+              - <<: *buildRunner
+                image: ghcr.io/heavybullets8/business-runner:2.337.0@sha256:6474fafd73bb30dbc1c30e1b4ef3f26ed8e099cb649f1a633f08db6e8ca80275
