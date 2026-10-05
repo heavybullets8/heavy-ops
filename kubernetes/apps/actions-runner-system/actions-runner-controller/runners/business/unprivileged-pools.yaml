@@ -679,6 +679,21 @@ items:
           spec:
             <<: *buildPod
 
+  # Keep image publication separate from the exact-source CI gate it awaits.
+  - <<: *ciPool
+    metadata:
+      name: connelybrothers-build
+    spec:
+      <<: *buildPoolSpec
+      values:
+        <<: *ciPoolValues
+        githubConfigUrl: https://github.com/Heavybullets8/connelybrothers
+        runnerScaleSetName: connelybrothers-build
+        maxRunners: 1
+        template:
+          spec:
+            <<: *buildPod
+
   # Dedicated home BuildKit for MK/JM qualification and image publication.
   - <<: *ciPool
     metadata:
