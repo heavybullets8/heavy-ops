@@ -24,7 +24,7 @@ spec:
           app:
             image:
               repository: ghcr.io/heavybullets8/cb-ha-app
-              tag: 0.1.1@sha256:ca97eb64f50ed01ad133f79d3a45a1ee494722826047ad9ee4dd2b408ec9c972
+              tag: 0.2.0@sha256:d46ea53f869ebfa0b875cff40273941ea630eb038af30bbdd993e46b5ea04c60
               pullPolicy: IfNotPresent
             env:
               PORT: &port 8000
