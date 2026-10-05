@@ -611,3 +611,55 @@ items:
               - *buildWorkVolume
               - *buildkitSocket
               - *buildkitState
+  - <<: *ciPool
+    metadata:
+      name: cloudpeakinsulation-build
+    spec:
+      <<: *buildPoolSpec
+      values:
+        <<: *ciPoolValues
+        githubConfigUrl: https://github.com/Heavybullets8/cloudpeakinsulation
+        runnerScaleSetName: cloudpeakinsulation-build
+        maxRunners: 1
+        template:
+          spec:
+            <<: *buildPod
+  - <<: *ciPool
+    metadata:
+      name: connelyslandscaping-build
+    spec:
+      <<: *buildPoolSpec
+      values:
+        <<: *ciPoolValues
+        githubConfigUrl: https://github.com/Heavybullets8/connelyslandscaping
+        runnerScaleSetName: connelyslandscaping-build
+        maxRunners: 1
+        template:
+          spec:
+            <<: *buildPod
+  - <<: *ciPool
+    metadata:
+      name: anytimesteel-build
+    spec:
+      <<: *buildPoolSpec
+      values:
+        <<: *ciPoolValues
+        githubConfigUrl: https://github.com/Heavybullets8/anytimesteel
+        runnerScaleSetName: anytimesteel-build
+        maxRunners: 1
+        template:
+          spec:
+            <<: *buildPod
+  - <<: *ciPool
+    metadata:
+      name: mkrentals-build
+    spec:
+      <<: *buildPoolSpec
+      values:
+        <<: *ciPoolValues
+        githubConfigUrl: https://github.com/Heavybullets8/mk_rentals
+        runnerScaleSetName: mkrentals-build
+        maxRunners: 1
+        template:
+          spec:
+            <<: *buildPod
