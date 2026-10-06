@@ -22,9 +22,10 @@ spec:
           app:
             image: &image
               repository: ghcr.io/heavybullets8/bighorn-byte-web
-              tag: 0.1.0@sha256:e872286077b7472b3ab1af6f57f655e13c8a59b587b7464383af91986543635a
+              tag: 0.2.0@sha256:3ec28d4c97585ead53dbbdecfd69b423b77b7bd2353106ad8eed33c707539826
               pullPolicy: Always
             env:
+              BHB_CONNECTIONS_BACKEND: remote
               TZ: ${TIMEZONE}
               BHB_ENVIRONMENT: production
               DENO_ENV: production
@@ -38,6 +39,8 @@ spec:
             envFrom:
               - secretRef:
                   name: bighorn-byte-web-secret
+              - secretRef:
+                  name: bighorn-byte-connections-management-secret
             probes:
               liveness:
                 enabled: true
