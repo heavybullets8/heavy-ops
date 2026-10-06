@@ -1,0 +1,19 @@
+# Standalone web-only patch; retain existing runtime Secret and add separate management capability.
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: bighorn-byte-web
+  namespace: business
+spec:
+  values:
+    controllers:
+      web:
+        containers:
+          app:
+            env:
+              BHB_CONNECTIONS_BACKEND: remote
+            envFrom:
+              - secretRef:
+                  name: bighorn-byte-web-secret
+              - secretRef:
+                  name: bighorn-byte-connections-management-secret
