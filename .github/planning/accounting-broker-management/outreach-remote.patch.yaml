@@ -1,0 +1,39 @@
+# Standalone final-image switch: fence local broker work in every outreach role; no management capability.
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: bighorn-byte-outreach
+  namespace: business
+spec:
+  values:
+    controllers:
+      jobs:
+        containers:
+          app:
+            env:
+              BHB_CONNECTIONS_BACKEND: remote
+      mcp:
+        containers:
+          app:
+            env:
+              BHB_CONNECTIONS_BACKEND: remote
+      scheduler:
+        containers:
+          app:
+            env:
+              BHB_CONNECTIONS_BACKEND: remote
+      mail:
+        containers:
+          app:
+            env:
+              BHB_CONNECTIONS_BACKEND: remote
+      hourly-maintenance:
+        containers:
+          app:
+            env:
+              BHB_CONNECTIONS_BACKEND: remote
+      daily-maintenance:
+        containers:
+          app:
+            env:
+              BHB_CONNECTIONS_BACKEND: remote
