@@ -21,7 +21,7 @@ spec:
           app:
             image:
               repository: ghcr.io/runescape/rsdw-dedicated
-              tag: 2.0.0@sha256:c35701edb05619fd28bfb37856b6a323c10bc8aa6466fb57b3e1b232936294dc
+              tag: 2.0.1@sha256:e8b0a5f59eb03082f43e74f8fd6a9019ba8e37773fcde60e1fc7859eb24b9211
             env:
               TZ: ${TIMEZONE}
               RSDW_PORT: &port "7777"
