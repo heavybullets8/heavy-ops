@@ -26,6 +26,17 @@ spec:
             env: &env
               TZ: ${TIMEZONE}
               SITE_URL: https://tv.bighornbyte.com
+              MAINTENANCE_MODE: "0"
+              PGHOST: postgres16-rw.database.svc.cluster.local
+              PGPORT: "5432"
+              PGDATABASE: scale_tv
+              EMAIL_FROM: SCALE TV <no-reply@tv.bighornbyte.com>
+              ADMIN_CONTACT_EMAIL: kyler@bighornbyte.com
+              PLEX_MACHINE_ID: 0c253b083be8c13680cab7eabe4d7739d403b554
+              PLEX_CLIENT_ID: 1b8ce7ac-ec7b-49a6-9219-98e594d6ff68
+              PLEX_LIBRARY_SECTION_IDS: "126752770,126752776,126752794,126752786"
+              STRIPE_PRICE_MONTHLY: price_1RsrFjHSEDqoA430tuRCK3F5
+              STRIPE_PRICE_YEARLY: price_1TqcmLHSEDqoA430aJ7WX5KT
             envFrom: &envFrom
               - secretRef:
                   name: scale-tv-secret
@@ -84,6 +95,17 @@ spec:
           app:
             image: *image
             env:
+              <<: *env
+              PGUSER:
+                valueFrom:
+                  secretKeyRef:
+                    name: scale-tv-secret
+                    key: PGUSER
+              PGPASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: scale-tv-secret
+                    key: PGPASSWORD
               DIRECT_URL:
                 valueFrom:
                   secretKeyRef:
