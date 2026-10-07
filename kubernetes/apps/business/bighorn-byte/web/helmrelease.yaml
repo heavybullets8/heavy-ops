@@ -22,7 +22,7 @@ spec:
           app:
             image: &image
               repository: ghcr.io/heavybullets8/bighorn-byte-web
-              tag: 0.2.1@sha256:403ef1c0b34b4a8cabad47fffba2a3e58cb266cb8a098d2b9650a07543cf16da
+              tag: 0.2.2@sha256:731237a910f6de71b6579c00fea40bc99be4ea9ff6ff8d3bfb959771283c0bce
               pullPolicy: Always
             env:
               BHB_CONNECTIONS_BACKEND: remote
