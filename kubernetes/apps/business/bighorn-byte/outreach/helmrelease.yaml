@@ -21,7 +21,7 @@ spec:
           app:
             image: &image
               repository: ghcr.io/heavybullets8/bighorn-byte-outreach
-              tag: 0.2.2@sha256:6f1438e23f27e2f2a3af153a028e08b6a97b9b881a79d31196a9e79dea18bb97
+              tag: 0.2.3@sha256:f3e0cc825e34ecfe3965f5efd3bc2b11a7580af8eeadc6c7c74f47f3be7a6b8c
               pullPolicy: Always
             env: &env
               BHB_CONNECTIONS_BACKEND: remote
