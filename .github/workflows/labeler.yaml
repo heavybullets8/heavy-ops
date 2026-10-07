@@ -13,12 +13,20 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     steps:
+      - name: Load secrets
+        id: op
+        uses: 1password/load-secrets-action@70062d7a876d3eb6334754fa26efd2fbd90c32f2 # v5.0.1
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          BOT_APP_CLIENT_ID: op://github-actions/github/BOT_APP_CLIENT_ID
+          BOT_APP_PRIVATE_KEY: op://github-actions/github/BOT_APP_PRIVATE_KEY
+
       - name: Generate Token
         uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         id: app-token
         with:
-          app-id: "${{ secrets.BOT_APP_ID }}"
-          private-key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
+          client-id: "${{ steps.op.outputs.BOT_APP_CLIENT_ID }}"
+          private-key: "${{ steps.op.outputs.BOT_APP_PRIVATE_KEY }}"
 
       - name: Labeler
         uses: actions/labeler@bf12e9b00b37c5c0ca2b87b79b2daf7891dbda13 # v7.0.0
