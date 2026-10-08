@@ -21,7 +21,7 @@ spec:
           app:
             image: &image
               repository: ghcr.io/heavybullets8/scale-tv
-              tag: 0.2.4@sha256:343f20ae009b6c8f3b40c1be744f004deec558a7c7bb3e158a95cf1af8c7c72a
+              tag: 0.3.0@sha256:34c80034a6846143d1a1c08703219b434058fa10b0ef63610ba81e64e5626733
               pullPolicy: Always
             env: &env
               TZ: ${TIMEZONE}
@@ -48,7 +48,7 @@ spec:
                   httpGet:
                     path: /healthz
                     port: &port 8000
-                  periodSeconds: 30
+                  periodSeconds: 15
                   timeoutSeconds: 2
                   failureThreshold: 3
               readiness:
@@ -58,9 +58,9 @@ spec:
                   httpGet:
                     path: /readyz
                     port: *port
-                  periodSeconds: 10
+                  periodSeconds: 5
                   timeoutSeconds: 2
-                  failureThreshold: 3
+                  failureThreshold: 2
               startup:
                 enabled: true
                 custom: true
@@ -69,7 +69,7 @@ spec:
                     path: /healthz
                     port: *port
                   periodSeconds: 5
-                  failureThreshold: 30
+                  failureThreshold: 60
             resources:
               requests:
                 cpu: 100m
@@ -77,6 +77,10 @@ spec:
               limits:
                 cpu: 1
                 memory: 1Gi
+            lifecycle:
+              preStop:
+                sleep:
+                  seconds: 5
             securityContext: &securityContext
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
@@ -116,10 +120,10 @@ spec:
                 memory: 1Gi
             securityContext: *securityContext
 
-      hourly-maintenance:
+      sweep-member-coverage:
         type: cronjob
         annotations: *reload
-        cronjob:
+        cronjob: &cronjob
           schedule: "0 * * * *"
           timeZone: Etc/UTC
           suspend: false
@@ -129,46 +133,63 @@ spec:
           successfulJobsHistory: 1
           failedJobsHistory: 1
         containers:
-          app:
+          app: &jobContainer
             image: *image
-            env: *env
+            env:
+              <<: *env
+              JOB_NAME:
+                valueFrom:
+                  fieldRef:
+                    fieldPath: metadata.labels['batch.kubernetes.io/job-name']
             envFrom: *envFrom
-            args: ["run", "--cached-only", "--frozen", "--allow-all", "scripts/maintenance.ts", "hourly"]
+            args: ["task", "job", "sweep-member-coverage"]
             resources: *jobResources
             securityContext: *securityContext
 
-      nightly-maintenance:
+      sweep-invites-sessions:
         type: cronjob
         annotations: *reload
         cronjob:
-          schedule: "0 9 * * *"
-          timeZone: Etc/UTC
-          suspend: false
-          concurrencyPolicy: Forbid
-          backoffLimit: 2
-          activeDeadlineSeconds: 900
-          successfulJobsHistory: 1
-          failedJobsHistory: 1
+          <<: *cronjob
+          schedule: "0 * * * *"
         containers:
           app:
-            image: *image
-            env: *env
-            envFrom: *envFrom
-            args: ["run", "--cached-only", "--frozen", "--allow-all", "scripts/maintenance.ts", "nightly"]
-            resources: *jobResources
-            securityContext: *securityContext
+            <<: *jobContainer
+            args: ["task", "job", "sweep-invites-sessions"]
+
+      reconcile-members:
+        type: cronjob
+        annotations: *reload
+        cronjob:
+          <<: *cronjob
+          schedule: "0 9 * * *"
+        containers:
+          app:
+            <<: *jobContainer
+            args: ["task", "job", "reconcile-members"]
+
+      reconcile-shares:
+        type: cronjob
+        annotations: *reload
+        cronjob:
+          <<: *cronjob
+          schedule: "0 9 * * *"
+        containers:
+          app:
+            <<: *jobContainer
+            args: ["task", "job", "reconcile-shares"]
 
     defaultPodOptions:
       imagePullSecrets:
         - name: business-ghcr
       automountServiceAccountToken: false
       enableServiceLinks: false
-      terminationGracePeriodSeconds: 60
+      terminationGracePeriodSeconds: 30
       securityContext:
         runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
         seccompProfile:
           type: RuntimeDefault
 
