@@ -1,0 +1,38 @@
+{
+  "application": {
+    "installationId": "mk-development",
+    "business": "mk",
+    "environment": "development",
+    "appOrigin": "https://mk-sales.development.example",
+    "runtimeOrigin": "https://assistant-mk.development.example",
+    "issuerOrigin": "https://auth.development.example",
+    "providerItem": "OpenAI-development",
+    "runtimeRoot": "/srv/dealer-agent/mk-sales-development",
+    "model": {
+      "name": "gpt-6.1-sol",
+      "maxInputTokens": 200000,
+      "maxOutputTokens": 8000,
+      "contextTokens": 256000
+    },
+    "usagePolicy": {
+      "version": "openai-standard-global-2026-10-07",
+      "dailyLimitMicros": 0,
+      "monthlyLimitMicros": 0,
+      "runLimitMicros": 0,
+      "models": {
+        "gpt-6.1-sol": {
+          "inputMicrosPerMillion": 2000000,
+          "cacheReadMicrosPerMillion": 100000,
+          "cacheWriteMicrosPerMillion": 2500000,
+          "outputMicrosPerMillion": 10000000
+        }
+      }
+    }
+  },
+  "cluster": {
+    "installation": "mk-development",
+    "generation": "initial",
+    "secretStore": "dealer-agent-onepassword",
+    "storageClass": "openebs-zfs-16k"
+  }
+}

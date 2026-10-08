@@ -1,0 +1,236 @@
+---
+apiVersion: "v1"
+kind: "ConfigMap"
+metadata:
+  name: "dealer-agent-worker-0beb3098ec79"
+immutable: true
+data:
+  worker.py: |
+    """Private per-attempt worker relay and read-only retained-history reader. No shell/exec API."""
+    import hmac
+    import http.server
+    import json
+    import os
+    from pathlib import Path
+    import re
+    import signal
+    import sqlite3
+    import subprocess
+    import tempfile
+    import threading
+    import urllib.error
+    import urllib.request
+    
+    CONFIG = json.loads(Path('/runtime-config/config.json').read_text())
+    UID = os.environ['DEALER_POD_UID']
+    HOME = Path('/opt/data/home')
+    READER = CONFIG['mode'] == 'reader'
+    SLOTS = threading.BoundedSemaphore(16)
+    UPSTREAM = CONFIG['controllerUrl']
+    if not re.fullmatch(r'http://(?:[0-9]{1,3}\.){3}[0-9]{1,3}:8788', UPSTREAM):
+        raise RuntimeError('Invalid private controller address')
+    if not re.fullmatch(r'[A-Za-z0-9_-]{43}', CONFIG['operatorKey']):
+        raise RuntimeError('Invalid private control credential')
+    
+    
+    def page(after):
+        if not re.fullmatch(r'[0-9]{1,20}', after):
+            raise RuntimeError('Invalid history cursor')
+        path = HOME / 'state.db'
+        if not path.exists():
+            return {'rows': [], 'hasMore': False}
+        connection = sqlite3.connect('file:' + str(path) + '?mode=ro', uri=True, timeout=5)
+        connection.row_factory = sqlite3.Row
+        try:
+            lineage = [CONFIG['homeId']]
+            frontier = list(lineage)
+            for _ in range(64):
+                children = [row[0] for parent in frontier for row in connection.execute(
+                    'SELECT id FROM sessions WHERE parent_session_id=? LIMIT 257', (parent,))]
+                if not children:
+                    break
+                if any(child in lineage for child in children) or len(lineage) + len(children) > 256:
+                    raise RuntimeError('Invalid history lineage')
+                lineage.extend(children)
+                frontier = children
+            else:
+                raise RuntimeError('History lineage limit')
+            query = "SELECT id,role,CASE WHEN role='tool' THEN NULL ELSE content END AS content FROM messages WHERE session_id IN (" + ','.join('?' for _ in lineage) + ') AND id>? ORDER BY id'
+            rows, size = [], 0
+            for row in connection.execute(query, (*lineage, int(after))):
+                item = dict(row)
+                length = len(json.dumps(item).encode())
+                if length > 1000000:
+                    raise RuntimeError('Individual history row limit')
+                if len(rows) == 256 or size + length > 1000000:
+                    return {'rows': rows, 'hasMore': True}
+                rows.append(item)
+                size += length
+            return {'rows': rows, 'hasMore': False}
+        finally:
+            connection.close()
+    
+    
+    class Handler(http.server.BaseHTTPRequestHandler):
+        def log_message(self, *_):
+            pass
+    
+        def refuse(self):
+            self.send_response(503)
+            self.send_header('Content-Length', '0')
+            self.send_header('X-Dealer-Worker-Uid', UID)
+            self.end_headers()
+    
+        def dispatch(self):
+            if not SLOTS.acquire(blocking=False):
+                self.refuse()
+                return
+            try:
+                self.connection.settimeout(180)
+                length = int(self.headers.get('Content-Length', '0'))
+                if length < 0 or length > 2097152 or self.headers.get('Transfer-Encoding'):
+                    raise RuntimeError('Request size limit')
+                body = self.rfile.read(length) if length else None
+                if self.server.server_port == 8788:
+                    if self.headers.get('Authorization'):
+                        raise RuntimeError('Unexpected forwarded authorization header')
+                    if not hmac.compare_digest(self.headers.get('X-Dealer-Operator-Key', ''), CONFIG['operatorKey']) or self.headers.get('X-Dealer-Expected-Uid') != UID:
+                        raise RuntimeError('Private control refused')
+                    if READER:
+                        if self.path != '/transcript/page' or self.command != 'POST':
+                            raise RuntimeError('Reader operation refused')
+                        value = json.loads(body)
+                        if set(value) != {'afterSourceRowId'}:
+                            raise RuntimeError('Reader input refused')
+                        data = json.dumps(page(value['afterSourceRowId'])).encode()
+                        self.send_response(200)
+                        self.send_header('Content-Type', 'application/json')
+                        self.send_header('Content-Length', str(len(data)))
+                        self.send_header('X-Dealer-Worker-Uid', UID)
+                        self.end_headers()
+                        self.wfile.write(data)
+                        return
+                    if not re.fullmatch(r'/(?:health(?:/detailed)?|v1/capabilities|v1/runs(?:/[A-Za-z0-9_-]+(?:/(?:events|stop))?)?|api/sessions/[A-Za-z0-9_-]+/messages)(?:\?[A-Za-z0-9_=&-]*)?', self.path):
+                        raise RuntimeError('Control path refused')
+                    destination = 'http://127.0.0.1:8642' + self.path
+                    headers = {'Authorization': 'Bearer ' + CONFIG['operatorKey']}
+                    if self.headers.get('Idempotency-Key'):
+                        headers['Idempotency-Key'] = self.headers['Idempotency-Key']
+                else:
+                    if READER or self.command != 'POST' or not hmac.compare_digest(self.headers.get('Authorization', ''), 'Bearer ' + CONFIG['proxyCredential']):
+                        raise RuntimeError('Worker relay refused')
+                    if self.server.server_port == 8686 and self.path == '/mcp':
+                        destination = UPSTREAM + '/worker/mcp'
+                    elif self.server.server_port == 9001 and self.path == '/v1/responses':
+                        destination = UPSTREAM + '/worker/v1/responses'
+                    else:
+                        raise RuntimeError('Worker path refused')
+                    headers = {'Authorization': 'Bearer ' + CONFIG['proxyCredential']}
+                headers['Content-Type'] = 'application/json'
+                request = urllib.request.Request(destination, data=body, method=self.command, headers=headers)
+                opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect())
+                try:
+                    response = opener.open(request, timeout=180)
+                except urllib.error.HTTPError as error:
+                    response = error
+                with response:
+                    self.send_response(response.status)
+                    self.send_header('Content-Type', response.headers.get('Content-Type', 'application/json'))
+                    self.send_header('X-Dealer-Worker-Uid', UID)
+                    self.send_header('Connection', 'close')
+                    self.end_headers()
+                    total = 0
+                    while True:
+                        data = response.read1(16384)
+                        if not data:
+                            break
+                        total += len(data)
+                        if total > 16777216:
+                            raise RuntimeError('Response limit')
+                        self.wfile.write(data)
+                        self.wfile.flush()
+                self.close_connection = True
+            except Exception:
+                self.close_connection = True
+                try:
+                    self.refuse()
+                except Exception:
+                    pass
+            finally:
+                SLOTS.release()
+    
+        do_GET = dispatch
+        do_POST = dispatch
+    
+    
+    class NoRedirect(urllib.request.HTTPRedirectHandler):
+        def redirect_request(self, *_):
+            raise RuntimeError('Redirect refused')
+    
+    
+    servers = []
+    for host, port in [('0.0.0.0', 8788)] + ([] if READER else [('127.0.0.1', 8686), ('127.0.0.1', 9001)]):
+        server = http.server.ThreadingHTTPServer((host, port), Handler)
+        server.daemon_threads = True
+        server.request_queue_size = 16
+        servers.append(server)
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+    
+    process = None
+    if not READER:
+        # Files are created by the same non-root worker UID; an absent ownership repair stays fatal.
+        if HOME.is_symlink():
+            raise RuntimeError('Home symlink refused')
+        HOME.mkdir(exist_ok=True, mode=0o700)
+        HOME.chmod(0o700)
+        for name, content, mode in [('config.yaml', json.dumps(CONFIG['hermes']), 0o600), ('SOUL.md', CONFIG['soul'], 0o400)]:
+            target = HOME / name
+            if target.is_symlink():
+                raise RuntimeError('Managed identity symlink refused')
+            with tempfile.NamedTemporaryFile(dir=HOME, prefix='.prepared-', delete=False) as prepared:
+                temporary = Path(prepared.name)
+                prepared.write(content.encode())
+                prepared.flush()
+                os.fsync(prepared.fileno())
+            try:
+                temporary.chmod(mode)
+                temporary.replace(target)
+            finally:
+                temporary.unlink(missing_ok=True)
+        path = HOME / 'state.db'
+        marker = HOME / ('.prompt-refreshed-' + CONFIG['workerIdentity'])
+        if CONFIG['refreshPrompt'] and not marker.exists() and path.exists():
+            connection = sqlite3.connect(str(path), timeout=5)
+            try:
+                connection.execute('BEGIN IMMEDIATE')
+                connection.execute('UPDATE sessions SET system_prompt=NULL,system_prompt_hash=NULL WHERE id=?', (CONFIG['homeId'],))
+                connection.commit()
+            finally:
+                connection.close()
+        if CONFIG['refreshPrompt'] and not marker.exists():
+            marker.write_text(CONFIG['homeId'])
+            marker.chmod(0o600)
+        process = subprocess.Popen(['/opt/hermes/.venv/bin/hermes', 'gateway', 'run', '--no-supervise', '--external-supervisor'], env={'PATH': '/opt/hermes/.venv/bin:/usr/local/bin:/usr/bin:/bin', 'HOME': str(HOME), 'HERMES_HOME': str(HOME), 'PYTHONDONTWRITEBYTECODE': '1'})
+    
+    stopped = threading.Event()
+    
+    
+    def stop(*_):
+        if process and process.poll() is None:
+            process.terminate()
+        stopped.set()
+    
+    
+    signal.signal(signal.SIGTERM, stop)
+    signal.signal(signal.SIGINT, stop)
+    while not stopped.wait(0.1):
+        if process and process.poll() is not None:
+            break
+    if process:
+        try:
+            process.wait(timeout=20)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait(timeout=5)
+    for server in servers:
+        server.shutdown()

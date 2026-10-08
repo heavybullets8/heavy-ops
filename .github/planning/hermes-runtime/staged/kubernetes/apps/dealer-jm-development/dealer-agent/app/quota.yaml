@@ -1,0 +1,13 @@
+---
+apiVersion: "v1"
+kind: "ResourceQuota"
+metadata:
+  name: "dealer-agent"
+spec:
+  hard:
+    pods: "32"
+    persistentvolumeclaims: "128"
+    secrets: "128"
+    requests.storage: "128Gi"
+    limits.cpu: "16"
+    limits.memory: "32Gi"

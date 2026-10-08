@@ -1,0 +1,22 @@
+---
+apiVersion: "gateway.networking.k8s.io/v1"
+kind: "HTTPRoute"
+metadata:
+  name: "dealer-agent"
+spec:
+  parentRefs:
+    - name: "envoy-external"
+      namespace: "network"
+  hostnames:
+    - "assistant-jm.development.example"
+  rules:
+    - matches:
+        - path:
+            type: "Exact"
+            value: "/internal/ready"
+        - path:
+            type: "Exact"
+            value: "/internal/wake"
+      backendRefs:
+        - name: "dealer-agent"
+          port: 8787

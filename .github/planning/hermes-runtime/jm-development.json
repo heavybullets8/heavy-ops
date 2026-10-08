@@ -1,0 +1,38 @@
+{
+  "application": {
+    "installationId": "jm-development",
+    "business": "jm",
+    "environment": "development",
+    "appOrigin": "https://jm-trailer.development.example",
+    "runtimeOrigin": "https://assistant-jm.development.example",
+    "issuerOrigin": "https://auth.development.example",
+    "providerItem": "OpenAI-development",
+    "runtimeRoot": "/srv/dealer-agent/jm-trailer-development",
+    "model": {
+      "name": "gpt-6.1-sol",
+      "maxInputTokens": 200000,
+      "maxOutputTokens": 8000,
+      "contextTokens": 256000
+    },
+    "usagePolicy": {
+      "version": "openai-standard-global-2026-10-07",
+      "dailyLimitMicros": 0,
+      "monthlyLimitMicros": 0,
+      "runLimitMicros": 0,
+      "models": {
+        "gpt-6.1-sol": {
+          "inputMicrosPerMillion": 2000000,
+          "cacheReadMicrosPerMillion": 100000,
+          "cacheWriteMicrosPerMillion": 2500000,
+          "outputMicrosPerMillion": 10000000
+        }
+      }
+    }
+  },
+  "cluster": {
+    "installation": "jm-development",
+    "generation": "initial",
+    "secretStore": "dealer-agent-onepassword",
+    "storageClass": "openebs-zfs-16k"
+  }
+}

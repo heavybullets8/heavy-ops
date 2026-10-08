@@ -1,0 +1,206 @@
+{
+  "controllers": {
+    "controller": {
+      "replicas": 0,
+      "serviceAccount": {
+        "name": "dealer-agent-controller"
+      },
+      "strategy": "Recreate",
+      "annotations": {
+        "reloader.stakater.com/auto": "true"
+      },
+      "containers": {
+        "app": {
+          "image": {
+            "repository": "ghcr.io/heavybullets8/dealer-agent",
+            "tag": "${DEALER_AGENT_IMAGE_TAG}",
+            "pullPolicy": "IfNotPresent"
+          },
+          "command": [
+            "deno",
+            "run",
+            "--cached-only",
+            "--frozen",
+            "--allow-env",
+            "--allow-read",
+            "--allow-net",
+            "--allow-write=/state",
+            "/app/src/main.ts"
+          ],
+          "env": {
+            "ASSISTANT_INSTALLATION_ID": "jm-development",
+            "ASSISTANT_ENABLED": "0",
+            "ASSISTANT_BROWSER_ENABLED": "0",
+            "SITE_SCOPE": "jm",
+            "ASSISTANT_APP_URL": "https://jm-trailer.development.example/",
+            "ASSISTANT_RUNTIME_ROOT": "/state",
+            "ASSISTANT_RUNTIME_HOST": "0.0.0.0",
+            "ASSISTANT_RUNTIME_PORT": "8787",
+            "OPENAI_MODEL": "gpt-6.1-sol",
+            "OPENAI_MAX_INPUT_TOKENS": "200000",
+            "OPENAI_MAX_OUTPUT_TOKENS": "8000",
+            "OPENAI_CONTEXT_TOKENS": "256000",
+            "ASSISTANT_WORKER_BACKEND": "kubernetes",
+            "ASSISTANT_RUNTIME_NAMESPACE": "dealer-jm-development",
+            "ASSISTANT_RUNTIME_GENERATION": "initial",
+            "ASSISTANT_CONTROLLER_SERVICE": "dealer-agent",
+            "ASSISTANT_WORKER_SCRIPT_CONFIGMAP": "dealer-agent-worker-0beb3098ec79",
+            "ASSISTANT_WORKER_STORAGE_CLASS": "openebs-zfs-16k"
+          },
+          "envFrom": [
+            {
+              "secretRef": {
+                "name": "dealer-agent"
+              }
+            }
+          ],
+          "probes": {
+            "startup": {
+              "enabled": true,
+              "custom": true,
+              "spec": {
+                "exec": {
+                  "command": [
+                    "deno",
+                    "run",
+                    "--allow-env",
+                    "--allow-net=127.0.0.1",
+                    "/app/deploy/container/health.ts"
+                  ]
+                },
+                "periodSeconds": 5,
+                "timeoutSeconds": 6,
+                "failureThreshold": 30
+              }
+            },
+            "readiness": {
+              "enabled": true,
+              "custom": true,
+              "spec": {
+                "exec": {
+                  "command": [
+                    "deno",
+                    "run",
+                    "--allow-env",
+                    "--allow-net=127.0.0.1",
+                    "/app/deploy/container/health.ts"
+                  ]
+                },
+                "periodSeconds": 10,
+                "timeoutSeconds": 6
+              }
+            }
+          },
+          "resources": {
+            "requests": {
+              "cpu": "100m",
+              "memory": "256Mi",
+              "ephemeral-storage": "128Mi"
+            },
+            "limits": {
+              "cpu": "1",
+              "memory": "1Gi",
+              "ephemeral-storage": "512Mi"
+            }
+          },
+          "securityContext": {
+            "allowPrivilegeEscalation": false,
+            "readOnlyRootFilesystem": true,
+            "capabilities": {
+              "drop": [
+                "ALL"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "defaultPodOptions": {
+    "automountServiceAccountToken": false,
+    "enableServiceLinks": false,
+    "labels": {
+      "dealer.agent/installation": "jm-development",
+      "dealer.agent/role": "controller"
+    },
+    "securityContext": {
+      "runAsNonRoot": true,
+      "runAsUser": 10001,
+      "runAsGroup": 10001,
+      "fsGroup": 10001,
+      "seccompProfile": {
+        "type": "RuntimeDefault"
+      }
+    },
+    "terminationGracePeriodSeconds": 60
+  },
+  "service": {
+    "app": {
+      "controller": "controller",
+      "extraSelectorLabels": {
+        "dealer.agent/installation": "jm-development",
+        "dealer.agent/role": "controller"
+      },
+      "ports": {
+        "http": {
+          "port": 8787
+        },
+        "worker": {
+          "port": 8788
+        }
+      }
+    }
+  },
+  "persistence": {
+    "state": {
+      "type": "emptyDir",
+      "sizeLimit": "128Mi",
+      "globalMounts": [
+        {
+          "path": "/state"
+        }
+      ]
+    },
+    "tmp": {
+      "type": "emptyDir",
+      "sizeLimit": "64Mi",
+      "globalMounts": [
+        {
+          "path": "/tmp"
+        }
+      ]
+    },
+    "api": {
+      "type": "custom",
+      "volumeSpec": {
+        "projected": {
+          "sources": [
+            {
+              "serviceAccountToken": {
+                "path": "token",
+                "expirationSeconds": 3600
+              }
+            },
+            {
+              "configMap": {
+                "name": "kube-root-ca.crt",
+                "items": [
+                  {
+                    "key": "ca.crt",
+                    "path": "ca.crt"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "globalMounts": [
+        {
+          "path": "/var/run/secrets/kubernetes.io/serviceaccount",
+          "readOnly": true
+        }
+      ]
+    }
+  }
+}

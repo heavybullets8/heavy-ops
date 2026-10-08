@@ -1,0 +1,57 @@
+---
+apiVersion: "cilium.io/v2"
+kind: "CiliumNetworkPolicy"
+metadata:
+  name: "dealer-agent-controller"
+spec:
+  endpointSelector:
+    matchLabels:
+      dealer.agent/installation: "jm-development"
+      dealer.agent/role: "controller"
+  ingress:
+    - fromEntities:
+        - "cluster"
+      toPorts:
+        - ports:
+            - port: "8787"
+              protocol: "TCP"
+    - fromEndpoints:
+        - matchLabels:
+            dealer.agent/installation: "jm-development"
+            dealer.agent/role: "worker"
+      toPorts:
+        - ports:
+            - port: "8788"
+              protocol: "TCP"
+  egress:
+    - toEntities:
+        - "kube-apiserver"
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: "TCP"
+            - port: "6443"
+              protocol: "TCP"
+    - toEndpoints:
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": "kube-system"
+            "k8s:k8s-app": "kube-dns"
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: "UDP"
+            - port: "53"
+              protocol: "TCP"
+          rules:
+            dns:
+              - matchName: "jm-trailer.development.example"
+              - matchName: "api.openai.com"
+              - matchName: "kubernetes.default.svc.cluster.local"
+              - matchName: "kubernetes.default.svc"
+    - toFQDNs:
+        - matchName: "jm-trailer.development.example"
+        - matchName: "api.openai.com"
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: "TCP"

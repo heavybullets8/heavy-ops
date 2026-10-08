@@ -1,0 +1,56 @@
+{
+  "namespace": "dealer-jm-development",
+  "installation": "jm-development",
+  "generation": "initial",
+  "application": {
+    "env": {
+      "ASSISTANT_INSTALLATION_ID": "jm-development",
+      "ASSISTANT_BROWSER_ENABLED": "0",
+      "SITE_SCOPE": "jm",
+      "SITE_URL": "https://jm-trailer.development.example",
+      "ASSISTANT_ENABLED": "0",
+      "ASSISTANT_RESOURCE": "https://jm-trailer.development.example/api/assistant/mcp",
+      "ASSISTANT_PRINCIPAL_ID": "jm-trailer-development-assistant",
+      "ASSISTANT_MAX_GRANT_AGE_MS": "86400000",
+      "ASSISTANT_MAX_RUN_AGE_MS": "900000",
+      "ASSISTANT_OAUTH_ISSUER": "https://auth.development.example",
+      "ASSISTANT_OAUTH_JWKS_URL": "https://auth.development.example/jwks.json",
+      "ASSISTANT_OAUTH_TOKEN_URL": "https://auth.development.example/api/oidc/token",
+      "ASSISTANT_OAUTH_CLIENT_ID": "jm-trailer-development-assistant",
+      "ASSISTANT_OAUTH_SUBJECT": "jm-trailer-development-assistant",
+      "ASSISTANT_RUNTIME_URL": "https://assistant-jm.development.example/",
+      "ASSISTANT_USAGE_POLICY": "{\"version\":\"openai-standard-global-2026-10-07\",\"dailyLimitMicros\":0,\"monthlyLimitMicros\":0,\"runLimitMicros\":0,\"models\":{\"gpt-6.1-sol\":{\"inputMicrosPerMillion\":2000000,\"cacheReadMicrosPerMillion\":100000,\"cacheWriteMicrosPerMillion\":2500000,\"outputMicrosPerMillion\":10000000}}}"
+    },
+    "secretReferences": {
+      "ASSISTANT_OAUTH_CLIENT_SECRET": "op://Bighorn Byte/jm-trailer-development/ASSISTANT_OAUTH_CLIENT_SECRET",
+      "ASSISTANT_BROKER_SECRET": "op://Bighorn Byte/jm-trailer-development/ASSISTANT_BROKER_SECRET"
+    }
+  },
+  "oauthRegistration": {
+    "client": {
+      "client_id": "jm-trailer-development-assistant",
+      "public": false,
+      "grant_types": [
+        "client_credentials"
+      ],
+      "scopes": [
+        "dealer:invoke"
+      ],
+      "audience": [
+        "https://jm-trailer.development.example/api/assistant/mcp"
+      ],
+      "requested_audience_mode": "explicit",
+      "token_endpoint_auth_method": "client_secret_basic",
+      "access_token_signed_response_alg": "RS256"
+    },
+    "clientSecretReference": "op://Bighorn Byte/jm-trailer-development/ASSISTANT_OAUTH_CLIENT_SECRET",
+    "clientSecretEncoding": "Hash with the deployed Authelia CLI before adding client_secret; never place the plaintext secret in Git."
+  },
+  "activation": [
+    "Keep these resources outside the Flux discovery tree.",
+    "Supply a published immutable DEALER_AGENT_IMAGE_TAG and matching script ConfigMap.",
+    "Register a Bighorn Byte-capable secret store; the current talos store is not sufficient.",
+    "Qualify API proxy, CSI ReadWriteOncePod, Cilium rules and host recovery before changing suspend/replicas.",
+    "Restore while dispatch is disabled; reconcile app leases/effects, change generation and reauthorize before resuming."
+  ]
+}

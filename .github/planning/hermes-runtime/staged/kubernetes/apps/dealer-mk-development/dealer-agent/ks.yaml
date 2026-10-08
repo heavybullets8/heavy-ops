@@ -1,0 +1,25 @@
+---
+apiVersion: "kustomize.toolkit.fluxcd.io/v1"
+kind: "Kustomization"
+metadata:
+  name: "dealer-agent"
+  namespace: "dealer-mk-development"
+spec:
+  suspend: true
+  targetNamespace: "dealer-mk-development"
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: "dealer-agent"
+  dependsOn:
+    - name: "onepassword"
+      namespace: "external-secrets"
+  path: "./kubernetes/apps/dealer-mk-development/dealer-agent/app"
+  prune: true
+  retryInterval: "2m"
+  sourceRef:
+    kind: "GitRepository"
+    name: "flux-system"
+    namespace: "flux-system"
+  wait: false
+  interval: "30m"
+  timeout: "15m"
