@@ -21,7 +21,7 @@ spec:
           app:
             image: &image
               repository: ghcr.io/heavybullets8/scale-tv
-              tag: 0.1.3@sha256:f7ea93d76933e949c1dea8978067eaaa1a4416cb03e75b5bc265488793e7171a
+              tag: 0.2.0@sha256:0a400098e45853de4105091e4728131213bd89566fd333d51f5eec5b437b0ba8
               pullPolicy: Always
             env: &env
               TZ: ${TIMEZONE}
@@ -106,11 +106,6 @@ spec:
                   secretKeyRef:
                     name: scale-tv-secret
                     key: PGPASSWORD
-              DIRECT_URL:
-                valueFrom:
-                  secretKeyRef:
-                    name: scale-tv-secret
-                    key: DIRECT_URL
             args: ["task", "db:deploy"]
             resources: &jobResources
               requests:
