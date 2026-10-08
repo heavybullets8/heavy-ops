@@ -669,12 +669,6 @@ items:
         template:
           spec:
             <<: *buildPod
-            # NOTE: overlayfs trial; ZFS 2.4 and kernel 6.18 support rootless overlayfs unprivileged.
-            initContainers:
-              - <<: *buildkitSidecar
-                env:
-                  - name: BUILDKIT_SNAPSHOTTER
-                    value: overlayfs
   - <<: *ciPool
     metadata:
       name: mkrentals-build
