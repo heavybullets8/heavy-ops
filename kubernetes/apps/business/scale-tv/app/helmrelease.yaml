@@ -124,10 +124,10 @@ spec:
           timeZone: Etc/UTC
           suspend: false
           concurrencyPolicy: Forbid
-          backoffLimit: 1
-          activeDeadlineSeconds: 1200
+          backoffLimit: 2
+          activeDeadlineSeconds: 900
           successfulJobsHistory: 1
-          failedJobsHistory: 2
+          failedJobsHistory: 1
         containers:
           app:
             image: *image
@@ -145,10 +145,10 @@ spec:
           timeZone: Etc/UTC
           suspend: false
           concurrencyPolicy: Forbid
-          backoffLimit: 1
-          activeDeadlineSeconds: 1200
+          backoffLimit: 2
+          activeDeadlineSeconds: 900
           successfulJobsHistory: 1
-          failedJobsHistory: 2
+          failedJobsHistory: 1
         containers:
           app:
             image: *image
