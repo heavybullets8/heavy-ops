@@ -151,7 +151,7 @@ items:
         <<: *ciPoolValues
         githubConfigUrl: https://github.com/Heavybullets8/anytimesteel
         runnerScaleSetName: anytimesteel-ci
-        maxRunners: 1
+        maxRunners: 4
         template:
           spec: &databasePod
             <<: *ciPod
@@ -226,7 +226,7 @@ items:
         <<: *ciPoolValues
         githubConfigUrl: https://github.com/Heavybullets8/cloudpeakinsulation
         runnerScaleSetName: cloudpeakinsulation-ci
-        maxRunners: 1
+        maxRunners: 4
         template:
           spec:
             <<: *databasePod
@@ -256,7 +256,7 @@ items:
         <<: *ciPoolValues
         githubConfigUrl: https://github.com/Heavybullets8/connelyslandscaping
         runnerScaleSetName: connelyslandscaping-ci
-        maxRunners: 1
+        maxRunners: 4
         template:
           spec:
             <<: *databasePod
@@ -286,7 +286,7 @@ items:
         <<: *ciPoolValues
         githubConfigUrl: https://github.com/Heavybullets8/mk_rentals
         runnerScaleSetName: mk-rentals-ci
-        maxRunners: 1
+        maxRunners: 4
         template:
           spec:
             <<: *databasePod
@@ -475,7 +475,7 @@ items:
         <<: *ciPoolValues
         githubConfigUrl: https://github.com/Heavybullets8/connelybrothers
         runnerScaleSetName: connelybrothers-ci
-        maxRunners: 1
+        maxRunners: 4
         template:
           spec:
             <<: *buildPod
@@ -513,7 +513,7 @@ items:
         githubConfigUrl: https://github.com/Heavybullets8/scale-tv
         runnerScaleSetName: scale-tv-ci
         minRunners: 0
-        maxRunners: 1
+        maxRunners: 4
         template:
           spec:
             <<: *buildPod
@@ -560,7 +560,7 @@ items:
         githubConfigUrl: https://github.com/Heavybullets8/bighorn-byte
         runnerScaleSetName: bighorn-byte-ci
         minRunners: 2
-        maxRunners: 3
+        maxRunners: 4
         template:
           spec:
             <<: *buildPod
@@ -635,7 +635,7 @@ items:
         <<: *ciPoolValues
         githubConfigUrl: https://github.com/Heavybullets8/cloudpeakinsulation
         runnerScaleSetName: cloudpeakinsulation-build
-        maxRunners: 1
+        maxRunners: 4
         template:
           spec:
             <<: *buildPod
@@ -648,7 +648,7 @@ items:
         <<: *ciPoolValues
         githubConfigUrl: https://github.com/Heavybullets8/connelyslandscaping
         runnerScaleSetName: connelyslandscaping-build
-        maxRunners: 1
+        maxRunners: 4
         template:
           spec:
             <<: *buildPod
@@ -661,7 +661,7 @@ items:
         <<: *ciPoolValues
         githubConfigUrl: https://github.com/Heavybullets8/anytimesteel
         runnerScaleSetName: anytimesteel-build
-        maxRunners: 1
+        maxRunners: 4
         template:
           spec:
             <<: *buildPod
@@ -674,7 +674,7 @@ items:
         <<: *ciPoolValues
         githubConfigUrl: https://github.com/Heavybullets8/mk_rentals
         runnerScaleSetName: mkrentals-build
-        maxRunners: 1
+        maxRunners: 4
         template:
           spec:
             <<: *buildPod
@@ -689,7 +689,7 @@ items:
         <<: *ciPoolValues
         githubConfigUrl: https://github.com/Heavybullets8/connelybrothers
         runnerScaleSetName: connelybrothers-build
-        maxRunners: 1
+        maxRunners: 4
         template:
           spec:
             <<: *buildPod
