@@ -136,6 +136,10 @@ spec:
       enabled: false
       forceDeployDashboards: true
 
+    defaultRules:
+      disabled:
+        NodeMemoryMajorPagesFaults: true
+
     additionalPrometheusRulesMap:
       dockerhub-rules:
         groups:
