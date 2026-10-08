@@ -286,7 +286,52 @@ history recovery.
 The application and runtime now implement a separate browser account lease,
 private native viewer and attended listing journal for an owned local fixture.
 This local driver requires Chromium's sandbox and refuses the Kubernetes
-controller backend. The staged installations keep it disabled. A deployed
-browser needs its own Pod or VM, restricted control transport, network policy,
-profile storage and restore qualification before external accounts can be
-enabled. Local fixture evidence does not establish Turnstile compatibility.
+controller backend. The staged installations select a separate per-account
+browser Pod backend and keep browser/chat activation off, replicas at zero and
+Flux reconciliation suspended. These files remain outside active Flux paths.
+
+The selected engine is headed Chrome/Chromium with a persistent profile and
+Playwright control. The
+[browser comparison](../../../deno-kit/docs/planning/hermes-primary-research.md#october-8-browser-selection-and-flaresolverr-follow-up)
+records the alternatives and source versions. Each capsule owns one
+installation/book/account/profile-generation PVC, a private display and an
+internal RPC endpoint. It receives no mounted service-account token, app broker
+secret, model credentials or worker home. The controller has no Chromium
+subprocess permission or browser profile mount. Its private port 8789 admits
+only scoped browser callbacks and an owned fixture relay; public routing exposes
+only the existing authenticated viewer endpoint. Capsule RPC port 8790 is
+restricted to the Kubernetes API proxy.
+
+The initial capsule network policy permits only the controller callback. The
+synthetic site runs on controller loopback under `/state/browser-fixture`; its
+test accounts/listings are ephemeral on controller Pod replacement. Browser
+profiles use separate retained PVCs. This deliberately tests the account and
+control contract before opening external destinations. The placeholder
+`${DEALER_BROWSER_IMAGE}` must be replaced by a published, digest-pinned capsule
+image. The existing reviewed Talos Chromium seccomp profile is selected; no node
+configuration changes are staged.
+
+FlareSolverr in `media` is a fetch/solver API, not an interactive browser or
+forward proxy. Bighorn Byte also has a patched private solver and a separate
+HTTP/CONNECT gateway through Gluetun. Reuse that gateway's destination
+validation and transport patterns when designing dealer egress; account browsers
+must get an explicit stable route and must not inherit shared outreach VPN
+sessions or cookies. No existing solver, proxy or account is reconfigured by
+this staging.
+
+The runtime's separate Docker-container proof passed real headed sandboxed
+Chromium, account login/isolation, rotated photo upload, one attended synthetic
+publication, replay suppression, readback and cookie persistence after exact
+shutdown/removal/replacement. It used the existing seccomp profile and private
+per-account Unix callbacks with external networking disabled. It does not prove
+Kubernetes transport, Cilium or CSI behavior. The
+[runtime reproduction commands](../../../dealer-agent/README.md#owned-browser-fixture-qualification-2026-10-08)
+record this distinction.
+
+Acceptance still requires a published pinned capsule image, API proxy transport,
+Chromium sandbox, Cilium isolation, CSI exclusivity, controller/host recovery
+and encrypted quiescent profile backup/restore on the target cluster. Recovery
+must prove the old browser stopped; a missing Pod object, expired lease or new
+generation alone is insufficient. External browsing/proxy activation, real
+account login and Turnstile/Marketplace compatibility remain separate observed
+qualification. Local fixture evidence does not establish them.

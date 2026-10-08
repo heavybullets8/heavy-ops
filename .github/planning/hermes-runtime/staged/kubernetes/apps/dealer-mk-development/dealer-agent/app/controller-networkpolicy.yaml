@@ -23,6 +23,14 @@ spec:
         - ports:
             - port: "8788"
               protocol: "TCP"
+    - fromEndpoints:
+        - matchLabels:
+            dealer.agent/installation: "mk-development"
+            dealer.agent/role: "browser"
+      toPorts:
+        - ports:
+            - port: "8789"
+              protocol: "TCP"
   egress:
     - toEntities:
         - "kube-apiserver"

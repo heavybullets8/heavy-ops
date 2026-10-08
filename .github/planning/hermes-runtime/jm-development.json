@@ -33,6 +33,12 @@
     "installation": "jm-development",
     "generation": "initial",
     "secretStore": "dealer-agent-onepassword",
-    "storageClass": "openebs-zfs-16k"
+    "storageClass": "openebs-zfs-16k",
+    "browser": {
+      "image": "${DEALER_BROWSER_IMAGE}",
+      "fixtureOrigin": "http://127.0.0.1:8791",
+      "seccompProfile": "profiles/bighorn-browser-containerd-2.2.7.json",
+      "maxCapsules": 2
+    }
   }
 }

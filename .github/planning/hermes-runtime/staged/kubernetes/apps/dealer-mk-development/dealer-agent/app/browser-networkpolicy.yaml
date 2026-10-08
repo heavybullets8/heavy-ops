@@ -1,0 +1,43 @@
+---
+apiVersion: "cilium.io/v2"
+kind: "CiliumNetworkPolicy"
+metadata:
+  name: "dealer-agent-browser-capsules"
+spec:
+  endpointSelector:
+    matchLabels:
+      dealer.agent/installation: "mk-development"
+      dealer.agent/role: "browser"
+  ingress:
+    - fromEntities:
+        - "kube-apiserver"
+      toPorts:
+        - ports:
+            - port: "8790"
+              protocol: "TCP"
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            dealer.agent/installation: "mk-development"
+            dealer.agent/role: "controller"
+      toPorts:
+        - ports:
+            - port: "8789"
+              protocol: "TCP"
+  egressDeny:
+    - toEntities:
+        - "world"
+        - "host"
+        - "remote-node"
+        - "kube-apiserver"
+    - toEndpoints:
+        - matchExpressions:
+            - key: "k8s:io.kubernetes.pod.namespace"
+              operator: "NotIn"
+              values:
+                - "dealer-mk-development"
+        - matchExpressions:
+            - key: "dealer.agent/role"
+              operator: "NotIn"
+              values:
+                - "controller"

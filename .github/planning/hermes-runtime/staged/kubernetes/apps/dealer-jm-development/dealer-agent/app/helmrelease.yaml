@@ -33,6 +33,7 @@ spec:
               - "--allow-read"
               - "--allow-net"
               - "--allow-write=/state"
+              - "--allow-sys=uid"
               - "/app/src/main.ts"
             env:
               ASSISTANT_INSTALLATION_ID: "jm-development"
@@ -53,6 +54,21 @@ spec:
               ASSISTANT_CONTROLLER_SERVICE: "dealer-agent"
               ASSISTANT_WORKER_SCRIPT_CONFIGMAP: "dealer-agent-worker-0beb3098ec79"
               ASSISTANT_WORKER_STORAGE_CLASS: "openebs-zfs-16k"
+              ASSISTANT_BROWSER_BACKEND: "kubernetes-capsule"
+              ASSISTANT_BROWSER_CAPSULE_IMAGE: "${DEALER_BROWSER_IMAGE}"
+              ASSISTANT_BROWSER_STORAGE_CLASS: "openebs-zfs-16k"
+              ASSISTANT_BROWSER_SECCOMP_PROFILE: "profiles/bighorn-browser-containerd-2.2.7.json"
+              ASSISTANT_BROWSER_MAX_CAPSULES: "2"
+              ASSISTANT_BROWSER_FIXTURE_ORIGIN: "http://127.0.0.1:8791"
+              ASSISTANT_BROWSER_OWNED_FIXTURE_ROOT: "/state/browser-fixture"
+              ASSISTANT_CONTROLLER_POD_NAME:
+                valueFrom:
+                  fieldRef:
+                    fieldPath: "metadata.name"
+              ASSISTANT_CONTROLLER_POD_UID:
+                valueFrom:
+                  fieldRef:
+                    fieldPath: "metadata.uid"
             envFrom:
               - secretRef:
                   name: "dealer-agent"
@@ -124,6 +140,8 @@ spec:
             port: 8787
           worker:
             port: 8788
+          capsule:
+            port: 8789
     persistence:
       state:
         type: "emptyDir"
