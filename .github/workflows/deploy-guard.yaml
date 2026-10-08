@@ -1,0 +1,18 @@
+name: Deploy guard
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# NOTE: report-only. Findings are warning annotations; an app fails the job only once it is
+# listed under `strict:` in .github/deploy-guard.yaml. The guard runs beside, not inside,
+# the existing validation so its checks and failures are unchanged.
+jobs:
+  guard:
+    uses: heavybullets8/site-automation/.github/workflows/deploy-guard.yml@v1
+    with:
+      runner: ubuntu-latest
+      paths: kubernetes/apps/business
+      config: .github/deploy-guard.yaml
