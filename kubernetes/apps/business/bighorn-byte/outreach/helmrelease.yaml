@@ -24,18 +24,8 @@ spec:
               tag: 0.2.3@sha256:f3e0cc825e34ecfe3965f5efd3bc2b11a7580af8eeadc6c7c74f47f3be7a6b8c
               pullPolicy: Always
             env: &env
-              BHB_CONNECTIONS_BACKEND: remote
               TZ: ${TIMEZONE}
-              BHB_ENVIRONMENT: production
-              BHB_PUBLIC_ORIGIN: https://bighornbyte.com
-              OUTREACH_ENVIRONMENT: production
-              OUTREACH_ENABLED: "1"
-              OUTREACH_BROWSER_URL: "ws://bighorn-byte-browser.business.svc.cluster.local:3000/$(BROWSER_WS_PATH)"
-              OUTREACH_BROWSER_INTERNAL_ORIGIN: http://bighorn-byte-web.business.svc.cluster.local:8000
-              OUTREACH_PROXY_URL: socks5://qbittorrent-gluetun.media.svc.cluster.local:8388
-              OUTREACH_SOLVER_URL: http://bighorn-byte-solver.business.svc.cluster.local:8191/v1
-              OUTREACH_SOLVER_PROXY_URL: http://bighorn-byte-public-proxy.business.svc.cluster.local:8080
-              # NOTE: v24 env contract, added beside the current names; images before v24 ignore these.
+              SITE_URL: https://bighornbyte.com
               PGHOST: postgres-rw.database.svc.cluster.local
               PGPORT: "5432"
               PGDATABASE: bighorn_byte_demo
@@ -43,6 +33,13 @@ spec:
               AI_MODEL_EXTRACT: deepseek:deepseek-flash
               AI_MODEL_CLASSIFY: deepseek:deepseek-flash
               AI_MODEL_WRITE: deepseek:deepseek-flash
+              BHB_CONNECTIONS_BACKEND: remote
+              OUTREACH_ENABLED: "1"
+              OUTREACH_BROWSER_URL: "ws://bighorn-byte-browser.business.svc.cluster.local:3000/$(BROWSER_WS_PATH)"
+              OUTREACH_BROWSER_INTERNAL_ORIGIN: http://bighorn-byte-web.business.svc.cluster.local:8000
+              OUTREACH_PROXY_URL: socks5://qbittorrent-gluetun.media.svc.cluster.local:8388
+              OUTREACH_SOLVER_URL: http://bighorn-byte-solver.business.svc.cluster.local:8191/v1
+              OUTREACH_SOLVER_PROXY_URL: http://bighorn-byte-public-proxy.business.svc.cluster.local:8080
             envFrom: &envFrom
               - secretRef:
                   name: bighorn-byte-outreach-secret
@@ -98,15 +95,8 @@ spec:
           app:
             image: *image
             env:
-              BHB_CONNECTIONS_BACKEND: remote
               TZ: ${TIMEZONE}
-              BHB_ENVIRONMENT: production
-              BHB_PUBLIC_ORIGIN: https://bighornbyte.com
-              OUTREACH_ENVIRONMENT: production
-              OUTREACH_MCP_PUBLIC_URL: https://outreach-mcp.${SECRET_DOMAIN}
-              OUTREACH_MCP_ISSUER: https://auth.${SECRET_DOMAIN}
-              OUTREACH_MCP_OWNER_SUBJECTS: 463c69e1-db21-4eb3-8b29-bf87dbced4df
-              # NOTE: v24 env contract, added beside the current names; images before v24 ignore these.
+              SITE_URL: https://bighornbyte.com
               PGHOST: postgres-rw.database.svc.cluster.local
               PGPORT: "5432"
               PGDATABASE: bighorn_byte_demo
@@ -114,6 +104,10 @@ spec:
               AI_MODEL_EXTRACT: deepseek:deepseek-flash
               AI_MODEL_CLASSIFY: deepseek:deepseek-flash
               AI_MODEL_WRITE: deepseek:deepseek-flash
+              BHB_CONNECTIONS_BACKEND: remote
+              OUTREACH_MCP_PUBLIC_URL: https://outreach-mcp.${SECRET_DOMAIN}
+              OUTREACH_MCP_ISSUER: https://auth.${SECRET_DOMAIN}
+              OUTREACH_MCP_OWNER_SUBJECTS: 463c69e1-db21-4eb3-8b29-bf87dbced4df
             envFrom: *envFrom
             args: ["run", "--cached-only", "--frozen", "--allow-env", "--allow-net", "--allow-read", "--allow-sys", "--allow-ffi", "scripts/outreach-mcp.ts"]
             probes:
