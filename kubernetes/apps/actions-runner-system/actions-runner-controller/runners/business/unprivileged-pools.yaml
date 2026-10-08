@@ -204,7 +204,7 @@ items:
             containers:
               - &databaseRunner
                 <<: *ciRunner
-                image: ghcr.io/heavybullets8/business-runner:2.337.0@sha256:6474fafd73bb30dbc1c30e1b4ef3f26ed8e099cb649f1a633f08db6e8ca80275
+                image: ghcr.io/heavybullets8/business-runner:2.338.0@sha256:b6e7f3ae973e7922e226b7b639a1f3001af560629f2a4ec76b7d8c54164bd681
             volumes:
               - *workVolume
               - &postgresData
@@ -322,7 +322,7 @@ items:
             <<: *databasePod
             containers:
               - <<: *databaseRunner
-                image: ghcr.io/heavybullets8/business-runner:2.337.0@sha256:6474fafd73bb30dbc1c30e1b4ef3f26ed8e099cb649f1a633f08db6e8ca80275
+                image: ghcr.io/heavybullets8/business-runner:2.338.0@sha256:b6e7f3ae973e7922e226b7b639a1f3001af560629f2a4ec76b7d8c54164bd681
             initContainers:
               - <<: *postgresSidecar
                 args: ["-p", "5432", "-c", "listen_addresses=127.0.0.1"]
@@ -712,4 +712,4 @@ items:
             <<: *buildPod
             containers:
               - <<: *buildRunner
-                image: ghcr.io/heavybullets8/business-runner:2.337.0@sha256:6474fafd73bb30dbc1c30e1b4ef3f26ed8e099cb649f1a633f08db6e8ca80275
+                image: ghcr.io/heavybullets8/business-runner:2.338.0@sha256:b6e7f3ae973e7922e226b7b639a1f3001af560629f2a4ec76b7d8c54164bd681
