@@ -1,20 +1,20 @@
 # Hermes dealer hosting groundwork
 
-Draft, October 6, 2026, for
+Updated October 8, 2026, for
 [BIG-302](https://linear.app/bighorn-byte/issue/BIG-302/evaluate-premium-dealer-assistant-and-plan-portal-integration).
 Heavy Ops will host the dealer assistant gateway, Hermes runtime and persistent
 browser. M&K Sales and J&M Trailer are the likely pilots; non-dealer sites are
-outside this rollout. This branch adds planning only. Independent inactive MCP
-foundation work in the kit and isolated local M&K/J&M read integration are
-authorized. Publication and host deployment follow accounting's accepted
-publication, then qualification of an isolated environment before any pilot
-activation.
+outside this rollout. This branch contains the architecture and reproducible,
+inactive installation manifests described below. Application and runtime
+implementation is locally qualified on separate feature branches. Publication
+and host deployment follow accounting's accepted publication, then qualification
+of an isolated environment before any pilot activation.
 
 The shared
 [architecture](../../../deno-kit/docs/planning/hermes-dealer-assistant.md)
 defines application actions, identity, previews and delivery. This repository
 owns deployment configuration and operational policy. Runtime application source
-belongs in a proposed dedicated `dealer-agent` repository, not in GitOps files.
+belongs in the dedicated `dealer-agent` repository, not in GitOps files.
 
 ## Match the existing app structure
 
