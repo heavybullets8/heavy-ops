@@ -51,12 +51,20 @@ root = Path(__file__).parent
 args.output.mkdir(parents=True, exist_ok=True)
 for business in ('mk', 'jm'):
     public = json.loads((root / (business + '-development.json')).read_text())
+    if public['cluster'].get('apiUrl') != 'https://kubernetes.default.svc.cluster.local.':
+        raise ValueError('Heavy Ops requires the absolute API FQDN allowed by the unchanged controller DNS policy.')
     with tempfile.TemporaryDirectory(prefix='dealer-gitops-public-') as temporary:
         folder = Path(temporary)
         (folder / 'app.json').write_text(json.dumps(public['application']))
         (folder / 'cluster.json').write_text(json.dumps(public['cluster']))
         result = subprocess.run(['deno', 'run', '--allow-read', str(args.runtime / 'scripts/kubernetes-installation-plan.ts'), str(folder / 'app.json'), str(folder / 'cluster.json')], cwd=args.runtime, env={'PATH': os.environ['PATH']}, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
     plan = json.loads(result.stdout)
+    controller = plan['resources']['dealer-agent/app/helmrelease.yaml']['spec']['values']['controllers']['controller']
+    env = controller['containers']['app']['env']
+    if env.get('ASSISTANT_KUBERNETES_API_URL') != public['cluster']['apiUrl']:
+        raise ValueError('The installation planner omitted the absolute API FQDN.')
+    if controller['replicas'] != 0 or env.get('ASSISTANT_ENABLED') != '0' or env.get('ASSISTANT_BROWSER_ENABLED') != '0':
+        raise ValueError('The public staging renderer must preserve inactive chat and browser gates.')
     (args.output / (business + '-helm-values.json')).write_text(json.dumps(plan['resources']['dealer-agent/app/helmrelease.yaml']['spec']['values'], indent=2) + '\n')
     for name, value in plan['resources'].items():
         destination = args.output / 'kubernetes/apps' / plan['namespace'] / name

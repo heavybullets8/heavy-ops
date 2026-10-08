@@ -34,6 +34,7 @@
     "generation": "initial",
     "secretStore": "dealer-agent-onepassword",
     "storageClass": "openebs-zfs-16k",
+    "apiUrl": "https://kubernetes.default.svc.cluster.local.",
     "browser": {
       "image": "${DEALER_BROWSER_IMAGE}",
       "fixtureOrigin": "http://127.0.0.1:8791",

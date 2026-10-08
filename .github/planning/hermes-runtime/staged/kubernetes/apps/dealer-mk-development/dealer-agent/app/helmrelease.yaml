@@ -54,6 +54,7 @@ spec:
               ASSISTANT_CONTROLLER_SERVICE: "dealer-agent"
               ASSISTANT_WORKER_SCRIPT_CONFIGMAP: "dealer-agent-worker-0beb3098ec79"
               ASSISTANT_WORKER_STORAGE_CLASS: "openebs-zfs-16k"
+              ASSISTANT_KUBERNETES_API_URL: "https://kubernetes.default.svc.cluster.local."
               ASSISTANT_BROWSER_BACKEND: "kubernetes-capsule"
               ASSISTANT_BROWSER_CAPSULE_IMAGE: "${DEALER_BROWSER_IMAGE}"
               ASSISTANT_BROWSER_STORAGE_CLASS: "openebs-zfs-16k"
