@@ -20,7 +20,8 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  wait: false
+  # NOTE: Ready only after the web pod's migrate init containers finish; the worker and crawler wait on it.
+  wait: true
   interval: 30m
   timeout: 15m
 ---
@@ -38,6 +39,7 @@ spec:
   dependsOn:
     - name: onepassword
       namespace: external-secrets
+    - name: bighorn-byte-web
   path: ./kubernetes/apps/business/bighorn-byte/outreach
   prune: true
   retryInterval: 2m
@@ -85,6 +87,8 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+  dependsOn:
+    - name: bighorn-byte-web
   path: ./kubernetes/apps/business/bighorn-byte/crawler
   prune: true
   retryInterval: 2m
