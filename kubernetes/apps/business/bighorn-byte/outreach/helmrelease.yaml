@@ -35,6 +35,14 @@ spec:
               OUTREACH_PROXY_URL: socks5://qbittorrent-gluetun.media.svc.cluster.local:8388
               OUTREACH_SOLVER_URL: http://bighorn-byte-solver.business.svc.cluster.local:8191/v1
               OUTREACH_SOLVER_PROXY_URL: http://bighorn-byte-public-proxy.business.svc.cluster.local:8080
+              # NOTE: v24 env contract, added beside the current names; images before v24 ignore these.
+              PGHOST: postgres-rw.database.svc.cluster.local
+              PGPORT: "5432"
+              PGDATABASE: bighorn_byte_demo
+              ADMIN_PGDATABASE: bighorn_byte_admin
+              AI_MODEL_EXTRACT: deepseek:deepseek-flash
+              AI_MODEL_CLASSIFY: deepseek:deepseek-flash
+              AI_MODEL_WRITE: deepseek:deepseek-flash
             envFrom: &envFrom
               - secretRef:
                   name: bighorn-byte-outreach-secret
@@ -98,6 +106,14 @@ spec:
               OUTREACH_MCP_PUBLIC_URL: https://outreach-mcp.${SECRET_DOMAIN}
               OUTREACH_MCP_ISSUER: https://auth.${SECRET_DOMAIN}
               OUTREACH_MCP_OWNER_SUBJECTS: 463c69e1-db21-4eb3-8b29-bf87dbced4df
+              # NOTE: v24 env contract, added beside the current names; images before v24 ignore these.
+              PGHOST: postgres-rw.database.svc.cluster.local
+              PGPORT: "5432"
+              PGDATABASE: bighorn_byte_demo
+              ADMIN_PGDATABASE: bighorn_byte_admin
+              AI_MODEL_EXTRACT: deepseek:deepseek-flash
+              AI_MODEL_CLASSIFY: deepseek:deepseek-flash
+              AI_MODEL_WRITE: deepseek:deepseek-flash
             envFrom: *envFrom
             args: ["run", "--cached-only", "--frozen", "--allow-env", "--allow-net", "--allow-read", "--allow-sys", "--allow-ffi", "scripts/outreach-mcp.ts"]
             probes:
