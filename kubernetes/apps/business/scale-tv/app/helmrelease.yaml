@@ -128,10 +128,14 @@ spec:
           timeZone: Etc/UTC
           suspend: false
           concurrencyPolicy: Forbid
+          startingDeadlineSeconds: 600
           backoffLimit: 2
           activeDeadlineSeconds: 900
           successfulJobsHistory: 1
           failedJobsHistory: 1
+          ttlSecondsAfterFinished: 86400
+        pod: &jobPod
+          restartPolicy: Never
         containers:
           app: &jobContainer
             image: *image
@@ -149,6 +153,7 @@ spec:
       sweep-invites-sessions:
         type: cronjob
         annotations: *reload
+        pod: *jobPod
         cronjob:
           <<: *cronjob
           schedule: "0 * * * *"
@@ -160,6 +165,7 @@ spec:
       reconcile-members:
         type: cronjob
         annotations: *reload
+        pod: *jobPod
         cronjob:
           <<: *cronjob
           schedule: "0 9 * * *"
@@ -171,6 +177,7 @@ spec:
       reconcile-shares:
         type: cronjob
         annotations: *reload
+        pod: *jobPod
         cronjob:
           <<: *cronjob
           schedule: "0 9 * * *"
