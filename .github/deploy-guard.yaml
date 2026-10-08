@@ -1,0 +1,4 @@
+exclude:
+  - docmost-bhb
+  - documenso
+strict: []
