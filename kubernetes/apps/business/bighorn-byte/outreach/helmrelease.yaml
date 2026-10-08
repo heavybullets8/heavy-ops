@@ -30,9 +30,9 @@ spec:
               PGPORT: "5432"
               PGDATABASE: bighorn_byte_demo
               ADMIN_PGDATABASE: bighorn_byte_admin
-              AI_MODEL_EXTRACT: deepseek:deepseek-flash
-              AI_MODEL_CLASSIFY: deepseek:deepseek-flash
-              AI_MODEL_WRITE: deepseek:deepseek-flash
+              AI_MODEL_EXTRACT: anthropic:claude-haiku-5-5
+              AI_MODEL_CLASSIFY: anthropic:claude-haiku-5-5
+              AI_MODEL_WRITE: anthropic:claude-haiku-5-5
               BHB_CONNECTIONS_BACKEND: remote
               OUTREACH_ENABLED: "1"
               OUTREACH_BROWSER_URL: "ws://bighorn-byte-browser.business.svc.cluster.local:3000/$(BROWSER_WS_PATH)"
@@ -101,9 +101,9 @@ spec:
               PGPORT: "5432"
               PGDATABASE: bighorn_byte_demo
               ADMIN_PGDATABASE: bighorn_byte_admin
-              AI_MODEL_EXTRACT: deepseek:deepseek-flash
-              AI_MODEL_CLASSIFY: deepseek:deepseek-flash
-              AI_MODEL_WRITE: deepseek:deepseek-flash
+              AI_MODEL_EXTRACT: anthropic:claude-haiku-5-5
+              AI_MODEL_CLASSIFY: anthropic:claude-haiku-5-5
+              AI_MODEL_WRITE: anthropic:claude-haiku-5-5
               BHB_CONNECTIONS_BACKEND: remote
               OUTREACH_MCP_PUBLIC_URL: https://outreach-mcp.${SECRET_DOMAIN}
               OUTREACH_MCP_ISSUER: https://auth.${SECRET_DOMAIN}
