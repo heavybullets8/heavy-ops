@@ -328,36 +328,22 @@ Kubernetes transport, Cilium or CSI behavior. The
 [runtime reproduction commands](../../../dealer-agent/README.md#owned-browser-fixture-qualification-2026-10-08)
 record this distinction.
 
-Acceptance still requires a published pinned capsule image, API proxy transport,
-Chromium sandbox, Cilium isolation, CSI exclusivity, controller/host recovery
-and encrypted quiescent profile backup/restore on the target cluster. Recovery
-must prove the old browser stopped; a missing Pod object, expired lease or new
-generation alone is insufficient. External browsing/proxy activation, real
-account login and Turnstile/Marketplace compatibility remain separate observed
-qualification. Local fixture evidence does not establish them.
+Recovery must prove the old browser stopped; a missing Pod object, expired
+lease or new generation alone is insufficient. External browsing, real account
+login and Marketplace compatibility require separate observed qualification.
+Owned-fixture evidence does not establish them.
 
 ## October 8 isolated live qualification progress
 
-The owner authorized isolated cluster qualification after the local browser
-proof. Two dedicated proof namespaces were created outside Flux discovery;
-the inactive dealer development plans and production workloads remain unchanged.
-The runtime's proof-only publisher passed and produced private digest-pinned
-capsule, synthetic controller and offline profile images at feature revision
-`92859f0`. The existing registry login was not granted additional permissions.
+The authorized isolated browser workflow, graceful replacement and encrypted
+profile restoration checks passed against owned synthetic accounts. Temporary
+test resources and credential copies were removed afterward. Detailed evidence
+is retained in the private runtime repository.
 
-Actual OpenEBS ZFS `ReadWriteOncePod` exclusivity and graceful writer handoff
-passed. Both proof installations passed their own-callback allow check and
-control-port, cross-installation, API, node and public-egress denial checks.
-API-server proxy access to both owned controller-role targets worked. These
-network probes used public Deno images, not Chromium. Temporary probe Pods and
-the storage claim were removed after evidence capture.
+Physical host-failure recovery, external browsing and real-account compatibility
+remain unqualified. Production installation and scheduled backup/key recovery
+still require acceptance. The owned-fixture result does not qualify the
+production application database path or the real Marketplace adapter.
 
-The non-root offline profile image passed network-disabled encrypted backup
-and fresh-generation restoration with matching synthetic cookie/WAL/receipt
-bytes. Wrong-key, corrupt-artifact, unsafe-path and occupied-target checks pass.
-See the [runtime evidence and harness](../../../dealer-agent/README.md#live-browser-qualification-progress-2026-10-08).
-Server validation of both private controller manifests passed, but actual
-capsule startup, controller recovery and encrypted profile PVC restore await
-temporary private-image pull access. No registry credential was copied to the
-cluster. Host-failure fencing and real-account/external-egress acceptance remain
-separate requirements; no node restart or production activation was performed.
+Both dealer development plans remain inactive. No main/dev merge or application
+activation occurred; accounting release and rollout gates are unchanged.
