@@ -36,6 +36,14 @@ spec:
               OUTREACH_PROXY_URL: socks5://qbittorrent-gluetun.media.svc.cluster.local:8388
               OUTREACH_SOLVER_URL: http://bighorn-byte-solver.business.svc.cluster.local:8191/v1
               OUTREACH_SOLVER_PROXY_URL: http://bighorn-byte-public-proxy.business.svc.cluster.local:8080
+              # NOTE: v24 env contract, added beside the current names; images before v24 ignore these.
+              PGHOST: postgres-rw.database.svc.cluster.local
+              PGPORT: "5432"
+              PGDATABASE: bighorn_byte_demo
+              ADMIN_PGDATABASE: bighorn_byte_admin
+              AI_MODEL_EXTRACT: deepseek:deepseek-flash
+              AI_MODEL_CLASSIFY: deepseek:deepseek-flash
+              AI_MODEL_WRITE: deepseek:deepseek-flash
             envFrom:
               - secretRef:
                   name: bighorn-byte-web-secret
@@ -101,6 +109,20 @@ spec:
                   secretKeyRef:
                     name: bighorn-byte-web-secret
                     key: DIRECT_URL
+              # NOTE: the migration reads the same PG* names as the app after the v24 image.
+              PGHOST: postgres-rw.database.svc.cluster.local
+              PGPORT: "5432"
+              PGDATABASE: bighorn_byte_demo
+              PGUSER:
+                valueFrom:
+                  secretKeyRef:
+                    name: bighorn-byte-web-secret
+                    key: PGUSER
+              PGPASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: bighorn-byte-web-secret
+                    key: PGPASSWORD
             args: ["task", "db:deploy"]
             resources: &migrationResources
               requests:
@@ -127,6 +149,20 @@ spec:
                   secretKeyRef:
                     name: bighorn-byte-web-secret
                     key: ADMIN_DIRECT_URL
+              # NOTE: ADMIN_PG* falls back to PGHOST and PGPORT for the shared server.
+              PGHOST: postgres-rw.database.svc.cluster.local
+              PGPORT: "5432"
+              ADMIN_PGDATABASE: bighorn_byte_admin
+              ADMIN_PGUSER:
+                valueFrom:
+                  secretKeyRef:
+                    name: bighorn-byte-web-secret
+                    key: ADMIN_PGUSER
+              ADMIN_PGPASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: bighorn-byte-web-secret
+                    key: ADMIN_PGPASSWORD
             args: ["task", "db:admin:deploy"]
             resources: *migrationResources
             securityContext: *securityContext
