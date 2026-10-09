@@ -11,4 +11,5 @@ resources:
   - "externalsecret.yaml"
   - "httproute.yaml"
   - "helmrelease.yaml"
+  - "jobs-networkpolicy.yaml"
   - "browser-networkpolicy.yaml"

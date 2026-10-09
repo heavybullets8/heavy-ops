@@ -2,7 +2,7 @@
 apiVersion: "v1"
 kind: "ConfigMap"
 metadata:
-  name: "dealer-agent-worker-0beb3098ec79"
+  name: "dealer-agent-worker-d0c8b0a3f195"
 immutable: true
 data:
   worker.py: |
@@ -39,36 +39,43 @@ data:
         path = HOME / 'state.db'
         if not path.exists():
             return {'rows': [], 'hasMore': False}
-        connection = sqlite3.connect('file:' + str(path) + '?mode=ro', uri=True, timeout=5)
-        connection.row_factory = sqlite3.Row
+        from hermes_state import SessionDB
+        from agent.compaction_display import project_compaction_message_for_display
+        database = SessionDB(path, read_only=True)
         try:
-            lineage = [CONFIG['homeId']]
-            frontier = list(lineage)
-            for _ in range(64):
-                children = [row[0] for parent in frontier for row in connection.execute(
-                    'SELECT id FROM sessions WHERE parent_session_id=? LIMIT 257', (parent,))]
-                if not children:
-                    break
-                if any(child in lineage for child in children) or len(lineage) + len(children) > 256:
-                    raise RuntimeError('Invalid history lineage')
-                lineage.extend(children)
-                frontier = children
-            else:
-                raise RuntimeError('History lineage limit')
-            query = "SELECT id,role,CASE WHEN role='tool' THEN NULL ELSE content END AS content FROM messages WHERE session_id IN (" + ','.join('?' for _ in lineage) + ') AND id>? ORDER BY id'
             rows, size = [], 0
-            for row in connection.execute(query, (*lineage, int(after))):
-                item = dict(row)
-                length = len(json.dumps(item).encode())
-                if length > 1000000:
-                    raise RuntimeError('Individual history row limit')
-                if len(rows) == 256 or size + length > 1000000:
-                    return {'rows': rows, 'hasMore': True}
-                rows.append(item)
-                size += length
+            for session in database.get_compression_lineage(CONFIG['homeId']):
+                offset = 0
+                while True:
+                    messages = database.get_messages(session, include_compacted=True, limit=128, offset=offset)
+                    for message in messages:
+                        if message['role'] not in ('user', 'assistant', 'tool'):
+                            continue
+                        identity = database._read_all('SELECT COALESCE((SELECT MIN(original.id) FROM messages original WHERE original.display_identity=current.display_identity AND original.session_id=current.session_id),current.id) FROM messages current WHERE current.id=?', (message['id'],))[0][0]
+                        if identity <= int(after):
+                            continue
+                        projected = project_compaction_message_for_display(message)
+                        if projected is None or projected.get('display_kind') == 'hidden':
+                            continue
+                        content = None if message['role'] == 'tool' else projected['content']
+                        if content is not None and not isinstance(content, str):
+                            content = json.dumps(content, ensure_ascii=False)
+                        item = {'id': identity, 'role': 'assistant' if message.get('display_kind') in ('async_delegation_complete', 'runtime_notification') else message['role'], 'content': content}
+                        if message.get('display_kind') == 'steer':
+                            item['displayKind'] = 'steer'
+                        length = len(json.dumps(item).encode())
+                        if length > 1000000:
+                            raise RuntimeError('Individual history row limit')
+                        if len(rows) == 256 or size + length > 1000000:
+                            return {'rows': rows, 'hasMore': True}
+                        rows.append(item)
+                        size += length + 2
+                    if len(messages) < 128:
+                        break
+                    offset += len(messages)
             return {'rows': rows, 'hasMore': False}
         finally:
-            connection.close()
+            database.close()
     
     
     class Handler(http.server.BaseHTTPRequestHandler):
@@ -88,7 +95,7 @@ data:
             try:
                 self.connection.settimeout(180)
                 length = int(self.headers.get('Content-Length', '0'))
-                if length < 0 or length > 2097152 or self.headers.get('Transfer-Encoding'):
+                if length < 0 or length > (30 * 1024 * 1024 if self.server.server_port == 9001 and self.path == '/v1/responses' else 2097152) or self.headers.get('Transfer-Encoding'):
                     raise RuntimeError('Request size limit')
                 body = self.rfile.read(length) if length else None
                 if self.server.server_port == 8788:
@@ -96,7 +103,19 @@ data:
                         raise RuntimeError('Unexpected forwarded authorization header')
                     if not hmac.compare_digest(self.headers.get('X-Dealer-Operator-Key', ''), CONFIG['operatorKey']) or self.headers.get('X-Dealer-Expected-Uid') != UID:
                         raise RuntimeError('Private control refused')
-                    if READER:
+                    if not READER and self.path == '/skills/instructions' and self.command == 'POST':
+                        env = {**os.environ, 'HERMES_HOME': str(HOME)}
+                        result = subprocess.run(['/opt/hermes/.venv/bin/python', '-c', CONFIG['nativeSkillReader']], input=body, capture_output=True, env=env, timeout=30)
+                        if result.returncode or len(result.stdout) > 1048576:
+                            raise RuntimeError('Native skill collection failed')
+                        self.send_response(200)
+                        self.send_header('Content-Type', 'application/json')
+                        self.send_header('Content-Length', str(len(result.stdout)))
+                        self.send_header('X-Dealer-Worker-Uid', UID)
+                        self.end_headers()
+                        self.wfile.write(result.stdout)
+                        return
+                    if READER or self.path == '/transcript/page':
                         if self.path != '/transcript/page' or self.command != 'POST':
                             raise RuntimeError('Reader operation refused')
                         value = json.loads(body)
@@ -110,7 +129,7 @@ data:
                         self.end_headers()
                         self.wfile.write(data)
                         return
-                    if not re.fullmatch(r'/(?:health(?:/detailed)?|v1/capabilities|v1/runs(?:/[A-Za-z0-9_-]+(?:/(?:events|stop))?)?|api/sessions/[A-Za-z0-9_-]+/messages)(?:\?[A-Za-z0-9_=&-]*)?', self.path):
+                    if not re.fullmatch(r'/(?:health(?:/detailed)?|v1/(?:capabilities|skills|toolsets)|v1/runs(?:/[A-Za-z0-9_-]+(?:/(?:events|stop|approval|steer|notifications|connections|requests(?:/srq-[A-Za-z0-9_-]+(?:/lock)?)?))?)?|api/sessions(?:/[A-Za-z0-9_-]+(?:/messages)?)?)(?:\?[A-Za-z0-9_=&-]*)?', self.path):
                         raise RuntimeError('Control path refused')
                     destination = 'http://127.0.0.1:8642' + self.path
                     headers = {'Authorization': 'Bearer ' + CONFIG['operatorKey']}
@@ -121,6 +140,8 @@ data:
                         raise RuntimeError('Worker relay refused')
                     if self.server.server_port == 8686 and self.path == '/mcp':
                         destination = UPSTREAM + '/worker/mcp'
+                    elif self.server.server_port == 8686 and self.path == '/jobs/manage':
+                        destination = UPSTREAM + '/worker/jobs/manage'
                     elif self.server.server_port == 9001 and self.path == '/v1/responses':
                         destination = UPSTREAM + '/worker/v1/responses'
                     else:
@@ -137,6 +158,8 @@ data:
                     self.send_response(response.status)
                     self.send_header('Content-Type', response.headers.get('Content-Type', 'application/json'))
                     self.send_header('X-Dealer-Worker-Uid', UID)
+                    if response.headers.get('Retry-After'):
+                        self.send_header('Retry-After', response.headers['Retry-After'])
                     self.send_header('Connection', 'close')
                     self.end_headers()
                     total = 0
@@ -145,7 +168,7 @@ data:
                         if not data:
                             break
                         total += len(data)
-                        if total > 16777216:
+                        if total > 16777216 and not self.path.endswith('/events'):
                             raise RuntimeError('Response limit')
                         self.wfile.write(data)
                         self.wfile.flush()
@@ -177,7 +200,28 @@ data:
         threading.Thread(target=server.serve_forever, daemon=True).start()
     
     process = None
+    dashboard = None
     if not READER:
+        if any(CONFIG.get(key) for key in ('nativeBrowser', 'nativeApiApprovalBridge', 'nativeUserPromptBridge', 'nativeJobs', 'nativeProcessWake', 'nativeApiConnectionsBridge')):
+            capabilities = json.loads(Path('/opt/dealer/runtime-capabilities.json').read_text())
+            if capabilities.get('sourceRevision') != 'f97608f178d1ffeca59860195ab7da295f7c8e5f':
+                raise RuntimeError('Native image source capability mismatch')
+            if capabilities.get('activityLifetime') != 'native-activity-v1':
+                raise RuntimeError('Native process and desktop lifetime capability is unavailable')
+            if CONFIG.get('nativeBrowser') and capabilities.get('browser') != 'structured-bot-screen':
+                raise RuntimeError('Native browser capability is unavailable')
+            if CONFIG.get('nativeApiApprovalBridge') and capabilities.get('apiApprovalBridge') != 'session-callback-v1':
+                raise RuntimeError('Native exact approval capability is unavailable')
+            if CONFIG.get('nativeUserPromptBridge') and capabilities.get('userPromptBridge') != 'native-server-requests-v1':
+                raise RuntimeError('Native user prompt capability is unavailable')
+            if CONFIG.get('nativeJobs') and capabilities.get('jobsProvider') != 'dealer-native-cron-v1':
+                raise RuntimeError('Native Jobs provider capability is unavailable')
+            if CONFIG.get('nativeProcessWake') and capabilities.get('processWakeBridge') != 'native-durable-wake-v1':
+                raise RuntimeError('Native durable process wake capability is unavailable')
+            if CONFIG.get('nativeApiConnectionsBridge') and (capabilities.get('connectionsBridge') != 'native-connection-card-v1' or not CONFIG.get('nativeUserPromptBridge')):
+                raise RuntimeError('Native connections callback capability is unavailable')
+        if CONFIG.get('nativeWeb') and 'web' not in CONFIG['hermes']['platform_toolsets']['api_server']:
+            raise RuntimeError('Native Web configuration mismatch')
         # Files are created by the same non-root worker UID; an absent ownership repair stays fatal.
         if HOME.is_symlink():
             raise RuntimeError('Home symlink refused')
@@ -210,7 +254,11 @@ data:
         if CONFIG['refreshPrompt'] and not marker.exists():
             marker.write_text(CONFIG['homeId'])
             marker.chmod(0o600)
-        process = subprocess.Popen(['/opt/hermes/.venv/bin/hermes', 'gateway', 'run', '--no-supervise', '--external-supervisor'], env={'PATH': '/opt/hermes/.venv/bin:/usr/local/bin:/usr/bin:/bin', 'HOME': str(HOME), 'HERMES_HOME': str(HOME), 'PYTHONDONTWRITEBYTECODE': '1'})
+        environment = {'PATH': '/opt/hermes/.venv/bin:/usr/local/bin:/usr/bin:/bin', 'HOME': str(HOME), 'HERMES_HOME': str(HOME), 'HERMES_SHARED_AUTH_DIR': str(HOME / 'shared-auth'), 'PYTHONDONTWRITEBYTECODE': '1'}
+        if CONFIG.get('nativeBrowser'):
+            environment.update({'AGENT_BROWSER_EXECUTABLE_PATH': '/usr/local/bin/dealer-native-chromium', 'AGENT_BROWSER_ARGS': '--disable-dev-shm-usage', 'AGENT_BROWSER_PROFILE': str(HOME / 'browser-profile')})
+            dashboard = subprocess.Popen(['/opt/hermes/.venv/bin/python', '-B', '/opt/dealer/native-browser-dashboard.py', '--host', '0.0.0.0', '--port', '8643'], env={**environment, 'HERMES_DASHBOARD_SESSION_TOKEN': CONFIG['operatorKey']})
+        process = subprocess.Popen(['/opt/hermes/.venv/bin/hermes', 'gateway', 'run', '--no-supervise', '--external-supervisor'], env=environment)
     
     stopped = threading.Event()
     
@@ -218,6 +266,8 @@ data:
     def stop(*_):
         if process and process.poll() is None:
             process.terminate()
+        if dashboard and dashboard.poll() is None:
+            dashboard.terminate()
         stopped.set()
     
     
@@ -232,5 +282,12 @@ data:
         except subprocess.TimeoutExpired:
             process.kill()
             process.wait(timeout=5)
+    if dashboard:
+        if dashboard.poll() is None:
+            dashboard.terminate()
+        try:
+            dashboard.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            dashboard.kill(); dashboard.wait(timeout=5)
     for server in servers:
         server.shutdown()

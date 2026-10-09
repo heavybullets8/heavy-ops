@@ -19,6 +19,27 @@ spec:
             value: "/internal/wake"
         - path:
             type: "Exact"
+            value: "/internal/control"
+        - path:
+            type: "Exact"
+            value: "/internal/jobs"
+        - path:
+            type: "Exact"
+            value: "/internal/notification-wake"
+        - path:
+            type: "Exact"
+            value: "/internal/prompts"
+        - path:
+            type: "Exact"
+            value: "/internal/connections"
+        - path:
+            type: "Exact"
+            value: "/internal/native-browser"
+        - path:
+            type: "Exact"
+            value: "/internal/native-browser/stream"
+        - path:
+            type: "Exact"
             value: "/internal/browser/viewer"
       backendRefs:
         - name: "dealer-agent"

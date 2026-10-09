@@ -15,6 +15,14 @@ spec:
         - ports:
             - port: "8788"
               protocol: "TCP"
+    - fromEndpoints:
+        - matchLabels:
+            dealer.agent/installation: "mk-development"
+            dealer.agent/role: "controller"
+      toPorts:
+        - ports:
+            - port: "8643"
+              protocol: "TCP"
   egress:
     - toEndpoints:
         - matchLabels:
@@ -24,20 +32,47 @@ spec:
         - ports:
             - port: "8788"
               protocol: "TCP"
+    - toCIDRSet:
+        - cidr: "0.0.0.0/0"
+          except:
+            - "0.0.0.0/8"
+            - "10.0.0.0/8"
+            - "100.64.0.0/10"
+            - "127.0.0.0/8"
+            - "169.254.0.0/16"
+            - "172.16.0.0/12"
+            - "192.0.0.0/24"
+            - "192.0.2.0/24"
+            - "192.168.0.0/16"
+            - "198.18.0.0/15"
+            - "198.51.100.0/24"
+            - "203.0.113.0/24"
+            - "224.0.0.0/4"
+            - "240.0.0.0/4"
+        - cidr: "2000::/3"
+          except:
+            - "2001:db8::/32"
+      toPorts:
+        - ports:
+            - port: "80"
+              protocol: "TCP"
+            - port: "443"
+              protocol: "TCP"
+    - toEndpoints:
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": "kube-system"
+            "k8s:k8s-app": "kube-dns"
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: "UDP"
+            - port: "53"
+              protocol: "TCP"
+          rules:
+            dns:
+              - matchPattern: "*"
   egressDeny:
     - toEntities:
-        - "world"
         - "host"
         - "remote-node"
         - "kube-apiserver"
-    - toEndpoints:
-        - matchExpressions:
-            - key: "k8s:io.kubernetes.pod.namespace"
-              operator: "NotIn"
-              values:
-                - "dealer-mk-development"
-        - matchExpressions:
-            - key: "dealer.agent/role"
-              operator: "NotIn"
-              values:
-                - "controller"

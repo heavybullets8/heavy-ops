@@ -36,10 +36,20 @@
     "storageClass": "openebs-zfs-16k",
     "apiUrl": "https://kubernetes.default.svc.cluster.local.",
     "browser": {
-      "image": "${DEALER_BROWSER_IMAGE}",
-      "fixtureOrigin": "http://127.0.0.1:8791",
+      "image": "${DEALER_NATIVE_HERMES_IMAGE}",
       "seccompProfile": "profiles/bighorn-browser-containerd-2.2.7.json",
-      "maxCapsules": 2
+      "maxCapsules": 2,
+      "nativeAccount": true
+    },
+    "nativeWorker": {
+      "image": "${DEALER_NATIVE_HERMES_IMAGE}",
+      "seccompProfile": "profiles/bighorn-browser-containerd-2.2.7.json",
+      "apiApprovalBridge": true,
+      "userPromptBridge": true,
+      "jobs": true,
+      "web": true,
+      "processWake": true,
+      "apiConnectionsBridge": true
     }
   }
 }

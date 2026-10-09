@@ -20,7 +20,7 @@
       "ASSISTANT_OAUTH_SUBJECT": "mk-sales-development-assistant",
       "ASSISTANT_RUNTIME_URL": "https://assistant-mk.development.example/",
       "ASSISTANT_USAGE_POLICY": "{\"version\":\"openai-standard-global-2026-10-07\",\"dailyLimitMicros\":0,\"monthlyLimitMicros\":0,\"runLimitMicros\":0,\"models\":{\"gpt-6.1-sol\":{\"inputMicrosPerMillion\":2000000,\"cacheReadMicrosPerMillion\":100000,\"cacheWriteMicrosPerMillion\":2500000,\"outputMicrosPerMillion\":10000000}}}",
-      "ASSISTANT_BROWSER_FIXTURE_ORIGIN": "http://127.0.0.1:8791"
+      "ASSISTANT_NATIVE_ACCOUNT_BROWSER": "1"
     },
     "secretReferences": {
       "ASSISTANT_OAUTH_CLIENT_SECRET": "op://Bighorn Byte/mk-sales-development/ASSISTANT_OAUTH_CLIENT_SECRET",
@@ -53,9 +53,9 @@
     "Register a Bighorn Byte-capable secret store; the current talos store is not sufficient.",
     "Qualify API proxy, CSI ReadWriteOncePod, Cilium rules and host recovery before changing suspend/replicas.",
     "Restore while dispatch is disabled; reconcile app leases/effects, change generation and reauthorize before resuming.",
-    "Supply a published immutable DEALER_BROWSER_IMAGE matching the qualified browser build; the placeholder cannot launch a capsule.",
-    "Qualify the existing node seccomp profile, capsule sandbox, private callback route and per-account ReadWriteOncePod storage before browser activation.",
-    "The embedded owned fixture is synthetic; its /state site data is ephemeral in this plan. Browser profile PVCs are separate. This is not real Marketplace support.",
-    "Keep FlareSolverr and outreach egress separate from dealer account sessions; no external browser network or proxy is enabled by this plan."
+    "Supply a published immutable DEALER_NATIVE_HERMES_IMAGE with the reviewed native capability manifest.",
+    "Qualify the node seccomp profile, DNS and public HTTP/HTTPS egress, denied private targets and private native display before chat activation.",
+    "Qualify the native account controller, current account-lease callback, private display and per-account ReadWriteOncePod storage before browser activation.",
+    "Generic native browsing does not mint canonical Marketplace publication receipts; qualify the real account and publication adapter separately."
   ]
 }

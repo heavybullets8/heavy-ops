@@ -53,7 +53,7 @@ rules:
     resources:
       - "configmaps"
     resourceNames:
-      - "dealer-agent-worker-0beb3098ec79"
+      - "dealer-agent-worker-d0c8b0a3f195"
     verbs:
       - "get"
   - apiGroups:
