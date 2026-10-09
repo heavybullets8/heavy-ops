@@ -19,6 +19,20 @@ spec:
         - ports:
             - port: "8080"
               protocol: TCP
+            - port: "8081"
+              protocol: TCP
+    # NOTE: the outreach fetch layer reaches the home listener only; its VPN reads go to gluetun.
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: business
+            app.kubernetes.io/name: bighorn-byte-outreach
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: business
+            app.kubernetes.io/name: bighorn-byte-web
+      toPorts:
+        - ports:
+            - port: "8081"
+              protocol: TCP
   ingressDeny:
     - fromEntities: [host, remote-node, kube-apiserver]
   egress:
@@ -41,8 +55,35 @@ spec:
         - ports:
             - port: "8388"
               protocol: TCP
+    # NOTE: the home listener's egress under its home policy; web ports only, never private ranges.
+    - toCIDRSet:
+        - cidr: 0.0.0.0/0
+          except:
+            - 0.0.0.0/8
+            - 10.0.0.0/8
+            - 100.64.0.0/10
+            - 127.0.0.0/8
+            - 169.254.0.0/16
+            - 172.16.0.0/12
+            - 192.168.0.0/16
+            - 224.0.0.0/3
+      toPorts:
+        - ports:
+            - port: "80"
+              protocol: TCP
+            - port: "443"
+              protocol: TCP
   egressDeny:
-    - toEntities: [host, remote-node, kube-apiserver, world]
+    - toEntities: [host, remote-node, kube-apiserver]
+    - toCIDRSet:
+        - cidr: 0.0.0.0/8
+        - cidr: 10.0.0.0/8
+        - cidr: 100.64.0.0/10
+        - cidr: 127.0.0.0/8
+        - cidr: 169.254.0.0/16
+        - cidr: 172.16.0.0/12
+        - cidr: 192.168.0.0/16
+        - cidr: 224.0.0.0/3
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/cilium.io/ciliumnetworkpolicy_v2.json
 apiVersion: cilium.io/v2
@@ -87,6 +128,8 @@ spec:
       toPorts:
         - ports:
             - port: "8080"
+              protocol: TCP
+            - port: "8081"
               protocol: TCP
   egressDeny:
     - toEntities: [host, remote-node, kube-apiserver, world]
