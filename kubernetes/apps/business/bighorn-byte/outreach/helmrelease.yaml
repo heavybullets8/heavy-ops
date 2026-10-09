@@ -21,7 +21,7 @@ spec:
           app:
             image: &image
               repository: ghcr.io/heavybullets8/bighorn-byte-web
-              tag: 0.4.2@sha256:797f1d867d308aba1143f0d1272175338d2caddb3081c1d23f9a394587a71056
+              tag: 0.4.3@sha256:82befd7858ae7140e9294d1137771fd8ee801fa76a0f3122659b164ec58603f4
               pullPolicy: Always
             env: &env
               TZ: ${TIMEZONE}
@@ -43,7 +43,7 @@ spec:
             envFrom: &envFrom
               - secretRef:
                   name: bighorn-byte-outreach-secret
-            args: ["run", "--cached-only", "--allow-all", "scripts/outreach-worker.ts"]
+            args: ["task", "worker"]
             probes:
               liveness:
                 enabled: true
@@ -114,7 +114,7 @@ spec:
               OUTREACH_MCP_ISSUER: https://auth.${SECRET_DOMAIN}
               OUTREACH_MCP_OWNER_SUBJECTS: 463c69e1-db21-4eb3-8b29-bf87dbced4df
             envFrom: *envFrom
-            args: ["run", "--cached-only", "--allow-all", "scripts/outreach-mcp.ts"]
+            args: ["task", "mcp"]
             probes:
               liveness:
                 enabled: true
