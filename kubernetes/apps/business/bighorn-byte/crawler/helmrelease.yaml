@@ -36,6 +36,7 @@ spec:
               OUTREACH_PUBLIC_PROXY_PORT: &proxyPort 8080
               OUTREACH_HOME_PROXY_PORT: &homePort 8081
               OUTREACH_PROXY_MAX_CONNECTIONS: 256
+              OUTREACH_HOME_BUDGET_FILE: /var/lib/outreach-proxy/home-budget.json
               OUTREACH_PROXY_URL: socks5://qbittorrent-gluetun.media.svc.cluster.local:8388
             probes:
               liveness:
@@ -175,6 +176,13 @@ spec:
           solver:
             app:
               - path: /tmp
+      state:
+        type: emptyDir
+        sizeLimit: 1Mi
+        advancedMounts:
+          public-proxy:
+            app:
+              - path: /var/lib/outreach-proxy
       dshm:
         type: emptyDir
         medium: Memory
