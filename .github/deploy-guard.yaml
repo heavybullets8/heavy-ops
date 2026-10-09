@@ -1,4 +1,5 @@
 exclude:
   - docmost-bhb
   - documenso
-strict: []
+strict:
+  - scale-tv
