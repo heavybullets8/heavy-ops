@@ -34,6 +34,7 @@ spec:
                   seconds: 5
             env:
               OUTREACH_PUBLIC_PROXY_PORT: &proxyPort 8080
+              OUTREACH_PUBLIC_DIRECT_PROXY_PORT: &directPort 8081
               OUTREACH_PROXY_MAX_CONNECTIONS: 128
               OUTREACH_PROXY_URL: socks5://qbittorrent-gluetun.media.svc.cluster.local:8388
             probes:
@@ -92,6 +93,7 @@ spec:
               LOG_LEVEL: warning
               PORT: &solverPort 8191
               PROXY_URL: http://bighorn-byte-public-proxy.business.svc.cluster.local:8080
+              PROXY_DIRECT_URL: http://bighorn-byte-public-proxy.business.svc.cluster.local:8081
             lifecycle:
               preStop:
                 sleep:
@@ -153,6 +155,8 @@ spec:
         ports:
           http:
             port: *proxyPort
+          direct:
+            port: *directPort
       solver:
         forceRename: bighorn-byte-solver
         controller: solver
