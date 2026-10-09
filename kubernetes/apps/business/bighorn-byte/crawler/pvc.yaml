@@ -1,0 +1,15 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/persistentvolumeclaim_v1.json
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bighorn-byte-proxy-state
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: openebs-zfs-16k
+  resources:
+    requests:
+      storage: 64Mi

@@ -177,8 +177,7 @@ spec:
             app:
               - path: /tmp
       state:
-        type: emptyDir
-        sizeLimit: 1Mi
+        existingClaim: bighorn-byte-proxy-state
         advancedMounts:
           public-proxy:
             app:
