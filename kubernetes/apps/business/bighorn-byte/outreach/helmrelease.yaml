@@ -94,6 +94,8 @@ spec:
         replicas: 1
         strategy: RollingUpdate
         annotations: *reload
+        pod:
+          terminationGracePeriodSeconds: 30
         containers:
           app:
             image: *image
@@ -231,7 +233,7 @@ spec:
         - name: business-ghcr
       automountServiceAccountToken: false
       enableServiceLinks: false
-      terminationGracePeriodSeconds: 30
+      terminationGracePeriodSeconds: 1200
       securityContext:
         runAsNonRoot: true
         runAsUser: 10001

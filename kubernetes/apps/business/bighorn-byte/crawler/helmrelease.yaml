@@ -141,7 +141,7 @@ spec:
         - name: business-ghcr
       automountServiceAccountToken: false
       enableServiceLinks: false
-      terminationGracePeriodSeconds: 30
+      terminationGracePeriodSeconds: 120
       securityContext:
         seccompProfile:
           type: RuntimeDefault
