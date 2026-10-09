@@ -22,7 +22,7 @@ spec:
           app:
             image: &image
               repository: ghcr.io/heavybullets8/bighorn-byte-web
-              tag: 0.3.3@sha256:8879d60652a3ebab066754b2912c73fc48b9ca97d6fdebac47c63237992cff2a
+              tag: 0.4.0@sha256:1948c1537081186ea138d4a8ff519eb63b3a7b5f15d795fe11e07dee80ee5aaa
               pullPolicy: Always
             env:
               TZ: ${TIMEZONE}
@@ -53,7 +53,7 @@ spec:
                   httpGet:
                     path: /healthz
                     port: &port 8000
-                  periodSeconds: 30
+                  periodSeconds: 15
                   timeoutSeconds: 2
                   failureThreshold: 3
               readiness:
@@ -63,9 +63,9 @@ spec:
                   httpGet:
                     path: /readyz
                     port: *port
-                  periodSeconds: 10
+                  periodSeconds: 5
                   timeoutSeconds: 2
-                  failureThreshold: 3
+                  failureThreshold: 2
               startup:
                 enabled: true
                 custom: true
@@ -74,7 +74,7 @@ spec:
                     path: /healthz
                     port: *port
                   periodSeconds: 5
-                  failureThreshold: 30
+                  failureThreshold: 60
             resources:
               requests:
                 cpu: 100m
@@ -82,6 +82,10 @@ spec:
               limits:
                 cpu: 1
                 memory: 1Gi
+            lifecycle:
+              preStop:
+                sleep:
+                  seconds: 5
             securityContext: &securityContext
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
@@ -190,11 +194,12 @@ spec:
         - name: business-ghcr
       automountServiceAccountToken: false
       enableServiceLinks: false
+      terminationGracePeriodSeconds: 30
       securityContext:
         runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
         seccompProfile:
           type: RuntimeDefault
 

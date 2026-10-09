@@ -15,19 +15,19 @@ spec:
       public-proxy:
         replicas: 1
         strategy: Recreate
+        pod:
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
+            fsGroup: 10001
         containers:
           app:
             image:
-              repository: ghcr.io/heavybullets8/bighorn-byte-outreach
-              tag: 0.3.3@sha256:0f5b7151bbcf8400ba21c538c928f6647cd588603878396b2735fb93f922043a
+              repository: ghcr.io/heavybullets8/bighorn-byte-web
+              tag: 0.4.0@sha256:1948c1537081186ea138d4a8ff519eb63b3a7b5f15d795fe11e07dee80ee5aaa
               pullPolicy: Always
-            args:
-              - run
-              - --cached-only
-              - --frozen
-              - --allow-env
-              - --allow-net
-              - scripts/outreach-proxy.ts
+            args: ["task", "proxy"]
             env:
               OUTREACH_PUBLIC_PROXY_PORT: &proxyPort 8080
               OUTREACH_PROXY_MAX_CONNECTIONS: 128
