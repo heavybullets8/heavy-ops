@@ -74,6 +74,10 @@ spec:
                     port: *port
                   periodSeconds: 5
                   failureThreshold: 30
+            lifecycle: &preStop
+              preStop:
+                sleep:
+                  seconds: 5
             resources:
               requests:
                 cpu: 1
@@ -90,8 +94,6 @@ spec:
         replicas: 1
         strategy: RollingUpdate
         annotations: *reload
-        pod:
-          terminationGracePeriodSeconds: 30
         containers:
           app:
             image: *image
@@ -141,6 +143,7 @@ spec:
                     port: *port
                   periodSeconds: 5
                   failureThreshold: 30
+            lifecycle: *preStop
             resources:
               requests:
                 cpu: 50m
@@ -150,7 +153,7 @@ spec:
                 memory: 512Mi
             securityContext: *securityContext
 
-      scheduler:
+      run-outreach-scheduler:
         type: cronjob
         annotations: *reload
         cronjob: &cronjob
@@ -185,7 +188,7 @@ spec:
                 memory: 1Gi
             securityContext: *securityContext
 
-      mail:
+      send-outreach-mail:
         type: cronjob
         annotations: *reload
         pod: *jobPod
@@ -197,7 +200,7 @@ spec:
             <<: *jobContainer
             args: ["task", "job", "send-outreach-mail"]
 
-      hourly-maintenance:
+      run-hourly-maintenance:
         type: cronjob
         annotations: *reload
         pod: *jobPod
@@ -210,7 +213,7 @@ spec:
             <<: *jobContainer
             args: ["task", "job", "run-hourly-maintenance"]
 
-      daily-maintenance:
+      run-daily-maintenance:
         type: cronjob
         annotations: *reload
         pod: *jobPod
@@ -228,7 +231,7 @@ spec:
         - name: business-ghcr
       automountServiceAccountToken: false
       enableServiceLinks: false
-      terminationGracePeriodSeconds: 1200
+      terminationGracePeriodSeconds: 30
       securityContext:
         runAsNonRoot: true
         runAsUser: 10001

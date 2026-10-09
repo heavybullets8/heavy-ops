@@ -3,3 +3,5 @@ exclude:
   - documenso
 strict:
   - scale-tv
+  - bighorn-byte-outreach
+  - bighorn-byte-crawler
