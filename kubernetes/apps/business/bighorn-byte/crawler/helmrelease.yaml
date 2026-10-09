@@ -28,6 +28,10 @@ spec:
               tag: 0.4.2@sha256:797f1d867d308aba1143f0d1272175338d2caddb3081c1d23f9a394587a71056
               pullPolicy: Always
             args: ["task", "proxy"]
+            lifecycle:
+              preStop:
+                sleep:
+                  seconds: 5
             env:
               OUTREACH_PUBLIC_PROXY_PORT: &proxyPort 8080
               OUTREACH_PROXY_MAX_CONNECTIONS: 128
@@ -88,6 +92,10 @@ spec:
               LOG_LEVEL: warning
               PORT: &solverPort 8191
               PROXY_URL: http://bighorn-byte-public-proxy.business.svc.cluster.local:8080
+            lifecycle:
+              preStop:
+                sleep:
+                  seconds: 5
             probes:
               liveness:
                 enabled: true
