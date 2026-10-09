@@ -7,7 +7,6 @@
       "matchPackageNames": [
         "ghcr.io/heavybullets8/scale-tv",
         "ghcr.io/heavybullets8/bighorn-byte-web",
-        "ghcr.io/heavybullets8/bighorn-byte-outreach",
         "ghcr.io/heavybullets8/bighorn-byte-browser",
         "ghcr.io/heavybullets8/bighorn-byte-solver"
       ],
@@ -15,17 +14,6 @@
       "allowedVersions": "/^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$/",
       "pinDigests": true,
       "automerge": false
-    },
-    {
-      "description": ["Update BighornByte release containers together"],
-      "matchDatasources": ["docker"],
-      "matchPackageNames": [
-        "ghcr.io/heavybullets8/bighorn-byte-web",
-        "ghcr.io/heavybullets8/bighorn-byte-outreach"
-      ],
-      "groupName": "BighornByte application",
-      "separateMajorMinor": false,
-      "separateMinorPatch": false
     },
     {
       "description": ["Promote tested agent runner image pairs and the chart that pins them together"],

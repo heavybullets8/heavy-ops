@@ -20,8 +20,8 @@ spec:
         containers:
           app:
             image: &image
-              repository: ghcr.io/heavybullets8/bighorn-byte-outreach
-              tag: 0.3.3@sha256:0f5b7151bbcf8400ba21c538c928f6647cd588603878396b2735fb93f922043a
+              repository: ghcr.io/heavybullets8/bighorn-byte-web
+              tag: 0.4.0@sha256:1948c1537081186ea138d4a8ff519eb63b3a7b5f15d795fe11e07dee80ee5aaa
               pullPolicy: Always
             env: &env
               TZ: ${TIMEZONE}
@@ -43,6 +43,7 @@ spec:
             envFrom: &envFrom
               - secretRef:
                   name: bighorn-byte-outreach-secret
+            args: ["task", "worker"]
             probes:
               liveness:
                 enabled: true
@@ -109,7 +110,7 @@ spec:
               OUTREACH_MCP_ISSUER: https://auth.${SECRET_DOMAIN}
               OUTREACH_MCP_OWNER_SUBJECTS: 463c69e1-db21-4eb3-8b29-bf87dbced4df
             envFrom: *envFrom
-            args: ["run", "--cached-only", "--frozen", "--allow-env", "--allow-net", "--allow-read", "--allow-sys", "--allow-ffi", "scripts/outreach-mcp.ts"]
+            args: ["task", "mcp"]
             probes:
               liveness:
                 enabled: true
@@ -152,21 +153,30 @@ spec:
       scheduler:
         type: cronjob
         annotations: *reload
-        cronjob:
+        cronjob: &cronjob
           schedule: "*/5 * * * *"
           timeZone: ${TIMEZONE}
           suspend: false
           concurrencyPolicy: Forbid
+          startingDeadlineSeconds: 600
           backoffLimit: 2
           activeDeadlineSeconds: 900
           successfulJobsHistory: 1
           failedJobsHistory: 1
+          ttlSecondsAfterFinished: 86400
+        pod: &jobPod
+          restartPolicy: Never
         containers:
-          app:
+          app: &jobContainer
             image: *image
-            env: *env
+            env:
+              <<: *env
+              JOB_NAME:
+                valueFrom:
+                  fieldRef:
+                    fieldPath: metadata.labels['batch.kubernetes.io/job-name']
             envFrom: *envFrom
-            args: ["run", "--cached-only", "--frozen", "--allow-all", "scripts/outreach-worker.ts", "scheduler", "--once"]
+            args: ["task", "job", "run-outreach-scheduler"]
             resources: &scheduledResources
               requests:
                 cpu: 100m
@@ -178,65 +188,40 @@ spec:
       mail:
         type: cronjob
         annotations: *reload
+        pod: *jobPod
         cronjob:
+          <<: *cronjob
           schedule: "* * * * *"
-          timeZone: ${TIMEZONE}
-          suspend: false
-          concurrencyPolicy: Forbid
-          backoffLimit: 2
-          activeDeadlineSeconds: 900
-          successfulJobsHistory: 1
-          failedJobsHistory: 1
         containers:
           app:
-            image: *image
-            env: *env
-            envFrom: *envFrom
-            args: ["run", "--cached-only", "--frozen", "--allow-all", "scripts/outreach-worker.ts", "mail", "--once"]
-            resources: *scheduledResources
-            securityContext: *securityContext
+            <<: *jobContainer
+            args: ["task", "job", "send-outreach-mail"]
 
       hourly-maintenance:
         type: cronjob
         annotations: *reload
+        pod: *jobPod
         cronjob:
+          <<: *cronjob
           schedule: "20 * * * *"
           timeZone: Etc/UTC
-          suspend: false
-          concurrencyPolicy: Forbid
-          backoffLimit: 2
-          activeDeadlineSeconds: 900
-          successfulJobsHistory: 1
-          failedJobsHistory: 1
         containers:
           app:
-            image: *image
-            env: *env
-            envFrom: *envFrom
-            args: ["run", "--cached-only", "--frozen", "--allow-all", "scripts/app-maintenance.ts", "hourly", "--once"]
-            resources: *scheduledResources
-            securityContext: *securityContext
+            <<: *jobContainer
+            args: ["task", "job", "run-hourly-maintenance"]
 
       daily-maintenance:
         type: cronjob
         annotations: *reload
+        pod: *jobPod
         cronjob:
+          <<: *cronjob
           schedule: "50 10 * * *"
           timeZone: Etc/UTC
-          suspend: false
-          concurrencyPolicy: Forbid
-          backoffLimit: 2
-          activeDeadlineSeconds: 900
-          successfulJobsHistory: 1
-          failedJobsHistory: 1
         containers:
           app:
-            image: *image
-            env: *env
-            envFrom: *envFrom
-            args: ["run", "--cached-only", "--frozen", "--allow-all", "scripts/app-maintenance.ts", "daily", "--once"]
-            resources: *scheduledResources
-            securityContext: *securityContext
+            <<: *jobContainer
+            args: ["task", "job", "run-daily-maintenance"]
 
     defaultPodOptions:
       imagePullSecrets:
@@ -246,9 +231,9 @@ spec:
       terminationGracePeriodSeconds: 1200
       securityContext:
         runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
         seccompProfile:
           type: RuntimeDefault
 
