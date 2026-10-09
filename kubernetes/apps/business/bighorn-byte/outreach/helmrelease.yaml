@@ -43,7 +43,7 @@ spec:
             envFrom: &envFrom
               - secretRef:
                   name: bighorn-byte-outreach-secret
-            args: ["task", "worker"]
+            args: ["run", "--cached-only", "--allow-all", "scripts/outreach-worker.ts"]
             probes:
               liveness:
                 enabled: true
@@ -114,7 +114,7 @@ spec:
               OUTREACH_MCP_ISSUER: https://auth.${SECRET_DOMAIN}
               OUTREACH_MCP_OWNER_SUBJECTS: 463c69e1-db21-4eb3-8b29-bf87dbced4df
             envFrom: *envFrom
-            args: ["task", "mcp"]
+            args: ["run", "--cached-only", "--allow-all", "scripts/outreach-mcp.ts"]
             probes:
               liveness:
                 enabled: true
