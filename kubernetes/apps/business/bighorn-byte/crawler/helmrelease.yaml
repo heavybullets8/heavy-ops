@@ -25,7 +25,7 @@ spec:
           app:
             image:
               repository: ghcr.io/heavybullets8/bighorn-byte-web
-              tag: 0.4.6@sha256:69aa95283d5c8ba8acf7de54058dbc9b6f8a68d351373f09951f6541f771c37e
+              tag: 0.4.8@sha256:99f6baffd8385051337c8dabd43ee2c71097e3f8142e75845d1c76b2e1b28d67
               pullPolicy: Always
             args: ["task", "proxy"]
             lifecycle:
@@ -86,7 +86,7 @@ spec:
           app:
             image:
               repository: ghcr.io/heavybullets8/bighorn-byte-solver
-              tag: 0.1.1@sha256:126da7864caced76a986fafb0cc4f55e96604e58ed181648068f8303aa2bc98c
+              tag: 0.1.2@sha256:e6c428ec546c4dd0156067b8caa80a5ea64ba8730e186fb4eb994dd353664c1a
               pullPolicy: Always
             env:
               CAPTCHA_SOLVER: "none"
