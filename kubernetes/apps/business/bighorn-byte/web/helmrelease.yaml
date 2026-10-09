@@ -40,7 +40,7 @@ spec:
               OUTREACH_PROXY_URL: socks5://qbittorrent-gluetun.media.svc.cluster.local:8388
               OUTREACH_SOLVER_URL: http://bighorn-byte-solver.business.svc.cluster.local:8191/v1
               OUTREACH_SOLVER_PROXY_URL: http://bighorn-byte-public-proxy.business.svc.cluster.local:8080
-              OUTREACH_SOLVER_DIRECT_PROXY_URL: http://bighorn-byte-public-proxy.business.svc.cluster.local:8081
+              OUTREACH_HOME_PROXY_URL: http://bighorn-byte-public-proxy.business.svc.cluster.local:8081
             envFrom:
               - secretRef:
                   name: bighorn-byte-web-secret

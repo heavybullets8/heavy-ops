@@ -21,6 +21,18 @@ spec:
               protocol: TCP
             - port: "8081"
               protocol: TCP
+    # NOTE: the outreach fetch layer reaches the home listener only; its VPN reads go to gluetun.
+    - fromEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: business
+            app.kubernetes.io/name: bighorn-byte-outreach
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: business
+            app.kubernetes.io/name: bighorn-byte-web
+      toPorts:
+        - ports:
+            - port: "8081"
+              protocol: TCP
   ingressDeny:
     - fromEntities: [host, remote-node, kube-apiserver]
   egress:
@@ -43,7 +55,7 @@ spec:
         - ports:
             - port: "8388"
               protocol: TCP
-    # NOTE: direct fallback when the VPN refuses; web ports only, never private ranges.
+    # NOTE: the home listener's egress under its home policy; web ports only, never private ranges.
     - toCIDRSet:
         - cidr: 0.0.0.0/0
           except:
