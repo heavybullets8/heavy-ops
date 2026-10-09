@@ -54,6 +54,10 @@ spec:
                   periodSeconds: 5
                   timeoutSeconds: 3
                   failureThreshold: 30
+            lifecycle:
+              preStop:
+                sleep:
+                  seconds: 5
             resources:
               requests:
                 cpu: 1
