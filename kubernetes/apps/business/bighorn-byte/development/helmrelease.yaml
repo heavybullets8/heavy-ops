@@ -1,16 +1,15 @@
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+# Same application image and runtime contract, with isolated data and credentials.
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &app bighorn-byte-web
+  name: bighorn-byte-development
 spec:
   interval: 30m
   timeout: 15m
   chartRef:
     kind: OCIRepository
     name: app-template
-
   values:
     controllers:
       web:
@@ -20,32 +19,24 @@ spec:
           reloader.stakater.com/auto: "true"
         containers:
           app:
-            image: &image
+            image:
               repository: ghcr.io/heavybullets8/bighorn-byte-web
               tag: 0.5.0@sha256:f62009b23fc89a9d58e0976a2ff1866713d37b5b1fa9f05d26f5cdd14d8edfaf
               pullPolicy: Always
             env:
               TZ: ${TIMEZONE}
-              SITE_URL: https://bighornbyte.com
+              SITE_URL: https://development.bighornbyte.com
               MAINTENANCE_MODE: "0"
               PGHOST: postgres-rw.database.svc.cluster.local
               PGPORT: "5432"
-              PGDATABASE: bighorn_byte_demo
-              ADMIN_PGDATABASE: bighorn_byte_admin
-              AI_MODEL_EXTRACT: anthropic:claude-haiku-5-5
-              AI_MODEL_CLASSIFY: anthropic:claude-haiku-5-5
+              PGDATABASE: bighorn_byte_development
+              ADMIN_PGDATABASE: bighorn_byte_admin_development
               AI_MODEL_WRITE: anthropic:claude-haiku-5-5
-              BHB_CONNECTIONS_BACKEND: remote
-              OUTREACH_BROWSER_URL: "ws://bighorn-byte-browser.business.svc.cluster.local:3000/$(BROWSER_WS_PATH)"
-              OUTREACH_PROXY_URL: socks5://qbittorrent-gluetun.media.svc.cluster.local:8388
-              OUTREACH_SOLVER_URL: http://bighorn-byte-solver.business.svc.cluster.local:8191/v1
-              OUTREACH_SOLVER_PROXY_URL: http://bighorn-byte-public-proxy.business.svc.cluster.local:8080
-              OUTREACH_HOME_PROXY_URL: http://bighorn-byte-public-proxy.business.svc.cluster.local:8081
+              OUTREACH_ENABLED: "0"
+              OUTREACH_MAIL_SEND_ENABLED: "0"
             envFrom:
               - secretRef:
-                  name: bighorn-byte-web-secret
-              - secretRef:
-                  name: bighorn-byte-connections-management-secret
+                  name: bighorn-byte-development-secret
             probes:
               liveness:
                 enabled: true
@@ -53,7 +44,7 @@ spec:
                 spec:
                   httpGet:
                     path: /healthz
-                    port: &port 8000
+                    port: 8000
                   periodSeconds: 15
                   timeoutSeconds: 2
                   failureThreshold: 3
@@ -63,7 +54,7 @@ spec:
                 spec:
                   httpGet:
                     path: /readyz
-                    port: *port
+                    port: 8000
                   periodSeconds: 5
                   timeoutSeconds: 2
                   failureThreshold: 2
@@ -73,7 +64,7 @@ spec:
                 spec:
                   httpGet:
                     path: /healthz
-                    port: *port
+                    port: 8000
                   periodSeconds: 5
                   failureThreshold: 60
             resources:
@@ -87,109 +78,102 @@ spec:
               preStop:
                 sleep:
                   seconds: 5
-            securityContext: &securityContext
+            securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
-              capabilities: { drop: ["ALL"] }
-
+              capabilities:
+                drop:
+                  - ALL
       migrate-demo:
         type: job
         annotations:
           helm.sh/hook: pre-install,pre-upgrade
           helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
           helm.sh/hook-weight: "-10"
-        job: &migrationJob
+        job:
           backoffLimit: 1
           activeDeadlineSeconds: 600
         containers:
           app:
-            image: *image
+            image:
+              repository: ghcr.io/heavybullets8/bighorn-byte-web
+              tag: 0.5.0@sha256:f62009b23fc89a9d58e0976a2ff1866713d37b5b1fa9f05d26f5cdd14d8edfaf
+              pullPolicy: Always
             env:
               PGHOST: postgres-rw.database.svc.cluster.local
               PGPORT: "5432"
-              PGDATABASE: bighorn_byte_demo
+              PGDATABASE: bighorn_byte_development
               PGUSER:
                 valueFrom:
                   secretKeyRef:
-                    name: bighorn-byte-web-secret
+                    name: bighorn-byte-development-secret
                     key: PGUSER
               PGPASSWORD:
                 valueFrom:
                   secretKeyRef:
-                    name: bighorn-byte-web-secret
+                    name: bighorn-byte-development-secret
                     key: PGPASSWORD
-            args: ["task", "db:deploy"]
-            resources: &migrationResources
+            args:
+              - task
+              - db:deploy
+            resources:
               requests:
                 cpu: 100m
                 memory: 256Mi
               limits:
                 cpu: 1
                 memory: 1Gi
-            securityContext: *securityContext
-
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
       migrate-admin:
         type: job
         annotations:
           helm.sh/hook: pre-install,pre-upgrade
           helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
           helm.sh/hook-weight: "-10"
-        job: *migrationJob
+        job:
+          backoffLimit: 1
+          activeDeadlineSeconds: 600
         containers:
           app:
-            image: *image
+            image:
+              repository: ghcr.io/heavybullets8/bighorn-byte-web
+              tag: 0.5.0@sha256:f62009b23fc89a9d58e0976a2ff1866713d37b5b1fa9f05d26f5cdd14d8edfaf
+              pullPolicy: Always
             env:
-              # NOTE: ADMIN_PG* falls back to PGHOST and PGPORT for the shared server.
               PGHOST: postgres-rw.database.svc.cluster.local
               PGPORT: "5432"
-              ADMIN_PGDATABASE: bighorn_byte_admin
+              ADMIN_PGDATABASE: bighorn_byte_admin_development
               ADMIN_PGUSER:
                 valueFrom:
                   secretKeyRef:
-                    name: bighorn-byte-web-secret
+                    name: bighorn-byte-development-secret
                     key: ADMIN_PGUSER
               ADMIN_PGPASSWORD:
                 valueFrom:
                   secretKeyRef:
-                    name: bighorn-byte-web-secret
+                    name: bighorn-byte-development-secret
                     key: ADMIN_PGPASSWORD
-            args: ["task", "db:admin:deploy"]
-            resources: *migrationResources
-            securityContext: *securityContext
-
-      indexnow:
-        type: job
-        annotations:
-          helm.sh/hook: post-install,post-upgrade
-          helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
-          helm.sh/hook-weight: "10"
-        job:
-          backoffLimit: 1
-          activeDeadlineSeconds: 660
-        containers:
-          app:
-            image: *image
-            command: ["/bin/sh", "-c"]
             args:
-              - |
-                if [ -z "$BHB_SOURCE_REVISION" ]; then
-                  echo 'IndexNow skipped: this image predates deployment revision checks.'
-                  exit 0
-                fi
-                deno run --cached-only --frozen --node-modules-dir=none \
-                  --allow-read=/app/static --allow-env=BHB_SOURCE_REVISION \
-                  --allow-net=bighornbyte.com,api.indexnow.org \
-                  /app/scripts/indexnow.ts --all --wait-seconds=600 || \
-                  echo 'IndexNow submission failed; retry with the IndexNow workflow after checking the deployment.'
+              - task
+              - db:admin:deploy
             resources:
               requests:
-                cpu: 25m
-                memory: 64Mi
-              limits:
-                cpu: 250m
+                cpu: 100m
                 memory: 256Mi
-            securityContext: *securityContext
-
+              limits:
+                cpu: 1
+                memory: 1Gi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                  - ALL
     defaultPodOptions:
       imagePullSecrets:
         - name: business-ghcr
@@ -203,14 +187,12 @@ spec:
         fsGroup: 10001
         seccompProfile:
           type: RuntimeDefault
-
     service:
       app:
         controller: web
         ports:
           http:
-            port: *port
-
+            port: 8000
     persistence:
       tmp:
         type: emptyDir

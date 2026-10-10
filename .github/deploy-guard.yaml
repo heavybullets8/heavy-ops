@@ -7,3 +7,4 @@ strict:
   - bighorn-byte-crawler
   - bighorn-byte-web
   - bighorn-byte-browser
+  - bighorn-byte-development
