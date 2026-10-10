@@ -73,9 +73,10 @@ items:
                     cpu: 500m
                     memory: 1Gi
                     ephemeral-storage: 2Gi
+                  # NOTE: the kit's DB test lane sizes its shard count from these limits.
                   limits:
-                    cpu: 4
-                    memory: 4Gi
+                    cpu: 16
+                    memory: 16Gi
                     ephemeral-storage: 10Gi
                 volumeMounts:
                   - &workMount
@@ -179,8 +180,8 @@ items:
                     cpu: 100m
                     memory: 256Mi
                   limits:
-                    cpu: 2
-                    memory: 3Gi
+                    cpu: 8
+                    memory: 8Gi
                 volumeMounts:
                   - name: postgres-data
                     mountPath: /var/lib/postgresql/data
@@ -211,12 +212,12 @@ items:
                 name: postgres-data
                 emptyDir:
                   medium: Memory
-                  sizeLimit: 2Gi
+                  sizeLimit: 4Gi
               - &postgresShm
                 name: postgres-shm
                 emptyDir:
                   medium: Memory
-                  sizeLimit: 256Mi
+                  sizeLimit: 1Gi
   - <<: *ciPool
     metadata:
       name: cloudpeakinsulation-ci
