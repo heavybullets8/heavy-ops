@@ -86,6 +86,9 @@ spec:
                   - ALL
       migrate-demo:
         type: job
+        # NOTE: Pre-install hooks run before the chart creates its service account.
+        serviceAccount:
+          name: default
         annotations:
           helm.sh/hook: pre-install,pre-upgrade
           helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
@@ -131,6 +134,8 @@ spec:
                   - ALL
       migrate-admin:
         type: job
+        serviceAccount:
+          name: default
         annotations:
           helm.sh/hook: pre-install,pre-upgrade
           helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
