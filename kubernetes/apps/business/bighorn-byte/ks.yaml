@@ -20,7 +20,7 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  # NOTE: Ready only after the web pod's migrate init containers finish; the worker and crawler wait on it.
+  # NOTE: Ready only after web migrations and rollout finish; workers and crawler wait on it.
   wait: true
   interval: 30m
   timeout: 15m
@@ -97,5 +97,29 @@ spec:
     name: flux-system
     namespace: flux-system
   wait: false
+  interval: 30m
+  timeout: 15m
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: bighorn-byte-development
+  namespace: business
+spec:
+  targetNamespace: business
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: bighorn-byte-development
+  dependsOn:
+    - name: onepassword
+      namespace: external-secrets
+  path: ./kubernetes/apps/business/bighorn-byte/development
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: true
   interval: 30m
   timeout: 15m

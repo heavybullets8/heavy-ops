@@ -113,3 +113,15 @@ that have significantly contributed to my home operations setup:
   Served as a bootstrap for my server configuration.
 - **[Home Operations Discord Community](https://discord.gg/home-operations)**: A
   supportive community where I received valuable advice and shared experiences.
+
+## Bighorn Byte environments
+
+The production web app, outreach workers and crawler use one pinned Bighorn
+Byte web image. The web release runs database migrations before the dependent
+workers roll out.
+
+The caller demonstration at `development.bighornbyte.com` uses the same image
+with separate demo/admin databases and the `bighorn-byte-development` 1Password
+item. It contains fictional dealers, has no provider credentials or workers,
+and limits outbound network access to DNS and PostgreSQL. Its login is stored
+in that item. Keep development values out of the production runtime items.
