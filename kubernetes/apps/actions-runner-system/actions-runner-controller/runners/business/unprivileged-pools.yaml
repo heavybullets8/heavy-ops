@@ -187,7 +187,8 @@ items:
                     mountPath: /var/lib/postgresql/data
                   - name: postgres-shm
                     mountPath: /dev/shm
-                args: ["-p", "5433", "-c", "listen_addresses=127.0.0.1"]
+                # NOTE: the kit's DB test lane sizes its shard count from free connections.
+                args: ["-p", "5433", "-c", "listen_addresses=127.0.0.1", "-c", "max_connections=400"]
                 env:
                   - name: POSTGRES_USER
                     value: anytimesteel
@@ -233,7 +234,7 @@ items:
             <<: *databasePod
             initContainers:
               - <<: *postgresSidecar
-                args: ["-p", "5434", "-c", "listen_addresses=127.0.0.1"]
+                args: ["-p", "5434", "-c", "listen_addresses=127.0.0.1", "-c", "max_connections=400"]
                 env:
                   - name: POSTGRES_USER
                     value: cloudpeak
@@ -263,7 +264,7 @@ items:
             <<: *databasePod
             initContainers:
               - <<: *postgresSidecar
-                args: ["-p", "5437", "-c", "listen_addresses=127.0.0.1"]
+                args: ["-p", "5437", "-c", "listen_addresses=127.0.0.1", "-c", "max_connections=400"]
                 env:
                   - name: POSTGRES_USER
                     value: dev
@@ -293,7 +294,7 @@ items:
             <<: *databasePod
             initContainers:
               - <<: *postgresSidecar
-                args: ["-p", "5438", "-c", "listen_addresses=127.0.0.1"]
+                args: ["-p", "5438", "-c", "listen_addresses=127.0.0.1", "-c", "max_connections=400"]
                 env:
                   - name: POSTGRES_USER
                     value: dev
@@ -326,7 +327,7 @@ items:
                 image: ghcr.io/heavybullets8/business-runner:2.338.0@sha256:e8fb65d9d653510e4220685375292936cb39a6f96b6c7c4ba483fc5017ac43fb
             initContainers:
               - <<: *postgresSidecar
-                args: ["-p", "5432", "-c", "listen_addresses=127.0.0.1"]
+                args: ["-p", "5432", "-c", "listen_addresses=127.0.0.1", "-c", "max_connections=400"]
                 env:
                   - name: POSTGRES_USER
                     value: dev
@@ -486,7 +487,7 @@ items:
             <<: *buildPod
             initContainers:
               - <<: *postgresSidecar
-                args: ["-p", "5436", "-c", "listen_addresses=127.0.0.1"]
+                args: ["-p", "5436", "-c", "listen_addresses=127.0.0.1", "-c", "max_connections=400"]
                 env:
                   - name: POSTGRES_USER
                     value: connelybros
@@ -524,7 +525,7 @@ items:
             <<: *buildPod
             initContainers:
               - <<: *postgresSidecar
-                args: ["-p", "5435", "-c", "listen_addresses=127.0.0.1"]
+                args: ["-p", "5435", "-c", "listen_addresses=127.0.0.1", "-c", "max_connections=400"]
                 env:
                   - name: POSTGRES_USER
                     value: dev
@@ -571,7 +572,7 @@ items:
             <<: *buildPod
             initContainers:
               - <<: *postgresSidecar
-                args: ["-p", "5440", "-c", "listen_addresses=127.0.0.1"]
+                args: ["-p", "5440", "-c", "listen_addresses=127.0.0.1", "-c", "max_connections=400"]
                 env:
                   - name: POSTGRES_USER
                     value: dev
