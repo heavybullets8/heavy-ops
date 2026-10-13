@@ -19,7 +19,7 @@ spec:
           seed-nix:
             image: &image
               repository: ghcr.io/heavybullets8/devbox
-              tag: sha-6e6f261@sha256:5ab813ea5c1b33f7183c8601aad2c7f3aa5b3a1dad3f39e20348dbad77b7c15e
+              tag: sha-1ef339f@sha256:5120e1d9a88177829e0f5e00c350d0eba59c8629359f24ca8d5c16891fd1a1ee
             command: ["/bin/devbox-seed-nix"]
             resources:
               requests:
@@ -80,6 +80,8 @@ spec:
                 subPath: .devbox/tmp
               - path: /var/lib/tailscale
                 subPath: .devbox/tailscale
+              - path: /etc/ssh
+                subPath: .devbox/ssh
       nix:
         existingClaim: devbox-nix
         advancedMounts:
