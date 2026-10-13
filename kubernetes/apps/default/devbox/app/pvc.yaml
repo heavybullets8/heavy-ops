@@ -1,0 +1,22 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: devbox-home
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 300Gi
+  storageClassName: openebs-zfs-128k
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: devbox-nix
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: openebs-zfs-128k

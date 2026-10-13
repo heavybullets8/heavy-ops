@@ -84,6 +84,19 @@ kind: WatchdogTimerConfig
 device: /dev/watchdog0
 timeout: 5m
 ---
+# Writable cgroup v2 for pods that split their own memory limit (devbox)
+apiVersion: v1alpha1
+kind: CRICustomizationConfig
+name: cgroup-writable
+content: |
+  [plugins."io.containerd.cri.v1.runtime".containerd.runtimes.cgroup-writable]
+    runtime_type = "io.containerd.runc.v2"
+    base_runtime_spec = "/etc/cri/conf.d/base-spec.json"
+    cgroup_writable = true
+
+  [plugins."io.containerd.cri.v1.runtime".containerd.runtimes.cgroup-writable.options]
+    ShimCgroup = "/podruntime/shim"
+---
 version: v1alpha1
 machine:
   seccompProfiles:
