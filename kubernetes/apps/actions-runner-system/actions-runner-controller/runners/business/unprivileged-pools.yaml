@@ -658,6 +658,19 @@ items:
         template:
           spec:
             <<: *buildPod
+            # Native snapshots plus mode=max cache export exceeded the 64Gi quota.
+            volumes:
+              - *buildWorkVolume
+              - *buildkitSocket
+              - name: buildkit-state
+                ephemeral:
+                  volumeClaimTemplate:
+                    spec:
+                      accessModes: [ReadWriteOnce]
+                      storageClassName: openebs-zfs-128k
+                      resources:
+                        requests:
+                          storage: 128Gi
   - <<: *ciPool
     metadata:
       name: anytimesteel-build
