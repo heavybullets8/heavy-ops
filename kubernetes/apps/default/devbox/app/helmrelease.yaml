@@ -19,7 +19,7 @@ spec:
           seed-nix:
             image: &image
               repository: ghcr.io/heavybullets8/devbox
-              tag: sha-ece7bb1@sha256:120fe9feb705851c1beb087861ca12cab2c74933910b5d036c87f90b531be92f
+              tag: sha-c6c86a5@sha256:6ec7157acab4635dbb50e120c5a6b5466c7897d90800570e9c39ffc32120c3fe
             command: ["/bin/devbox-seed-nix"]
             resources:
               requests:
@@ -43,8 +43,8 @@ spec:
                 memory: 64Gi
               limits:
                 memory: 64Gi
-            # NOTE: the entrypoint starts as root inside the user namespace to
-            # split the memory limit into cgroups, then runs sessions as uid 1000.
+            # NOTE: the entrypoint starts as root inside the user namespace to run
+            # tailscaled for Tailscale SSH, then runs sessions as uid 1000.
             securityContext:
               runAsUser: 0
               runAsGroup: 0
@@ -59,7 +59,6 @@ spec:
     defaultPodOptions:
       hostname: *app
       hostUsers: false
-      runtimeClassName: cgroup-writable
       automountServiceAccountToken: false
       enableServiceLinks: false
       terminationGracePeriodSeconds: 60
