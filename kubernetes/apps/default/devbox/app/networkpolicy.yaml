@@ -40,6 +40,14 @@ spec:
             - 203.0.113.0/24
             - 224.0.0.0/4
             - 240.0.0.0/4
+    # NOTE: kubectl and talosctl against this cluster, like the workstations.
+    - toEntities: [host, kube-apiserver]
+      toPorts:
+        - ports:
+            - port: "6443"
+              protocol: TCP
+            - port: "50000"
+              protocol: TCP
     # NOTE: direct Tailscale paths to workstations on the home LAN; without
     # this, sessions from home fall back to DERP relays.
     - toCIDRSet:
@@ -49,4 +57,4 @@ spec:
             - port: "41641"
               protocol: UDP
   egressDeny:
-    - toEntities: [host, remote-node, kube-apiserver]
+    - toEntities: [remote-node]
