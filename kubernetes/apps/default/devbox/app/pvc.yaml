@@ -7,7 +7,7 @@ spec:
   accessModes: ["ReadWriteOnce"]
   resources:
     requests:
-      storage: 300Gi
+      storage: 500Gi
   storageClassName: openebs-zfs-128k
 ---
 apiVersion: v1
