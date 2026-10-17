@@ -19,7 +19,7 @@ spec:
           seed-nix:
             image: &image
               repository: ghcr.io/heavybullets8/devbox
-              tag: sha-7ca3f29@sha256:47d7407d2f94bcfb3b416e27907a1a5565a21d6e2c0bed0f3668e6fcd78a8a1c
+              tag: main@sha256:b689b4f9c3a8ceb245ce2923954d3d04d5818d454c399d64062a3550cd3e517b
             command: ["/bin/devbox-seed-nix"]
             resources:
               requests:
@@ -40,11 +40,11 @@ spec:
             resources:
               requests:
                 cpu: 8
-                memory: 64Gi
+                memory: 96Gi
               limits:
-                memory: 64Gi
+                memory: 96Gi
             # NOTE: the entrypoint starts as root inside the user namespace to run
-            # tailscaled for Tailscale SSH, then runs sessions as uid 1000.
+            # tailscaled, then runs sshd, herdr and the daily update as uid 1000.
             securityContext:
               runAsUser: 0
               runAsGroup: 0

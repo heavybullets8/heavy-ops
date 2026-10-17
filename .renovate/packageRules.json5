@@ -74,6 +74,13 @@
       "matchDepNames": ["siderolabs/talos"],
       "separateMajorMinor": true,
       "separateMinorPatch": true
+    },
+    {
+      "description": ["Merge devbox images by hand: rolling the pod ends every session in it"],
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["ghcr.io/heavybullets8/devbox"],
+      "matchUpdateTypes": ["digest"],
+      "automerge": false
     }
   ]
 }

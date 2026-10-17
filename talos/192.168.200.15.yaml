@@ -57,6 +57,9 @@ config:
   serializeImagePulls: false
   imageGCHighThresholdPercent: 70
   imageGCLowThresholdPercent: 65
+  # NOTE: kill the process that ran out of memory, not its whole container.
+  # One runaway test otherwise takes every devbox session down with it.
+  singleProcessOOMKill: true
 ---
 apiVersion: v1alpha1
 kind: KernelModuleConfig
