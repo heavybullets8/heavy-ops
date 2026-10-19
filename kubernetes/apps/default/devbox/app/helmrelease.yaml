@@ -19,7 +19,7 @@ spec:
           seed-nix:
             image: &image
               repository: ghcr.io/heavybullets8/devbox
-              tag: main@sha256:86ae6f98d47c7c681b54e71a9e6419692ee05b4e0dd306c86ab5f12eb6b84a63
+              tag: main@sha256:406635065c35a957e5225334ac9fcb50b565d227d658fba7a89a04f9e985f3bf
             command: ["/bin/devbox-seed-nix"]
             resources:
               requests:
