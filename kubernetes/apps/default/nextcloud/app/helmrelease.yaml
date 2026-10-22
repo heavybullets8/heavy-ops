@@ -18,6 +18,9 @@ spec:
       tag: 35.0.2-fpm-alpine@sha256:90283acde591e10601090d0e596ec76cec56b63baa7bbf53a60f81fc4ea8b6ad
     nginx:
       enabled: true
+      config:
+        headers:
+          Strict-Transport-Security: "max-age=15552000"
 
     phpClientHttpsFix:
       enabled: true
@@ -65,18 +68,19 @@ spec:
           authtype: LOGIN
           secure: ssl
 
-      lifecycle:
-        postStartCommand:
-          - "/bin/sh"
-          - "-c"
-          - "su -s /bin/sh www-data -c 'php occ db:add-missing-indices' || true"
+      hooks:
+        before-starting: |-
+          #!/bin/sh
+          set -eu
+          php /var/www/html/occ db:add-missing-indices --no-interaction
+          php /var/www/html/occ app:disable app_api
 
       configs:
         logging.config.php: |-
           <?php
           $CONFIG = array (
             'log_type' => 'file',
-            'logfile' => 'nextcloud.log',
+            'logfile' => '/var/www/html/data/nextcloud.log',
             'loglevel' => 1,
             'logdateformat' => 'F d, Y H:i:s'
             );
@@ -104,6 +108,8 @@ spec:
           <?php
           $CONFIG = array (
             'default_phone_region' => 'US',
+            'maintenance_window_start' => 8,
+            'serverid' => 0,
           );
 
     deploymentAnnotations:
