@@ -2,6 +2,13 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "packageRules": [
     {
+      "description": ["Track BookStack releases and LinuxServer rebuilds"],
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["ghcr.io/linuxserver/bookstack"],
+      "versioning": "regex:^v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-ls(?<build>\\d+)$",
+      "pinDigests": true
+    },
+    {
       "description": ["Follow stable releases for owned application containers"],
       "matchDatasources": ["docker"],
       "matchPackageNames": [

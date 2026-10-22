@@ -21,8 +21,8 @@ spec:
         containers:
           app:
             image:
-              repository: lscr.io/linuxserver/bookstack
-              tag: 26.09.20260929
+              repository: ghcr.io/linuxserver/bookstack
+              tag: v26.09.2-ls292@sha256:f9de4213499f892570a93368aded13836c421b0f166f9d85be4d7b223071f7fd
             env:
               TZ: ${TIMEZONE}
               PUID: "1000"
