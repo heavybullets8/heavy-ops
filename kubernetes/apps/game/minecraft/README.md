@@ -17,30 +17,30 @@ listed from lowest to highest priority.
 
 | Order | Addon | Version | Header UUID |
 | ----- | ----- | ------- | ----------- |
-| 1 | Actions & Stuff | 1.1.39 | `2cf066eb-1254-4b7d-affb-80fe3216b18c` |
-| 2 | Dynamic Lightning | 3.5.0 | `f94c7e73-0928-4acf-904f-70920c796729` |
+| 1 | Actions & Stuff | 1.1.66 | `2cf066eb-1254-4b7d-affb-80fe3216b18c` |
+| 2 | Dynamic Lightning | 4.1.0 | `f94c7e73-0928-4acf-904f-70920c796729` |
 | 3 | Structure Generation | 1.1.7 | `68ac942e-3470-4d14-a430-d12ceb49e93f` |
-| 4 | Fire & Ice | 1.0.27 | `67d777ab-847c-45ca-8ba8-91a9fd92171f` |
-| 5 | Essentials | 1.0.28 | `24188c69-3fc5-47a7-b41b-23847c67adf5` |
-| 6 | Crops & Farms | 1.1.19 | `d916218f-5397-4435-b2e7-6f573cbd2cbf` |
-| 7 | Villagers++ | 1.0.14 | `364d3ae0-4b45-426a-9054-9441fa662903` |
+| 4 | Fire & Ice | 1.0.34 | `67d777ab-847c-45ca-8ba8-91a9fd92171f` |
+| 5 | Essentials | 1.0.41 | `24188c69-3fc5-47a7-b41b-23847c67adf5` |
+| 6 | Crops & Farms | 1.1.26 | `d916218f-5397-4435-b2e7-6f573cbd2cbf` |
+| 7 | Villagers++ | 1.0.17 | `364d3ae0-4b45-426a-9054-9441fa662903` |
 | 8 | AutoMiner | 1.0.2 | `368af99b-0257-4d18-86ba-056ddbaf52d1` |
-| 9 | Cave Dweller | 1.0.25 | `5ab34fff-ed52-4a92-be6d-0bcbe3a0d678` |
-| 10 | Backpacks++ | 1.0.23 | `386318e6-9996-471e-ae9e-7fc0bb228521` |
+| 9 | Cave Dweller | 1.0.29 | `5ab34fff-ed52-4a92-be6d-0bcbe3a0d678` |
+| 10 | Backpacks++ | 1.0.27 | `386318e6-9996-471e-ae9e-7fc0bb228521` |
 
 ### Behavior Packs
 
 | Order | Addon | Version | Header UUID |
 | ----- | ----- | ------- | ----------- |
-| 1 | Dynamic Lightning | 3.5.0 | `657087d5-3a90-4ea6-b7dc-10ae07e31ce5` |
+| 1 | Dynamic Lightning | 4.1.0 | `657087d5-3a90-4ea6-b7dc-10ae07e31ce5` |
 | 2 | Structure Generation | 1.1.7 | `50ce70da-8091-4ef9-8c71-539c3d7d8654` |
-| 3 | Fire & Ice | 1.0.27 | `72924636-47ee-43f0-a36b-03efa792756f` |
-| 4 | Essentials | 1.0.28 | `47a58c9a-1d18-4761-9323-35a01254ef67` |
-| 5 | Crops & Farms | 1.1.19 | `d5de6bb3-8857-47a1-9375-b239c0f95ad3` |
-| 6 | Villagers++ | 1.0.14 | `82b5aab3-53d9-41f5-a077-27649f6b3425` |
+| 3 | Fire & Ice | 1.0.34 | `72924636-47ee-43f0-a36b-03efa792756f` |
+| 4 | Essentials | 1.0.41 | `47a58c9a-1d18-4761-9323-35a01254ef67` |
+| 5 | Crops & Farms | 1.1.26 | `d5de6bb3-8857-47a1-9375-b239c0f95ad3` |
+| 6 | Villagers++ | 1.0.17 | `82b5aab3-53d9-41f5-a077-27649f6b3425` |
 | 7 | AutoMiner | 1.0.1 | `2e839411-4a0e-4cee-b106-33d5bde91193` |
-| 8 | Cave Dweller | 1.0.25 | `efbee398-641d-4fd6-bf36-430d780c4f8f` |
-| 9 | Backpacks++ | 1.0.23 | `41309d1b-ba75-4d67-b4cb-1514d285a29c` |
+| 8 | Cave Dweller | 1.0.29 | `efbee398-641d-4fd6-bf36-430d780c4f8f` |
+| 9 | Backpacks++ | 1.0.27 | `41309d1b-ba75-4d67-b4cb-1514d285a29c` |
 
 AutoMiner's behavior-pack header is `1.0.1`; its modules are `1.0.2`. The
 world list must use the header version.
@@ -57,21 +57,21 @@ pack's `LiquidSettings` import, which otherwise aborts its script at startup.
 
 | Order | Addon | Version | Header UUID |
 | ----- | ----- | ------- | ----------- |
-| 1 | Actions & Stuff | 1.1.39 | `2cf066eb-1254-4b7d-affb-80fe3216b18c` |
-| 2 | Bedrock Reimagined addon resources | 1.0.3036 | `badcc305-8f0d-48bf-acea-9b3a903d06e0` |
+| 1 | Actions & Stuff | 1.1.66 | `2cf066eb-1254-4b7d-affb-80fe3216b18c` |
+| 2 | Bedrock Reimagined addon resources | 1.0.3078 | `badcc305-8f0d-48bf-acea-9b3a903d06e0` |
 | 3 | Create Bedrock | 1.0.1 | `1f819372-f7a9-4bdf-bf8b-ff2ae6c6ad15` |
-| 4 | Gravestone | 1.0.6 | `33530fcd-9d09-b79e-ee8a-7d850cfd52ed` |
+| 4 | Gravestone | 1.0.8 | `33530fcd-9d09-b79e-ee8a-7d850cfd52ed` |
 
 ### Behavior Packs
 
 | Order | Addon | Version | Header UUID |
 | ----- | ----- | ------- | ----------- |
-| 1 | Bedrock Reimagined | 1.0.3036 | `de800d74-c768-4926-9ec3-c8c3bb205eee` |
+| 1 | Bedrock Reimagined | 1.0.3078 | `de800d74-c768-4926-9ec3-c8c3bb205eee` |
 | 2 | Create Bedrock | 1.0.1 | `fcc16ff6-9255-406b-96ce-6af2c90311f3` |
-| 3 | Gravestone | 1.0.6 | `d0fe9016-fb59-bb31-421a-fd4c01feac95` |
-| 4 | FrenZone Player Fishing Perks | 1.0.0 | `4268c647-1b2b-453c-8b98-a8a651dfc4bc` |
+| 3 | Gravestone | 1.0.8 | `d0fe9016-fb59-bb31-421a-fd4c01feac95` |
+| 4 | FrenZone Player Fishing Perks | 1.0.1 | `4268c647-1b2b-453c-8b98-a8a651dfc4bc` |
 
-The Bedrock Reimagined archive's marketing filename is `v1.0.95`; the world
+The Bedrock Reimagined archive's marketing filename is `v1.0.97`; the world
 pack lists intentionally use the internal manifest versions shown above. Its
 standalone `Bedrock_Reimagined_RP.mcpack` (`ac3cfbf4-115d-41bc-9bdf-375eedb33540`)
 is intentionally disabled for Actions & Stuff compatibility. The paired
@@ -80,7 +80,7 @@ is intentionally disabled for Actions & Stuff compatibility. The paired
 ### Player-specific fishing perk
 
 `FrenZone Player Fishing Perks` is a companion behavior pack for Bedrock
-Reimagined `1.0.3036`. It currently targets the exact Gamertag
+Reimagined `1.0.3078`. It currently targets the exact Gamertag
 `SpeedMcCheez`. Every confirmed fishing catch for that player is replaced from
 a dedicated table containing only an enchanted book, enchanted bow, or
 enchanted fishing rod. Fish, junk, and Bedrock Reimagined's surprise creature
@@ -132,6 +132,32 @@ Bedrock Reimagined manifest dependency whenever that addon is upgraded.
 Script API content output is enabled in the server console. A successful test
 logs the target hook binding and the replacement item; an unresolved owner or
 runtime/content error is visible through the normal pod logs.
+
+### October 26, 2026 update
+
+The supplied `Minecraft.zip` updates Actions & Stuff on both servers; Fire &
+Ice, Essentials, Crops & Farms, Villagers++, Cave Dweller, and Backpacks++ on
+persistent; and Gravestone on rotational. Structure Generation is supplied at
+the existing `1.1.7` version and retains the compatibility correction above.
+Raiyon's Dynamic Lightning `4.1.0` was downloaded from its
+[author page](https://mcpedl.com/raiyons-dynamic-light-addon/), and Bedrock
+Reimagined `v1.0.97` (manifest `1.0.3078`) from its
+[official release](https://www.curseforge.com/minecraft-bedrock/addons/bedrock-reimagined/files/8891989).
+The guarded fishing overlay and companion dependency are updated together for
+that exact Reimagined release. Its standalone texture pack remains disabled.
+
+Addons without an installed upstream update:
+
+| Server | Addon | Installed version | Check result |
+| ------ | ----- | ----------------- | ------------ |
+| Persistent | Structure Generation | 1.1.7 | ZIP contains the same version |
+| Persistent | AutoMiner | BP 1.0.1 / RP 1.0.2 | [Author's latest release](https://mcpedl.com/auto-miner/) is still marketed as 1.0.2 |
+| Rotational | Create Bedrock | 1.0.1 | [Author's page](https://vatonage.com/mods/create-add-on) advertises Version 3; download requires a manual check before its internal version can be verified |
+
+The Minecraft container `2026.10.2`, Bedrock runtime `1.26.52.3`, Xbox
+broadcaster image, and addon filebrowser were already current. Both server
+HelmReleases bump `minecraft-addon-revision` to roll the pods for the new
+PVC pack contents. Pack loading order and UUIDs are retained.
 
 ## Server File Structure
 
@@ -314,4 +340,4 @@ kubectl exec -n game minecraft-pod-name -- cat /data/worlds/level/world_*.json
 
 ---
 
-_Last Updated: August 2, 2026 - Server Version: 1.26.36.1_
+_Last Updated: October 26, 2026 - Server Version: 1.26.52.3_

@@ -11,10 +11,10 @@ if [ "$#" -ge 2 ]; then
   output_file="$2"
 fi
 
-expected_source_sha="eb22fc3ef9cf9004d7961f90a110b9ced412a87708fde80df5d93fe0df35ed1a"
-expected_output_sha="ce162b231718903eb7feeafcdd20a2cc5ffa0a6019d83e8c0fac1f71a4d5e695"
-old_code='if(i.fired=!0,Math.random()>=LH)return;'
-new_code='if(i.fired=!0,[...ds.values()].some(e=>t-e.tick>=NH&&e.dimId===a.dimension.id&&(e.ownerId&&TH.getEntity(e.ownerId)?.name==="SpeedMcCheez"||e.hook?.isValid&&e.hook.hasTag("frenzone:no_creature_fishing"))&&(e===i||VA(a.location,e.lastLoc)<=OH))||Math.random()>=LH)return;'
+expected_source_sha="1422adc4388c34366d49ba961a4f35ef417c84c3eb1d45016dd07c318c6f25d5"
+expected_output_sha="0482053c61c788aeeb449e0a8e04d1fe2da9ea5a316926a091ea076793b2018c"
+old_code='if(i.fired=!0,Math.random()>=kj)return;'
+new_code='if(i.fired=!0,[...ps.values()].some(e=>t-e.tick>=Pj&&e.dimId===a.dimension.id&&(e.ownerId&&Cj.getEntity(e.ownerId)?.name==="SpeedMcCheez"||e.hook?.isValid&&e.hook.hasTag("frenzone:no_creature_fishing"))&&(e===i||mE(a.location,e.lastLoc)<=Sj))||Math.random()>=kj)return;'
 temporary_file="$output_file.tmp"
 
 cleanup() {

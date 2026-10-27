@@ -92,6 +92,8 @@ spec:
                 memory: 20Gi
 
     defaultPodOptions:
+      annotations:
+        minecraft-addon-revision: "2026-10-26"
       securityContext:
         runAsUser: 1000
         runAsGroup: 3000
