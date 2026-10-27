@@ -159,6 +159,22 @@ broadcaster image, and addon filebrowser were already current. Both server
 HelmReleases bump `minecraft-addon-revision` to roll the pods for the new
 PVC pack contents. Pack loading order and UUIDs are retained.
 
+Both PVCs also contained obsolete loose JavaScript files in the built-in
+`server_library`, `server_ui_library`, and `server_editor_library` behavior
+packs. Mojang's exact `1.26.52.3` package ships these libraries as
+`__brarchive/scripts.brarchive` instead. The old loose files overrode the new
+archives: Essentials failed to import `ItemPotionComponent`, and Backpacks++
+failed to resolve `EntitySwingSource.Attack`. Replacing all three library
+directories with pristine copies from that matching server package resolved
+both startup failures without modifying those addons. The official server
+binary SHA-256 matched both installed binaries before the replacement.
+
+The previous addon directories are retained outside Bedrock's pack search
+paths at `/data/.addon-update-backups/2026-10-26/`, with the old built-in
+libraries under `runtime-libraries/`. When updating Bedrock, replace obsolete
+built-in library directories rather than overlaying files from the new ZIP;
+an overlay can leave old loose scripts ahead of the new bundled archives.
+
 ## Server File Structure
 
 ```
