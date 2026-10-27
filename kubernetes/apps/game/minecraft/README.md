@@ -169,11 +169,11 @@ directories with pristine copies from that matching server package resolved
 both startup failures without modifying those addons. The official server
 binary SHA-256 matched both installed binaries before the replacement.
 
-The previous addon directories are retained outside Bedrock's pack search
-paths at `/data/.addon-update-backups/2026-10-26/`, with the old built-in
-libraries under `runtime-libraries/`. When updating Bedrock, replace obsolete
-built-in library directories rather than overlaying files from the new ZIP;
-an overlay can leave old loose scripts ahead of the new bundled archives.
+The temporary addon and runtime-library rollback copies were removed from
+both servers after validation at the owner's request. When updating Bedrock,
+replace obsolete built-in library directories rather than overlaying files
+from the new ZIP; an overlay can leave old loose scripts ahead of the new
+bundled archives.
 
 ## Server File Structure
 
