@@ -51,6 +51,38 @@ Structure Generation `1.1.7` requires a compatibility correction in
 `liquidSettings` option. The Bedrock `1.26.33.2` runtime does not expose the
 pack's `LiquidSettings` import, which otherwise aborts its script at startup.
 
+### Crops & Farms tree-growth correction
+
+Crops & Farms `1.1.26` reads `dimension.getBlock(...).isAir` without checking
+whether the block lookup returned anything. An unavailable block aborts the
+sapling's growth attempt with `TypeError: cannot read property 'isAir' of
+undefined`. The local correction returns `false` for that attempt so a later
+growth tick can retry. Clear space still permits growth and solid blocks
+still prevent it.
+
+The source-preserving patch is tracked in
+`minecraft/addons/crops-farms/patch-tree-growth.sh`. It verifies the exact
+upstream script checksum, saves and verifies `sgs_farm_treemanager.js.bak`
+beside the original in
+`/data/behavior_packs/Crops-Farms-Behavior/scripts/crops/`, then atomically
+installs the corrected script. Repeated application verifies the existing
+backup without overwriting it. The fix lives on the persistent server's PVC;
+an addon replacement requires reviewing and reapplying it.
+
+Apply from the repository root, then restart the persistent server:
+
+```bash
+kubectl --kubeconfig ./kubeconfig exec -i -n game deployment/minecraft -c app -- sh \
+  < kubernetes/apps/game/minecraft/minecraft/addons/crops-farms/patch-tree-growth.sh
+kubectl --kubeconfig ./kubeconfig rollout restart deployment/minecraft -n game
+```
+
+`test-tree-growth.mjs` in the same repository directory exercises the actual
+addon class with missing, clear, solid, and void blocks, and checks that
+unrelated errors remain visible. Pass the installed or extracted script path
+as its argument. To undo the correction, copy the `.bak` over
+`sgs_farm_treemanager.js` and restart only the persistent server.
+
 ## Rotational Server Addons
 
 ### Resource Packs
