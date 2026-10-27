@@ -22,7 +22,7 @@ spec:
           app:
             image:
               repository: ghcr.io/linuxserver/bookstack
-              tag: v26.09.2-ls292@sha256:f9de4213499f892570a93368aded13836c421b0f166f9d85be4d7b223071f7fd
+              tag: v26.09.2-ls293@sha256:2fdeeb1a2028ce7cb1274696237e32b9f849e16b6d77314d08c78356a6016fca
             env:
               TZ: ${TIMEZONE}
               PUID: "1000"
