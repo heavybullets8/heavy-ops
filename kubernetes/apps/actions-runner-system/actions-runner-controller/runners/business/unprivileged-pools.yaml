@@ -357,7 +357,7 @@ items:
             <<: *ciPod
             containers:
               - <<: *ciRunner
-                image: ghcr.io/heavybullets8/business-nix-runner:2.338.1@sha256:2d4938f361a71b7888a5e5aae6beb2a5498bead86586b5709e24ebe6a1b0afb0
+                image: ghcr.io/heavybullets8/business-nix-runner:2.338.2@sha256:a678034c62c446d9f23af1a43722b609a3f4faab9aa2f41301e70fe7206cb8ca
   - <<: *ciPool
     metadata:
       name: fcc-spam-reporter-ci
