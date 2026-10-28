@@ -44,7 +44,7 @@ spec:
           app:
             image:
               repository: ghcr.io/heavybullets8/prowlarr
-              tag: 2.6.5.5623@sha256:6bd370906039cfa50593e73b8f5f05272230af944e8e9e7186e1d6e13f2b4e77
+              tag: 2.7.0.5723@sha256:b73e3eed0fec1678f9161e0609e589d248fb40c9e2ef8e5b1dde49138075258f
             env:
               PROWLARR__APP__INSTANCENAME: Prowlarr
               PROWLARR__APP__THEME: dark
