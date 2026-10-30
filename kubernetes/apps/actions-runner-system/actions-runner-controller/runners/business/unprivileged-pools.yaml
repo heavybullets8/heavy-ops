@@ -344,6 +344,39 @@ items:
                   failureThreshold: 30
   - <<: *ciPool
     metadata:
+      name: dealer-sites-ci
+    spec:
+      <<: *ciPoolSpec
+      values:
+        <<: *ciPoolValues
+        githubConfigUrl: https://github.com/Heavybullets8/dealer-sites
+        runnerScaleSetName: dealer-sites-ci
+        maxRunners: 3
+        template:
+          spec:
+            <<: *databasePod
+            containers:
+              - <<: *databaseRunner
+                image: ghcr.io/heavybullets8/business-runner:2.338.2@sha256:1958b8a97af8583aff6097b9e99813943fc21813238e7e96dfffa747caf15ad6
+            initContainers:
+              - <<: *postgresSidecar
+                args: ["-p", "5432", "-c", "listen_addresses=127.0.0.1", "-c", "max_connections=400"]
+                env:
+                  - name: POSTGRES_USER
+                    value: dev
+                  - name: POSTGRES_PASSWORD
+                    value: devpassword
+                  - name: POSTGRES_DB
+                    value: dealer_sites_dev
+                  - name: PGDATA
+                    value: /var/lib/postgresql/data/pgdata
+                startupProbe:
+                  exec:
+                    command: [pg_isready, -h, "127.0.0.1", -p, "5432", -U, dev, -d, dealer_sites_dev]
+                  periodSeconds: 2
+                  failureThreshold: 30
+  - <<: *ciPool
+    metadata:
       name: nix-config-ci
     spec:
       <<: *ciPoolSpec
@@ -724,6 +757,25 @@ items:
         <<: *ciPoolValues
         githubConfigUrl: https://github.com/Heavybullets8/mk-jm
         runnerScaleSetName: mk-jm-build
+        minRunners: 0
+        maxRunners: 1
+        template:
+          spec:
+            <<: *buildPod
+            containers:
+              - <<: *buildRunner
+                image: ghcr.io/heavybullets8/business-runner:2.338.2@sha256:1958b8a97af8583aff6097b9e99813943fc21813238e7e96dfffa747caf15ad6
+
+  - <<: *ciPool
+    metadata:
+      name: dealer-sites-build
+    spec:
+      <<: *buildPoolSpec
+      suspend: false
+      values:
+        <<: *ciPoolValues
+        githubConfigUrl: https://github.com/Heavybullets8/dealer-sites
+        runnerScaleSetName: dealer-sites-build
         minRunners: 0
         maxRunners: 1
         template:
