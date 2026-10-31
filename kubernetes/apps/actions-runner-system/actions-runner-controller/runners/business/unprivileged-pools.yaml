@@ -784,3 +784,16 @@ items:
             containers:
               - <<: *buildRunner
                 image: ghcr.io/heavybullets8/business-runner:2.338.2@sha256:25e209a2f6cfdb2e74d51a0ab01a4a30f519dd525a4405005887b47f6d9006fc
+  - <<: *ciPool
+    metadata:
+      name: mail-mcp-build
+    spec:
+      <<: *buildPoolSpec
+      values:
+        <<: *ciPoolValues
+        githubConfigUrl: https://github.com/Heavybullets8/mail-mcp
+        runnerScaleSetName: mail-mcp-build
+        maxRunners: 1
+        template:
+          spec:
+            <<: *buildPod
