@@ -2,6 +2,12 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "packageRules": [
     {
+      "description": ["Skip Valheim 3.8.11: missing SteamCMD (mbround18/valheim-docker#1586)"],
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["ghcr.io/mbround18/valheim"],
+      "allowedVersions": "!/^3\\.8\\.11$/"
+    },
+    {
       "description": ["Track BookStack releases and LinuxServer rebuilds"],
       "matchDatasources": ["docker"],
       "matchPackageNames": ["ghcr.io/linuxserver/bookstack"],
