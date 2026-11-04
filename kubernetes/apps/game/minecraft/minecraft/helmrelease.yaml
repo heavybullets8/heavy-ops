@@ -93,7 +93,7 @@ spec:
 
     defaultPodOptions:
       annotations:
-        minecraft-addon-revision: "2026-10-26"
+        minecraft-addon-revision: "2026-11-03"
       securityContext:
         runAsUser: 1000
         runAsGroup: 3000

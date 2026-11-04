@@ -17,7 +17,7 @@ listed from lowest to highest priority.
 
 | Order | Addon | Version | Header UUID |
 | ----- | ----- | ------- | ----------- |
-| 1 | Actions & Stuff | 1.1.66 | `2cf066eb-1254-4b7d-affb-80fe3216b18c` |
+| 1 | Actions & Stuff | 1.1.69 | `2cf066eb-1254-4b7d-affb-80fe3216b18c` |
 | 2 | Dynamic Lightning | 4.1.0 | `f94c7e73-0928-4acf-904f-70920c796729` |
 | 3 | Structure Generation | 1.1.7 | `68ac942e-3470-4d14-a430-d12ceb49e93f` |
 | 4 | Fire & Ice | 1.0.34 | `67d777ab-847c-45ca-8ba8-91a9fd92171f` |
@@ -89,7 +89,7 @@ as its argument. To undo the correction, copy the `.bak` over
 
 | Order | Addon | Version | Header UUID |
 | ----- | ----- | ------- | ----------- |
-| 1 | Actions & Stuff | 1.1.66 | `2cf066eb-1254-4b7d-affb-80fe3216b18c` |
+| 1 | Actions & Stuff | 1.1.69 | `2cf066eb-1254-4b7d-affb-80fe3216b18c` |
 | 2 | Bedrock Reimagined addon resources | 1.0.3078 | `badcc305-8f0d-48bf-acea-9b3a903d06e0` |
 | 3 | Create Bedrock | 1.0.1 | `1f819372-f7a9-4bdf-bf8b-ff2ae6c6ad15` |
 | 4 | Gravestone | 1.0.8 | `33530fcd-9d09-b79e-ee8a-7d850cfd52ed` |
@@ -388,4 +388,4 @@ kubectl exec -n game minecraft-pod-name -- cat /data/worlds/level/world_*.json
 
 ---
 
-_Last Updated: October 26, 2026 - Server Version: 1.26.52.3_
+_Last Updated: November 3, 2026 - Server Version: 1.26.61.1_
