@@ -29,7 +29,7 @@ spec:
           app:
             image:
               repository: docker.io/s1t5/mailarchiver
-              tag: 2610.1@sha256:d354bf8cefc4d825dd22cb2d8a70d6622cabbc08b0fa08983e3660f6c2f0a322
+              tag: 2611.2@sha256:4baca9cb9dc6f97f2824f62489ba649ededc1095c4555f4d8b87da71349f7ebc
 
             env:
               # General
