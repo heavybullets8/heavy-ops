@@ -30,6 +30,7 @@ spec:
             env:
               TZ: ${TIMEZONE}
               DATA_DIR: /app/data
+              RECOVERY_STAGE: cloudflare-retry
               FLARESOLVERR_URL: http://flaresolverr.media.svc.cluster.local:8191/v1
               SUBMIT: true
             envFrom:

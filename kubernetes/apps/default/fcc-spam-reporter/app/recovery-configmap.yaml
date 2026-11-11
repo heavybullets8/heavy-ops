@@ -20,17 +20,12 @@ data:
     import { createLogger } from '/app/dist/logger.js';
     
     process.umask(0o077);
-    const log = createLogger('recovery-20261111');
+    const log = createLogger('recovery-20261111-cloudflare-retry');
     const auditedCalls = [
-      ['347-798-2878', 'August 19, 2026'],
-      ['571-625-8292', 'August 26, 2026'],
-      ['813-553-7122', 'September 2, 2026'],
-      ['307-420-0254', 'November 10, 2026'],
-      ['307-372-3793', 'November 10, 2026'],
       ['307-249-2033', 'November 11, 2026'],
       ['307-370-7862', 'November 11, 2026'],
     ];
-    const auditDir = join(config.server.dataDir, 'recovery-20261111');
+    const auditDir = join(config.server.dataDir, 'recovery-20261111-cloudflare-retry');
     mkdirSync(auditDir, { recursive: true, mode: 0o700 });
     const rawDb = new DatabaseSync(join(config.server.dataDir, 'store.db'));
     rawDb.exec('PRAGMA busy_timeout=5000');
@@ -57,8 +52,8 @@ data:
           claimJobExecution: id => store.claimJobExecution(id),
           readJob: id => store.readJob(id),
           saveJob: job => store.saveJob(job),
-          artifactPath: id => join(store.artifactPath(id),'recovery-20261111'),
-          ensureArtifactDir: async id => {const dir=join(await store.ensureArtifactDir(id),'recovery-20261111');mkdirSync(dir,{recursive:true,mode:0o700});return dir;},
+          artifactPath: id => join(store.artifactPath(id),'recovery-20261111-cloudflare-retry'),
+          ensureArtifactDir: async id => {const dir=join(await store.ensureArtifactDir(id),'recovery-20261111-cloudflare-retry');mkdirSync(dir,{recursive:true,mode:0o700});return dir;},
         },
         config: {...config,automation:{...config.automation,delayMinMs:0,delayMaxMs:0}},
         refreshQuoContacts: async () => {}, // Fresh snapshot above; all retries run serially.
@@ -76,14 +71,15 @@ data:
         if (job.status==='succeeded') {log.info('already recovered',{jobId:id,caller:job.reportData.spamNumber});continue;}
         const marker=join(auditDir,id + '.json');
         if (existsSync(marker)) {log.warn('recovery already attempted; leaving durable status for review',{jobId:id,status:job.status});continue;}
-        if (job.status!=='failed') throw new Error('Recovery refuses ' + job.status + ' job ' + id);
-        if (job.result) {
-          if (job.result.submissionConfirmed || !job.errorMessage?.startsWith('Historical audit 2026-09-21: FCC rejected') || !readFileSync(job.result.artifacts.finalHtmlPath,'utf8').includes('cannot be blank')) {
-            throw new Error('No definitive rejection evidence for ' + id);
-          }
-        } else if (!/page.waitForFunction: Timeout|locator.scrollIntoViewIfNeeded: Timeout/.test(job.errorMessage??'')) {
-          throw new Error('No audited pre-submission failure for ' + id);
+        if (job.status!=='needs_review') throw new Error('Recovery refuses ' + job.status + ' job ' + id);
+        const responseHtml = job.result?.artifacts.finalHtmlPath
+          ? readFileSync(job.result.artifacts.finalHtmlPath, 'utf8') : '';
+        if (job.result?.submissionConfirmed || !responseHtml.includes('<title>Just a moment...</title>') ||
+            !responseHtml.includes('_cf_chl_opt') || responseHtml.includes('Your request was successfully submitted.')) {
+          throw new Error('Recovery requires an audited Cloudflare-intercepted response for ' + id);
         }
+        // Pace this audited retry instead of replaying the original seven-call burst.
+        if (id !== ids[0]) await new Promise(resolve => setTimeout(resolve, 65_000));
         // Exclusive durable marker prevents a restart from replaying this attempt.
         // Keep the original job and its original artifacts; new artifacts use a subdir.
         writeFileSync(marker,JSON.stringify(job,null,2),{flag:'wx',mode:0o600});
@@ -91,7 +87,7 @@ data:
         rawDb.exec('BEGIN IMMEDIATE');
         try {
           rawDb.prepare('DELETE FROM job_dispositions WHERE job_id=? AND disposition=?').run(id,'execute');
-          rawDb.prepare('UPDATE report_jobs SET status=?,payload_json=? WHERE storage_key=? AND status=?').run('queued',JSON.stringify(queued),id,'failed');
+          rawDb.prepare('UPDATE report_jobs SET status=?,payload_json=? WHERE storage_key=? AND status=?').run('queued',JSON.stringify(queued),id,'needs_review');
           rawDb.exec('COMMIT');
         } catch(error) {rawDb.exec('ROLLBACK');throw error;}
         await handler(queued);
