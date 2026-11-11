@@ -18,11 +18,39 @@ spec:
         annotations:
           reloader.stakater.com/auto: "true"
 
+        # One-time audited recovery; the single-writer lock is released before
+        # the server starts. Remove after all seven jobs have been verified.
+        initContainers:
+          recover-failed-reports:
+            image:
+              repository: ghcr.io/heavybullets8/fcc-spam-reporter
+              tag: v1.0.4@sha256:a1a58701762f76a70829a1bca75122cccf128b381850d7d4cf0674180786702d
+              pullPolicy: IfNotPresent
+            command: ["/app/docker/entrypoint.sh", "node", "/recovery/recover.mjs"]
+            env:
+              TZ: ${TIMEZONE}
+              DATA_DIR: /app/data
+              FLARESOLVERR_URL: http://flaresolverr.media.svc.cluster.local:8191/v1
+              SUBMIT: true
+            envFrom:
+              - secretRef:
+                  name: fcc-spam-reporter-secret
+            resources:
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                cpu: 2
+                memory: 2Gi
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities: { drop: ["ALL"] }
+
         containers:
           app:
             image:
               repository: ghcr.io/heavybullets8/fcc-spam-reporter
-              tag: v1.0.3@sha256:113710dd7d1fc4b27479cb32f0cdb1b4b92df7788fb8a5aeac94c4547eb8bd9d
+              tag: v1.0.4@sha256:a1a58701762f76a70829a1bca75122cccf128b381850d7d4cf0674180786702d
               pullPolicy: IfNotPresent
 
             env:
@@ -119,3 +147,10 @@ spec:
         medium: Memory
         globalMounts:
           - path: /dev/shm
+
+      recovery:
+        type: configMap
+        name: fcc-report-recovery-20261111
+        globalMounts:
+          - path: /recovery
+            readOnly: true
