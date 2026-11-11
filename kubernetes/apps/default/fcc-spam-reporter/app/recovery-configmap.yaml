@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: fcc-report-recovery-20261111
+  name: fcc-report-recovery-20261111-verify
 data:
   recover.mjs: |
     // One-time recovery of seven audited failed reports. Runs under the image's
@@ -20,12 +20,11 @@ data:
     import { createLogger } from '/app/dist/logger.js';
     
     process.umask(0o077);
-    const log = createLogger('recovery-20261111-cloudflare-retry');
+    const log = createLogger('recovery-20261111-verification-wait');
     const auditedCalls = [
       ['307-249-2033', 'November 11, 2026'],
-      ['307-370-7862', 'November 11, 2026'],
     ];
-    const auditDir = join(config.server.dataDir, 'recovery-20261111-cloudflare-retry');
+    const auditDir = join(config.server.dataDir, 'recovery-20261111-verification-wait');
     mkdirSync(auditDir, { recursive: true, mode: 0o700 });
     const rawDb = new DatabaseSync(join(config.server.dataDir, 'store.db'));
     rawDb.exec('PRAGMA busy_timeout=5000');
@@ -52,8 +51,8 @@ data:
           claimJobExecution: id => store.claimJobExecution(id),
           readJob: id => store.readJob(id),
           saveJob: job => store.saveJob(job),
-          artifactPath: id => join(store.artifactPath(id),'recovery-20261111-cloudflare-retry'),
-          ensureArtifactDir: async id => {const dir=join(await store.ensureArtifactDir(id),'recovery-20261111-cloudflare-retry');mkdirSync(dir,{recursive:true,mode:0o700});return dir;},
+          artifactPath: id => join(store.artifactPath(id),'recovery-20261111-verification-wait'),
+          ensureArtifactDir: async id => {const dir=join(await store.ensureArtifactDir(id),'recovery-20261111-verification-wait');mkdirSync(dir,{recursive:true,mode:0o700});return dir;},
         },
         config: {...config,automation:{...config.automation,delayMinMs:0,delayMaxMs:0}},
         refreshQuoContacts: async () => {}, // Fresh snapshot above; all retries run serially.
