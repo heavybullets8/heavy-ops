@@ -10,7 +10,11 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+  components:
+    - ../../../../components/kopiur/backup
   dependsOn:
+    - name: kopiur-repository
+      namespace: kopiur-system
     - name: onepassword
       namespace: external-secrets
   wait: false
@@ -23,3 +27,8 @@ spec:
     namespace: flux-system
   interval: 30m
   timeout: 5m
+  postBuild:
+    substitute:
+      APP: *app
+      KOPIUR_CAPACITY: 1Gi
+      KOPIUR_RECORD_SIZE: 128k
