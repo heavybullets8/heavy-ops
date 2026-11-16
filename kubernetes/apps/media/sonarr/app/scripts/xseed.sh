@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 
-# Source from: https://github.com/bakerboy448/StarrScripts/blob/main/xseed.sh
-# INFO: Radarr: Connect -> Custom Script - - On Import Complete
-# INFO: Sonarr: Connect -> Custom Script - - On File Import AND On File Upgrade
+# Source from: https://github.com/baker-scripts/StarrScripts/blob/c95f917a108cb7434b5563e080fc92d6d8d57c9a/xseed.sh
+# Locally maintained for cross-seed v6; upstream's replacement uses qui.
+# INFO: Radarr: Connect -> Custom Script - On File Import AND On File Upgrade
+# INFO: Sonarr: Connect -> Custom Script - On Import Complete
 
 # INFO: TO ENABLE THIS FEATURE YOU _MUST_ SWITCH TO THE
 # INFO: ON IMPORT COMPLETE EVENT TYPE IN YOUR SONARR SETTINGS
 
-VERSION='4.0.0'
+VERSION='4.0.0+heavy-ops.1'
 TORRENT_CLIENTS=("qBitVPN")
 USENET_CLIENTS=("SABnzbd")
 XSEED_HOST=cross-seed.media.svc.cluster.local
@@ -180,7 +181,10 @@ handle_operations() {
         fi
     # Check if client is a usenet client
     elif is_valid_client "$clientID" "usenet"; then
-        if [ -z "$sonarrReleaseType" ] && [[ "$folderPath" =~ S[0-9]{1,2}(?!\.E[0-9]{1,2}) ]]; then
+        # Bash uses extended regular expressions, which do not support lookahead.
+        if [[ "$app" == "sonarr" && -z "$sonarrReleaseType" &&
+            "$folderPath" =~ S[0-9]{1,2} &&
+            ! "$folderPath" =~ S[0-9]{1,2}\.?E[0-9]{1,2} ]]; then
             log_message "WARN" "Depreciated Action. Skipping season pack search. Please switch to On Import Complete for Usenet Season Pack Support!"
             exit 0
         fi
