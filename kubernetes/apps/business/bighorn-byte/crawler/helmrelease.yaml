@@ -25,7 +25,7 @@ spec:
           app:
             image:
               repository: ghcr.io/heavybullets8/bighorn-byte-web
-              tag: 0.9.5@sha256:922956dd07a3ca80863a1e3c0af21e6b537f8c8eb0f18c4f5961577011508bd9
+              tag: 0.9.6@sha256:351a84c34e5ccb5e32865d47f7883af2cb16af5227895c6626097309beea345b
               pullPolicy: Always
             args: ["task", "proxy"]
             lifecycle:
