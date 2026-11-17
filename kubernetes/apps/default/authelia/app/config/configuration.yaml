@@ -243,4 +243,8 @@ identity_providers:
         scopes: [openid, offline_access, email, profile, "outreach:read", "outreach:write"]
         response_types: [code]
         grant_types: [authorization_code, refresh_token]
-        redirect_uris: ["https://chatgpt.com/connector_platform_oauth_redirect", "http://localhost:47823/callback"]
+        redirect_uris:
+          - https://chatgpt.com/connector_platform_oauth_redirect
+          - https://claude.ai/api/mcp/auth_callback
+          - https://claude.com/api/mcp/auth_callback
+          - http://localhost:47823/callback
