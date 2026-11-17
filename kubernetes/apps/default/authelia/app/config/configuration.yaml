@@ -243,4 +243,4 @@ identity_providers:
         scopes: [openid, offline_access, email, profile, "outreach:read", "outreach:write"]
         response_types: [code]
         grant_types: [authorization_code, refresh_token]
-        redirect_uris: ["https://chatgpt.com/connector_platform_oauth_redirect"]
+        redirect_uris: ["https://chatgpt.com/connector_platform_oauth_redirect", "http://localhost:47823/callback"]
