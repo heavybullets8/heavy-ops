@@ -21,7 +21,7 @@ spec:
           app:
             image:
               repository: ghcr.io/heavybullets8/bighorn-byte-web
-              tag: 0.8.5@sha256:7e8df993025ebda8959e23dc789e854a1b3871ff68d5d332ec1f145e3c99cf7a
+              tag: 0.9.0@sha256:fe32fffd459ca423f25137644129a46a95fa51510f34130ae058bdf1409b60b7
               pullPolicy: Always
             env:
               TZ: ${TIMEZONE}
@@ -32,8 +32,6 @@ spec:
               PGDATABASE: bighorn_byte_development
               ADMIN_PGDATABASE: bighorn_byte_admin_development
               AI_MODEL_WRITE: anthropic:claude-haiku-5-5
-              OUTREACH_ENABLED: "0"
-              OUTREACH_MAIL_SEND_ENABLED: "0"
             envFrom:
               - secretRef:
                   name: bighorn-byte-development-secret
@@ -100,7 +98,7 @@ spec:
           app:
             image:
               repository: ghcr.io/heavybullets8/bighorn-byte-web
-              tag: 0.8.5@sha256:7e8df993025ebda8959e23dc789e854a1b3871ff68d5d332ec1f145e3c99cf7a
+              tag: 0.9.0@sha256:fe32fffd459ca423f25137644129a46a95fa51510f34130ae058bdf1409b60b7
               pullPolicy: Always
             env:
               PGHOST: postgres-rw.database.svc.cluster.local
@@ -147,7 +145,7 @@ spec:
           app:
             image:
               repository: ghcr.io/heavybullets8/bighorn-byte-web
-              tag: 0.8.5@sha256:7e8df993025ebda8959e23dc789e854a1b3871ff68d5d332ec1f145e3c99cf7a
+              tag: 0.9.0@sha256:fe32fffd459ca423f25137644129a46a95fa51510f34130ae058bdf1409b60b7
               pullPolicy: Always
             env:
               PGHOST: postgres-rw.database.svc.cluster.local
