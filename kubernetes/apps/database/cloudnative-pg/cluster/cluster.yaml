@@ -50,8 +50,6 @@ spec:
     limits:
       memory: 4Gi
       hugepages-2Mi: 2Gi
-  monitoring:
-    enablePodMonitor: true
   plugins:
     - name: barman-cloud.cloudnative-pg.io
       isWALArchiver: true
