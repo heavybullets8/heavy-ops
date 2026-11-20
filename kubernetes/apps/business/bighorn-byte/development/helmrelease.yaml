@@ -21,7 +21,7 @@ spec:
           app:
             image:
               repository: ghcr.io/heavybullets8/bighorn-byte-web
-              tag: 0.9.13@sha256:656f17d241ffd2b02c47254df1ae6e5127233c7750f9273cb3fa7bc00280fbb0
+              tag: 0.9.14@sha256:6ed4050656184f4a3d6f6d805dd08b79e0923e28550bb4a7504da7a4b1222f89
               pullPolicy: Always
             env:
               TZ: ${TIMEZONE}
@@ -98,7 +98,7 @@ spec:
           app:
             image:
               repository: ghcr.io/heavybullets8/bighorn-byte-web
-              tag: 0.9.13@sha256:656f17d241ffd2b02c47254df1ae6e5127233c7750f9273cb3fa7bc00280fbb0
+              tag: 0.9.14@sha256:6ed4050656184f4a3d6f6d805dd08b79e0923e28550bb4a7504da7a4b1222f89
               pullPolicy: Always
             env:
               PGHOST: postgres-rw.database.svc.cluster.local
@@ -145,7 +145,7 @@ spec:
           app:
             image:
               repository: ghcr.io/heavybullets8/bighorn-byte-web
-              tag: 0.9.13@sha256:656f17d241ffd2b02c47254df1ae6e5127233c7750f9273cb3fa7bc00280fbb0
+              tag: 0.9.14@sha256:6ed4050656184f4a3d6f6d805dd08b79e0923e28550bb4a7504da7a4b1222f89
               pullPolicy: Always
             env:
               PGHOST: postgres-rw.database.svc.cluster.local
