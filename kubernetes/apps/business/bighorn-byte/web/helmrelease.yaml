@@ -22,7 +22,7 @@ spec:
           app:
             image: &image
               repository: ghcr.io/heavybullets8/bighorn-byte-web
-              tag: 0.9.16@sha256:83322719a8ad60c049722bd648a476f6f94347f4ae84c2f4ba9bff2826ad93c9
+              tag: 0.9.17@sha256:391b7e090094afe60b24f64f7768d58a47cd308a6fc57e1fb0137423288804bc
               pullPolicy: Always
             env:
               TZ: ${TIMEZONE}
