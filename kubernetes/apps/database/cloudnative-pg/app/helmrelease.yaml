@@ -13,6 +13,9 @@ spec:
     - name: openebs
       namespace: openebs-system
   values:
+    config:
+      data:
+        ENABLE_INSTANCE_MANAGER_INPLACE_UPDATES: "true"
     crds:
       create: true
     monitoring:

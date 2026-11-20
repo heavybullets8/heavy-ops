@@ -17,6 +17,7 @@ spec:
             spec:
               type: ClusterIP
   primaryUpdateStrategy: unsupervised
+  primaryUpdateMethod: switchover
   storage:
     size: 20Gi
     storageClass: openebs-hostpath
