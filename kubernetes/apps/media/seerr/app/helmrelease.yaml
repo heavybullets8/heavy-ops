@@ -31,7 +31,7 @@ spec:
           init-db:
             image:
               repository: ghcr.io/home-operations/postgres-init
-              tag: 18
+              tag: 19
             envFrom: &envFrom
               - secretRef:
                   name: seerr-secret
